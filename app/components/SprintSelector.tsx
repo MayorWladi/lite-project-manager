@@ -1,12 +1,13 @@
 // /app/components/SprintSelector.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { Sprint } from "@/app/types";
 import { useSprintMetrics, useProjectsManager } from "@/app/context/ProjectContext";
 import { useLanguage } from "@/app/context/LanguageContext";
 import ProgressBar from "./ProgressBar";
+import { useDoubleTapById } from "@/app/hooks/useDoubleTap";
 
 interface SprintSelectorProps {
 	sprints: Sprint[];
@@ -25,6 +26,11 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 	const [renameValue, setRenameValue] = useState("");
 
 	const metrics = useSprintMetrics(activeSprint);
+
+	const handleSprintDoubleTap = useDoubleTapById(useCallback((sprintId) => {
+		const sprint = sprints.find(s => s.id === sprintId);
+		if (sprint) { setRenamingId(sprint.id); setRenameValue(sprint.name); setMenuOpenId(null); }
+	}, [sprints]));
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -76,6 +82,7 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 							<button
 								onClick={() => onSelectSprint(sprint.id)}
 								onDoubleClick={(e) => { e.stopPropagation(); setRenamingId(sprint.id); setRenameValue(sprint.name); setMenuOpenId(null); }}
+								onTouchEnd={(e) => handleSprintDoubleTap(e, sprint.id)}
 								className={`px-3 py-1.5 rounded-md text-xs md:text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1 border ${activeSprint?.id === sprint.id
 									? "bg-foreground text-background border-foreground shadow-sm"
 									: "bg-background text-(--color-muted) border-(--color-border) hover:bg-black/5 dark:hover:bg-white/10 hover:text-foreground hover:border-(--color-muted)"
@@ -150,7 +157,7 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 			</div>
 			
 			<div className="hidden md:flex justify-end flex-1 shrink-0">
-				{activeSprint && <ProgressBar percentage={metrics.percentage} />}
+				{activeSprint && <ProgressBar percentage={metrics.percentage} total={metrics.total} done={metrics.done} />}
 			</div>
 		</div>
 	);

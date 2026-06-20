@@ -247,7 +247,7 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 				</div>
 
 				{/* Active Column Cards */}
-				<div className="flex-1 overflow-y-auto p-3 space-y-3 pb-24">
+				<div key={mobileActiveColumn} className="flex-1 overflow-y-auto p-3 space-y-3 pb-24 animate-column-enter">
 					{mobileActivities.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-16 text-(--color-muted)">
 							<svg width="32" height="32" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" className="mb-3 opacity-40">

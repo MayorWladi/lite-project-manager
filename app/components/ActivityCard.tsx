@@ -164,7 +164,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 				</div>
 
 				{tasks.map(task => (
-					<div key={task.id} className="flex items-start gap-2 group/task">
+					<div key={task.id} className={`flex items-start gap-2 group/task transition-opacity duration-300 ${task.isCompleted ? 'opacity-60' : 'opacity-100'}`}>
 						<button
 							type="button"
 							onClick={(e) => handleToggle(e, task.id)}

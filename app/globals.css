@@ -62,6 +62,25 @@ body {
   to { opacity: 1; }
 }
 
+@keyframes columnEnter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-column-enter {
+  animation: columnEnter 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes taskComplete {
+  0%   { opacity: 1; }
+  40%  { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.animate-task-complete {
+  animation: taskComplete 300ms ease-out both;
+}
+
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-4px); }

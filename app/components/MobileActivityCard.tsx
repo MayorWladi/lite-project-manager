@@ -1,11 +1,12 @@
 // /app/components/MobileActivityCard.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Activity, TaskStatus } from "@/app/types";
 import { useProjectsManager } from "@/app/context/ProjectContext";
 import { useLanguage } from "@/app/context/LanguageContext";
 import { notifyActivityError } from "@/app/helpers/notifications";
+import { useDoubleTap, useDoubleTapById } from "@/app/hooks/useDoubleTap";
 
 interface MobileActivityCardProps {
 	activity: Activity;
@@ -32,6 +33,21 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 	const completedTasks = tasks.filter(t => t.isCompleted).length;
 
 	const currentCol = columns.find(c => c.id === activity.status);
+
+	// Double-tap handlers for mobile
+	const handleActivityTitleDoubleTap = useDoubleTap(useCallback((e) => {
+		e.stopPropagation();
+		setIsRenaming(true);
+		setRenameValue(activity.name);
+	}, [activity.name]));
+
+	const handleTaskDoubleTap = useDoubleTapById(useCallback((taskId) => {
+		const task = (activity.tasks || []).find(t => t.id === taskId);
+		if (task) {
+			setRenamingTaskId(taskId);
+			setRenameTaskValue(task.title);
+		}
+	}, [activity.tasks]));
 
 	const handleToggle = (taskId: string) => {
 		if (selectedProjectId) {
@@ -129,6 +145,7 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 						<div className="flex-1 min-w-0">
 							<h4 
 								onDoubleClick={(e) => { e.stopPropagation(); setIsRenaming(true); setRenameValue(activity.name); }}
+								onTouchEnd={handleActivityTitleDoubleTap}
 								className="font-semibold text-sm text-foreground leading-tight truncate cursor-default"
 							>
 								{activity.name}
@@ -216,7 +233,7 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 					</div>
 
 					{tasks.map(task => (
-						<div key={task.id} className="flex items-start gap-2.5">
+						<div key={task.id} className={`flex items-start gap-2.5 transition-opacity duration-300 ${task.isCompleted ? 'opacity-60' : 'opacity-100'}`}>
 							<button
 								type="button"
 								onClick={() => handleToggle(task.id)}
@@ -248,6 +265,7 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 						) : (
 							<span 
 								onDoubleClick={(e) => { e.stopPropagation(); setRenamingTaskId(task.id); setRenameTaskValue(task.title); }}
+								onTouchEnd={(e) => handleTaskDoubleTap(e, task.id)}
 								className={`text-sm flex-1 select-none cursor-default ${task.isCompleted ? 'text-(--color-muted) line-through' : 'text-foreground'}`}
 							>
 								{task.title}

@@ -1,10 +1,11 @@
 // /app/components/Sidebar.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useProjectsManager } from "@/app/context/ProjectContext";
 import { useLanguage } from "@/app/context/LanguageContext";
 import SettingsModal from "./SettingsModal";
+import { useDoubleTapById } from "@/app/hooks/useDoubleTap";
 
 interface SidebarProps {
 	isOpen: boolean;
@@ -22,6 +23,13 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
 	const [renamingId, setRenamingId] = useState<string | null>(null);
 	const [renameValue, setRenameValue] = useState("");
 	const [storageUsage, setStorageUsage] = useState(0);
+	const [showStorageTooltip, setShowStorageTooltip] = useState(false);
+	const longPressTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+	const handleProjectDoubleTap = useDoubleTapById(useCallback((projectId) => {
+		const project = projects.find(p => p.id === projectId);
+		if (project) startRename(project);
+	}, [projects]));
 
 	React.useEffect(() => {
 		const calculateStorage = () => {
@@ -113,6 +121,7 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
 										<button
 											onClick={() => setSelectedProjectId(project.id)}
 											onDoubleClick={(e) => { e.stopPropagation(); startRename(project); }}
+											onTouchEnd={(e) => handleProjectDoubleTap(e, project.id)}
 											className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all duration-200 flex items-center justify-between ${selectedProjectId === project.id
 												? "bg-black/4 dark:bg-white/10 text-foreground font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
 												: "text-(--color-muted) font-medium hover:bg-black/3 dark:hover:bg-white/5 hover:text-foreground hover:translate-x-0.5"
@@ -172,7 +181,12 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
 
 				{/* Storage Capacity */}
 				<div className="relative group">
-					<div className="px-4 py-3 border-t border-(--color-border) flex flex-col gap-1.5 cursor-help">
+					<div
+						className="px-4 py-3 border-t border-(--color-border) flex flex-col gap-1.5 cursor-help"
+						onTouchStart={() => { longPressTimer.current = setTimeout(() => setShowStorageTooltip(true), 400); }}
+						onTouchEnd={() => { if (longPressTimer.current) clearTimeout(longPressTimer.current); }}
+						onClick={() => setShowStorageTooltip(v => !v)}
+					>
 						<div className="flex justify-between items-center text-[10px] text-(--color-muted) uppercase tracking-wider font-medium">
 							<span>Storage</span>
 							<span>{storageUsage.toFixed(1)}%</span>
@@ -182,8 +196,8 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
 						</div>
 					</div>
 
-					{/* Custom Tooltip on Hover */}
-					<div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-(--color-card-bg) border border-(--color-border) rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] p-3 min-w-[200px] pointer-events-none">
+					{/* Custom Tooltip on Hover (desktop) + tap/long-press (mobile) */}
+					<div className={`absolute left-1/2 -translate-x-1/2 bottom-full mb-1 z-50 bg-(--color-card-bg) border border-(--color-border) rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] p-3 min-w-[200px] pointer-events-none transition-all duration-200 ${showStorageTooltip ? 'opacity-100 visible' : 'opacity-0 invisible'} md:group-hover:opacity-100 md:group-hover:visible`}>
 						<div className="flex flex-col gap-2">
 							<h4 className="text-xs font-bold text-foreground">Almacenamiento Local</h4>
 							<div className="flex justify-between items-center text-xs">
