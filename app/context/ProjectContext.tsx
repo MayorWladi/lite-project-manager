@@ -1,68 +1,81 @@
-'use client'
+// /app/context/ProjectContext.tsx
+"use client";
 
-import { createContext, useContext, useState, ReactNode } from 'react'
-import type { Project, ProjectContextType } from '@/app/types'
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import { Project, Task, TaskStatus } from "@/app/types";
 
-const ProjectContext = createContext<ProjectContextType | undefined>(undefined)
-
-export function ProjectProvider({ children }: { children: ReactNode }) {
-	const [projects, setProjects] = useState<Project[]>([
-		{ id: 1, name: 'Diseño Web', activities: ['Crear wireframes', 'Diseñar UI'] },
-		{ id: 2, name: 'Desarrollo Backend', activities: ['Configurar API', 'Implementar autenticación'] },
-	])
-
-	const addProject = (name: string): Project => {
-		const newProject: Project = { id: Date.now(), name, activities: [] }
-		setProjects((prev: Project[]) => [...prev, newProject])
-		return newProject
-	}
-
-	const deleteProject = (id: number) => {
-		setProjects((prev: Project[]) => prev.filter((p) => p.id !== id))
-	}
-
-	const addActivity = (projectId: number, activityName: string): Project | undefined => {
-		let updatedProject: Project | undefined
-		setProjects((prev) =>
-			prev.map((p: Project) => {
-				if (p.id === projectId) {
-					const updated: Project = { ...p, activities: [...p.activities, activityName] }
-					updatedProject = updated
-					return updated
-				}
-				return p
-			})
-		)
-		return updatedProject
-	}
-
-	const deleteActivity = (projectId: number, index: number) => {
-		setProjects((prev) =>
-			prev.map((p: Project) => {
-				if (p.id === projectId) {
-					const newActivities = p.activities.filter((_: string, i: number) => i !== index)
-					return { ...p, activities: newActivities }
-				}
-				return p
-			})
-		)
-	}
-
-	const value: ProjectContextType = {
-		projects,
-		addProject,
-		deleteProject,
-		addActivity,
-		deleteActivity,
-	}
-
-	return <ProjectContext.Provider value={value}>{children}</ProjectContext.Provider>
+interface ProjectContextType {
+	projects: Project[];
+	selectedProjectId: string | null;
+	setSelectedProjectId: (id: string | null) => void;
+	addProject: (name: string) => void;
+	addSprint: (projectId: string, name: string) => void;
+	addTask: (projectId: string, sprintId: string, title: string, description: string) => void;
+	moveTask: (projectId: string, sprintId: string, taskId: string, newStatus: TaskStatus) => void;
 }
 
-export function useProjects(): ProjectContextType {
-	const context = useContext(ProjectContext)
+const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
+
+export function ProjectProvider({ children }: { children: ReactNode }) {
+	// Estado inicial vacío, preparado para ser hidratado desde localStorage en la Fase 5
+	const [projects, setProjects] = useState<Project[]>([]);
+	const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+
+	// Lógica funcional temporal para ver los cambios en la UI
+	const addProject = (name: string) => {
+		// Tareas de prueba para visualizar el KanbanBoard
+		const mockTasks: Task[] = [
+			{ id: `t1-${Date.now()}`, title: "Diseñar wireframes", description: "Esbozos en papel de la arquitectura", status: "todo", createdAt: Date.now() },
+			{ id: `t2-${Date.now()}`, title: "Configurar Next.js", description: "Setup base con Tailwind y tipografías", status: "working", createdAt: Date.now() },
+			{ id: `t3-${Date.now()}`, title: "Revisar Context API", description: "Asegurar que el estado no re-renderice todo", status: "review", createdAt: Date.now() },
+			{ id: `t4-${Date.now()}`, title: "Prueba técnica inicial", description: "Subir a Vercel el MVP", status: "done", createdAt: Date.now() },
+		];
+
+		const newProject: Project = {
+			id: Date.now().toString(),
+			name,
+			// Creamos un Sprint por defecto con las tareas de prueba
+			sprints: [{ id: `s1-${Date.now()}`, name: "Sprint 1", tasks: mockTasks, startDate: Date.now() }],
+			createdAt: Date.now(),
+		};
+
+		setProjects([...projects, newProject]);
+		setSelectedProjectId(newProject.id);
+	};
+
+	const addSprint = (projectId: string, name: string) => {
+		// TODO: Implementar lógica de agregar sprint
+	};
+
+	const addTask = (projectId: string, sprintId: string, title: string, description: string) => {
+		// TODO: Implementar lógica de agregar tarea
+	};
+
+	const moveTask = (projectId: string, sprintId: string, taskId: string, newStatus: TaskStatus) => {
+		// TODO: Implementar lógica de drag and drop para cambiar estado
+	};
+
+	return (
+		<ProjectContext.Provider
+			value={{
+				projects,
+				selectedProjectId,
+				setSelectedProjectId,
+				addProject,
+				addSprint,
+				addTask,
+				moveTask,
+			}}
+		>
+			{children}
+		</ProjectContext.Provider>
+	);
+}
+
+export function useProjectsManager() {
+	const context = useContext(ProjectContext);
 	if (context === undefined) {
-		throw new Error('useProjects must be used within a ProjectProvider')
+		throw new Error("useProjectsManager debe ser utilizado dentro de un ProjectProvider");
 	}
-	return context
+	return context;
 }

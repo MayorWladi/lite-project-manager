@@ -1,65 +1,51 @@
-'use client'
+// /app/page.tsx
+"use client";
 
-import { useState } from 'react'
-import { ProjectProvider, useProjects } from '@/app/context/ProjectContext'
-import ProjectForm from '@/app/components/ProjectForm'
-import ActivityForm from '@/app/components/ActivityForm'
-import ProjectList from '@/app/components/ProjectList'
-import AsyncButton from '@/app/components/AsyncButton'
-import { handleAddProject, handleDeleteProject } from './controller/projectController'
-import { handleAddActivity, handleDeleteActivity, handleAsyncTask } from './controller/activityController'
-
-function HomeContent() {
-  const { projects, addProject, deleteProject, addActivity, deleteActivity } = useProjects()
-  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null)
-
-  // Wrappers simples que llaman a los controladores con los parámetros necesarios
-  const onAddProject = (name: string) => {
-    handleAddProject(name, addProject)
-  }
-
-  const onDeleteProject = (id: number, name: string) => {
-    handleDeleteProject(id, name, deleteProject)
-  }
-
-  const onAddActivity = (projectId: number, activityName: string) => {
-    handleAddActivity(selectedProjectId, activityName, addActivity)
-  }
-
-  const onDeleteActivity = (projectId: number, index: number, activityName: string) => {
-    handleDeleteActivity(projectId, index, activityName, deleteActivity)
-  }
-
-  return (
-    <div className="animate-scroll-entry" style={{ padding: '6rem 2rem', maxWidth: '56rem', margin: '0 auto' }}>
-      <h1 className="font-editorial" style={{ fontSize: '3rem', fontWeight: 400, color: 'var(--foreground)', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: '3rem' }}>
-        Gestor de Proyectos
-      </h1>
-
-      <ProjectForm onAddProject={onAddProject} />
-
-      <ActivityForm
-        projects={projects}
-        selectedProjectId={selectedProjectId}
-        onSelectProject={setSelectedProjectId}
-        onAddActivity={onAddActivity}
-      />
-
-      <ProjectList
-        projects={projects}
-        onDeleteProject={onDeleteProject}
-        onDeleteActivity={onDeleteActivity}
-      />
-
-      <AsyncButton onAsyncTask={handleAsyncTask} />
-    </div>
-  )
-}
+import AppLayout from "@/app/components/AppLayout";
+import KanbanBoard from "@/app/components/KanbanBoard";
+import { useProjectsManager } from "@/app/context/ProjectContext";
 
 export default function Home() {
+  const { selectedProjectId, projects } = useProjectsManager();
+
+  const selectedProject = projects.find(p => p.id === selectedProjectId);
+  // Para esta fase, asumimos que estamos viendo el primer sprint
+  const activeSprint = selectedProject?.sprints[0];
+
   return (
-    <ProjectProvider>
-      <HomeContent />
-    </ProjectProvider>
-  )
+    <AppLayout>
+      {selectedProjectId && selectedProject ? (
+        <div className="h-full flex flex-col p-8 animate-scroll-entry">
+          <header className="mb-8 flex items-end justify-between">
+            <div>
+              <h1 className="font-editorial text-4xl font-medium tracking-tight mb-2 text-[var(--foreground)]">
+                {selectedProject.name}
+              </h1>
+              {activeSprint && (
+                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-black/5 dark:bg-white/10 text-[10px] font-bold text-[var(--color-muted)] uppercase tracking-widest border border-[var(--color-border)]">
+                  {activeSprint.name}
+                </div>
+              )}
+            </div>
+          </header>
+
+          <div className="flex-1 overflow-hidden">
+            {activeSprint ? (
+              <KanbanBoard sprint={activeSprint} />
+            ) : (
+              <div className="h-full border-2 border-dashed border-[var(--color-border)] rounded-xl flex items-center justify-center">
+                <p className="text-[var(--color-muted)] text-sm">No hay sprints activos en este proyecto.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="h-full flex items-center justify-center">
+          <p className="text-[var(--color-muted)] text-sm italic select-none">
+            Selecciona o crea un proyecto de la barra lateral
+          </p>
+        </div>
+      )}
+    </AppLayout>
+  );
 }
