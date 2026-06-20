@@ -9,9 +9,11 @@ import SettingsModal from "./SettingsModal";
 interface SidebarProps {
 	isOpen: boolean;
 	onClose: () => void;
+	isDesktopOpen?: boolean;
+	onDesktopToggle?: () => void;
 }
 
-export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDesktopToggle }: SidebarProps) {
 	const { projects, selectedProjectId, setSelectedProjectId, addProject, renameProject, deleteProject } = useProjectsManager();
 	const { t } = useLanguage();
 	const [newProjectName, setNewProjectName] = useState("");
@@ -19,6 +21,21 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 	const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
 	const [renamingId, setRenamingId] = useState<string | null>(null);
 	const [renameValue, setRenameValue] = useState("");
+	const [storageUsage, setStorageUsage] = useState(0);
+
+	React.useEffect(() => {
+		const calculateStorage = () => {
+			let total = 0;
+			for (let x in localStorage) {
+				if (!localStorage.hasOwnProperty(x)) continue;
+				total += ((localStorage[x].length + x.length) * 2);
+			}
+			setStorageUsage(Math.min((total / 5242880) * 100, 100));
+		};
+		calculateStorage();
+		const interval = setInterval(calculateStorage, 5000);
+		return () => clearInterval(interval);
+	}, []);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -51,7 +68,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 				/>
 			)}
 
-			<aside className={`fixed inset-y-0 left-0 z-50 w-[260px] bg-(--color-card-bg) border-r border-(--color-border) flex flex-col transition-transform duration-300 ease-in-out md:translate-x-0 md:static ${isOpen ? 'translate-x-0 shadow-[20px_0_40px_rgba(0,0,0,0.05)]' : '-translate-x-full'}`}>
+			<aside className={`fixed inset-y-0 left-0 z-50 bg-(--color-card-bg) border-r border-(--color-border) flex flex-col transition-all duration-300 ease-in-out md:static ${isOpen ? 'translate-x-0 shadow-[20px_0_40px_rgba(0,0,0,0.05)] w-[260px]' : '-translate-x-full md:translate-x-0'} ${isDesktopOpen ? 'md:w-[260px]' : 'md:w-0 md:border-r-0 overflow-hidden w-[260px]'}`}>
+				<div className="w-[260px] min-w-[260px] h-full flex flex-col">
 				{/* Encabezado */}
 				<div className="h-16 flex justify-between items-center px-6 border-b border-(--color-border) shrink-0">
 					<h1 className="text-lg font-medium text-foreground tracking-tight truncate">
@@ -60,6 +78,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 					<button className="md:hidden p-1 -mr-2 text-(--color-muted) hover:text-foreground transition-colors" onClick={onClose}>
 						<svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
 					</button>
+					{onDesktopToggle && (
+						<button className="hidden md:block p-1 -mr-2 text-(--color-muted) hover:text-foreground transition-colors" onClick={onDesktopToggle}>
+							<svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+						</button>
+					)}
 				</div>
 
 				{/* Lista de Proyectos */}
@@ -89,6 +112,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 									) : (
 										<button
 											onClick={() => setSelectedProjectId(project.id)}
+											onDoubleClick={(e) => { e.stopPropagation(); startRename(project); }}
 											className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all duration-200 flex items-center justify-between ${selectedProjectId === project.id
 												? "bg-black/4 dark:bg-white/10 text-foreground font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
 												: "text-(--color-muted) font-medium hover:bg-black/3 dark:hover:bg-white/5 hover:text-foreground hover:translate-x-0.5"
@@ -146,6 +170,17 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 					</form>
 				</div>
 
+				{/* Storage Capacity */}
+				<div className="px-4 py-3 border-t border-(--color-border) flex flex-col gap-1.5">
+					<div className="flex justify-between items-center text-[10px] text-(--color-muted) uppercase tracking-wider font-medium">
+						<span>Storage</span>
+						<span>{storageUsage.toFixed(1)}%</span>
+					</div>
+					<div className="h-1.5 w-full bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
+						<div className="h-full bg-foreground rounded-full transition-all duration-500" style={{ width: `${storageUsage}%` }} />
+					</div>
+				</div>
+
 				{/* Botón de Ajustes */}
 				<div className="p-3 border-t border-(--color-border)">
 					<button
@@ -158,6 +193,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 						</svg>
 						<span>{t("settings")}</span>
 					</button>
+				</div>
 				</div>
 			</aside>
 			<SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />

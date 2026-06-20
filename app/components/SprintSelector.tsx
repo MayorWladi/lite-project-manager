@@ -1,7 +1,8 @@
 // /app/components/SprintSelector.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Sprint } from "@/app/types";
 import { useSprintMetrics, useProjectsManager } from "@/app/context/ProjectContext";
 import { useLanguage } from "@/app/context/LanguageContext";
@@ -56,7 +57,7 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 	return (
 		<div className="flex items-center border-b border-(--color-border) pb-2 md:pb-3 mb-3 md:mb-6 relative">
 			<div className="hidden md:block flex-1" />
-			<div className="flex items-center gap-2 overflow-x-auto scrollbar-hide shrink-0 md:justify-center md:max-w-[calc(100%-100px)] px-0 md:px-2">
+			<div className="flex flex-wrap items-center gap-2 shrink-0 md:justify-center md:max-w-[calc(100%-100px)] px-0 md:px-2 relative">
 				{sprints.map((sprint) => (
 					<div key={sprint.id} className="relative shrink-0 flex items-center">
 						{renamingId === sprint.id ? (
@@ -74,21 +75,51 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 						) : (
 							<button
 								onClick={() => onSelectSprint(sprint.id)}
-								className={`px-3 md:px-4 py-1.5 rounded-md text-xs md:text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1 ${activeSprint?.id === sprint.id
-									? "bg-foreground text-background shadow-sm"
-									: "text-(--color-muted) hover:bg-black/5 dark:hover:bg-white/10 hover:text-foreground"
+								onDoubleClick={(e) => { e.stopPropagation(); setRenamingId(sprint.id); setRenameValue(sprint.name); setMenuOpenId(null); }}
+								className={`px-3 py-1.5 rounded-md text-xs md:text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1 border ${activeSprint?.id === sprint.id
+									? "bg-foreground text-background border-foreground shadow-sm"
+									: "bg-background text-(--color-muted) border-(--color-border) hover:bg-black/5 dark:hover:bg-white/10 hover:text-foreground hover:border-(--color-muted)"
 									}`}
 							>
 								{sprint.name}
 								{activeSprint?.id === sprint.id && (
 									<span
-										onClick={(e) => { e.stopPropagation(); setMenuOpenId(menuOpenId === sprint.id ? null : sprint.id); }}
-										className="ml-0.5 opacity-70 hover:opacity-100"
+										onClick={(e) => {
+											e.stopPropagation();
+											setMenuOpenId(menuOpenId === sprint.id ? null : sprint.id);
+										}}
+										className="ml-0.5 opacity-70 hover:opacity-100 p-0.5"
 									>
 										<svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" /></svg>
 									</span>
 								)}
 							</button>
+						)}
+
+						{/* Sprint Context Menu */}
+						{menuOpenId === sprint.id && (
+							<>
+								<div className="fixed inset-0 z-40 cursor-default" onClick={(e) => {
+									e.stopPropagation();
+									setMenuOpenId(null);
+								}} />
+								<div
+									className="absolute left-0 md:left-auto md:right-0 top-full mt-1 z-50 bg-(--color-card-bg) border border-(--color-border) rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-1 min-w-[120px] animate-fade-in"
+								>
+									<button
+										onClick={(e) => { e.stopPropagation(); setRenamingId(sprint.id); setRenameValue(sprint.name); setMenuOpenId(null); }}
+										className="w-full text-left px-3 py-1.5 text-xs font-medium text-(--color-muted) hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+									>
+										{t("rename")}
+									</button>
+									<button
+										onClick={(e) => { e.stopPropagation(); handleDelete(sprint.id); }}
+										className="w-full text-left px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-500/10 transition-colors"
+									>
+										{t("delete_item")}
+									</button>
+								</div>
+							</>
 						)}
 					</div>
 				))}
@@ -108,23 +139,18 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 				) : (
 					<button
 						onClick={() => setIsAdding(true)}
-						className="ml-1 px-2.5 md:px-3 py-1.5 rounded-md text-xs md:text-sm font-medium text-(--color-muted) border border-dashed border-(--color-border) hover:border-(--color-muted) hover:text-foreground transition-colors flex items-center gap-1.5 whitespace-nowrap"
+						className="px-3 py-1.5 rounded-md text-xs md:text-sm font-medium text-(--color-muted) border border-dashed border-(--color-border) hover:border-(--color-muted) hover:text-foreground transition-colors flex items-center gap-1.5 whitespace-nowrap bg-background"
 					>
 						<svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
 							<path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
 						</svg>
-						<span className="hidden sm:inline">{t("new_sprint")}</span>
-						<span className="sm:hidden">+</span>
+						<span>{t("new_sprint")}</span>
 					</button>
 				)}
 			</div>
-
-			<div className="hidden md:flex flex-1 justify-end shrink-0">
-				{activeSprint && (
-					<div className="ml-4">
-						<ProgressBar percentage={metrics.percentage} />
-					</div>
-				)}
+			
+			<div className="hidden md:flex justify-end flex-1 shrink-0">
+				{activeSprint && <ProgressBar percentage={metrics.percentage} />}
 			</div>
 		</div>
 	);

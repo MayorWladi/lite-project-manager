@@ -11,6 +11,7 @@ import KanbanCell from "./KanbanCell";
 import ActivityCard from "./ActivityCard";
 import MobileActivityCard from "./MobileActivityCard"
 import { createPortal } from "react-dom";
+import { notifyActivityError } from "@/app/helpers/notifications";
 
 export const getColumns = (t: (k: string) => string): { id: TaskStatus; title: string }[] => [
 	{ id: "todo", title: t("col_todo") },
@@ -58,6 +59,15 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 		const targetStatus = isOverColumn ? overId : overItem?.status;
 
 		if (!targetStatus) return activities;
+
+		if (targetStatus === 'review' || targetStatus === 'done') {
+			if (activeItem.tasks && activeItem.tasks.length > 0) {
+				const hasUncompleted = activeItem.tasks.some(t => !t.isCompleted);
+				if (hasUncompleted) {
+					return activities;
+				}
+			}
+		}
 
 		const columnsData: Record<string, Activity[]> = {};
 		COLUMNS.forEach(c => { columnsData[c.id] = []; });
@@ -146,6 +156,19 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 		const activeId = active.id as string;
 		const overId = over.id as string;
 
+		const activeItem = localActivities.find(a => a.id === activeId);
+		const isOverColumn = COLUMNS.some(c => c.id === overId);
+		const overItem = localActivities.find(a => a.id === overId);
+		const targetStatus = isOverColumn ? overId : overItem?.status;
+
+		if (activeItem && targetStatus && (targetStatus === 'review' || targetStatus === 'done') && activeItem.status !== targetStatus) {
+			if (activeItem.tasks && activeItem.tasks.some(t => !t.isCompleted)) {
+				notifyActivityError();
+				setLocalActivities(sprint.activities || []);
+				return;
+			}
+		}
+
 		const finalActivities = getReorderedActivities(localActivities, activeId, overId);
 		setLocalActivities(finalActivities);
 		updateSprintActivities(selectedProjectId, sprint.id, finalActivities);
@@ -154,6 +177,20 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 	// --- Mobile: change activity status ---
 	const handleMobileStatusChange = (activityId: string, newStatus: TaskStatus) => {
 		if (!selectedProjectId) return;
+		
+		const activity = localActivities.find(a => a.id === activityId);
+		if (!activity) return;
+
+		if (newStatus === 'review' || newStatus === 'done') {
+			if (activity.tasks && activity.tasks.length > 0) {
+				const hasUncompleted = activity.tasks.some(t => !t.isCompleted);
+				if (hasUncompleted) {
+					notifyActivityError();
+					return;
+				}
+			}
+		}
+
 		const updated = localActivities.map(a =>
 			a.id === activityId ? { ...a, status: newStatus } : a
 		);

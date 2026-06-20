@@ -3,6 +3,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { Project, Sprint, TaskStatus, Task, Activity } from "@/app/types";
+import { notifyTaskAdded, notifyTaskCompleted, notifyTaskDeleted } from "@/app/helpers/notifications";
 
 interface ProjectContextType {
 	projects: Project[];
@@ -19,6 +20,7 @@ interface ProjectContextType {
 	deleteActivity: (projectId: string, sprintId: string, activityId: string) => void;
 	updateSprintActivities: (projectId: string, sprintId: string, newActivities: Activity[]) => void;
 	addTaskToActivity: (projectId: string, sprintId: string, activityId: string, title: string) => void;
+	renameTask: (projectId: string, sprintId: string, activityId: string, taskId: string, newTitle: string) => void;
 	toggleTaskCompletion: (projectId: string, sprintId: string, activityId: string, taskId: string) => void;
 	deleteTask: (projectId: string, sprintId: string, activityId: string, taskId: string) => void;
 	useSprintMetrics: (sprint: Sprint | null | undefined) => { total: number; done: number; percentage: number };
@@ -235,9 +237,10 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 				})
 			};
 		}));
+		notifyTaskAdded(title);
 	};
 
-	const toggleTaskCompletion = (projectId: string, sprintId: string, activityId: string, taskId: string) => {
+	const renameTask = (projectId: string, sprintId: string, activityId: string, taskId: string, newTitle: string) => {
 		setProjects(prev => prev.map(project => {
 			if (project.id !== projectId) return project;
 			return {
@@ -250,7 +253,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 							if (act.id !== activityId) return act;
 							return {
 								...act,
-								tasks: (act.tasks || []).map(t => t.id === taskId ? { ...t, isCompleted: !t.isCompleted } : t)
+								tasks: (act.tasks || []).map(t => t.id === taskId ? { ...t, title: newTitle } : t)
 							};
 						})
 					};
@@ -259,7 +262,10 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 		}));
 	};
 
-	const deleteTask = (projectId: string, sprintId: string, activityId: string, taskId: string) => {
+	const toggleTaskCompletion = (projectId: string, sprintId: string, activityId: string, taskId: string) => {
+		let taskName = "";
+		let isNowCompleted = false;
+
 		setProjects(prev => prev.map(project => {
 			if (project.id !== projectId) return project;
 			return {
@@ -270,6 +276,42 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 						...sprint,
 						activities: (sprint.activities || []).map(act => {
 							if (act.id !== activityId) return act;
+							return {
+								...act,
+								tasks: (act.tasks || []).map(t => {
+									if (t.id === taskId) {
+										taskName = t.title;
+										isNowCompleted = !t.isCompleted;
+										return { ...t, isCompleted: isNowCompleted };
+									}
+									return t;
+								})
+							};
+						})
+					};
+				})
+			};
+		}));
+
+		if (taskName) {
+			notifyTaskCompleted(taskName, isNowCompleted);
+		}
+	};
+
+	const deleteTask = (projectId: string, sprintId: string, activityId: string, taskId: string) => {
+		let deletedTaskName = "";
+		setProjects(prev => prev.map(project => {
+			if (project.id !== projectId) return project;
+			return {
+				...project,
+				sprints: project.sprints.map(sprint => {
+					if (sprint.id !== sprintId) return sprint;
+					return {
+						...sprint,
+						activities: (sprint.activities || []).map(act => {
+							if (act.id !== activityId) return act;
+							const task = act.tasks?.find(t => t.id === taskId);
+							if (task) deletedTaskName = task.title;
 							return {
 								...act,
 								tasks: (act.tasks || []).filter(t => t.id !== taskId)
@@ -279,6 +321,10 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 				})
 			};
 		}));
+
+		if (deletedTaskName) {
+			notifyTaskDeleted(deletedTaskName);
+		}
 	};
 
 	if (!isHydrated) {
@@ -302,6 +348,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 				deleteActivity,
 				updateSprintActivities,
 				addTaskToActivity,
+				renameTask,
 				toggleTaskCompletion,
 				deleteTask,
 				useSprintMetrics,

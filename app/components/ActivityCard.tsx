@@ -9,13 +9,15 @@ import { useProjectsManager } from "@/app/context/ProjectContext";
 import { useLanguage } from "@/app/context/LanguageContext";
 
 export default function ActivityCard({ activity, sprintId, isOverlay }: { activity: Activity; sprintId: string, isOverlay?: boolean }) {
-	const { selectedProjectId, toggleTaskCompletion, addTaskToActivity, deleteTask, renameActivity, deleteActivity } = useProjectsManager();
+	const { selectedProjectId, toggleTaskCompletion, addTaskToActivity, deleteTask, renameActivity, deleteActivity, renameTask } = useProjectsManager();
 	const { t } = useLanguage();
 	const [newTaskTitle, setNewTaskTitle] = useState("");
 	const [isAddingTask, setIsAddingTask] = useState(false);
 	const [showMenu, setShowMenu] = useState(false);
 	const [isRenaming, setIsRenaming] = useState(false);
 	const [renameValue, setRenameValue] = useState("");
+	const [renamingTaskId, setRenamingTaskId] = useState<string | null>(null);
+	const [renameTaskValue, setRenameTaskValue] = useState("");
 
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: activity.id,
@@ -60,6 +62,13 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 		setIsRenaming(false);
 	};
 
+	const handleRenameTaskSubmit = (taskId: string) => {
+		if (renameTaskValue.trim() && selectedProjectId) {
+			renameTask(selectedProjectId, sprintId, activity.id, taskId, renameTaskValue.trim());
+		}
+		setRenamingTaskId(null);
+	};
+
 	const handleDeleteActivity = () => {
 		if (selectedProjectId) {
 			deleteActivity(selectedProjectId, sprintId, activity.id);
@@ -100,7 +109,10 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 						</form>
 					) : (
 						<>
-							<h4 className="font-semibold text-sm text-foreground leading-tight group-hover:text-(--color-muted) transition-colors select-none">
+							<h4 
+								onDoubleClick={(e) => { e.stopPropagation(); setIsRenaming(true); setRenameValue(activity.name); }}
+								className="font-semibold text-sm text-foreground leading-tight group-hover:text-(--color-muted) transition-colors select-none truncate cursor-text"
+							>
 								{activity.name}
 							</h4>
 							{activity.description && (
@@ -169,9 +181,26 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 								</svg>
 							)}
 						</button>
-						<span className={`text-xs flex-1 select-none ${task.isCompleted ? 'text-(--color-muted) line-through' : 'text-foreground'}`}>
-							{task.title}
-						</span>
+						{renamingTaskId === task.id ? (
+							<form onSubmit={(e) => { e.preventDefault(); handleRenameTaskSubmit(task.id); }} className="flex-1">
+								<input
+									autoFocus
+									type="text"
+									value={renameTaskValue}
+									onChange={(e) => setRenameTaskValue(e.target.value)}
+									onBlur={() => handleRenameTaskSubmit(task.id)}
+									onKeyDown={(e) => { if (e.key === 'Escape') setRenamingTaskId(null); }}
+									className="w-full text-xs px-1.5 py-0.5 bg-transparent border border-(--color-border) rounded outline-none focus:border-(--color-muted) text-foreground"
+								/>
+							</form>
+						) : (
+							<span 
+								onDoubleClick={(e) => { e.stopPropagation(); setRenamingTaskId(task.id); setRenameTaskValue(task.title); }}
+								className={`text-xs flex-1 select-none cursor-text ${task.isCompleted ? 'text-(--color-muted) line-through' : 'text-foreground'}`}
+							>
+								{task.title}
+							</span>
+						)}
 						<button
 							onClick={(e) => handleDelete(e, task.id)}
 							className="opacity-0 group-hover/task:opacity-100 text-(--color-muted) hover:text-[#9F2F2D] transition-opacity"
@@ -182,7 +211,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 				))}
 
 				{isAddingTask ? (
-					<form onSubmit={handleAddTask} className="mt-1">
+					<form onSubmit={handleAddTask} className="mt-1 w-full">
 						<input
 							autoFocus
 							type="text"
@@ -202,7 +231,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 					<button
 						type="button"
 						onClick={(e) => { e.stopPropagation(); setIsAddingTask(true); }}
-						className="mt-1 flex items-center gap-1.5 text-xs text-(--color-muted) hover:text-foreground transition-colors py-1 px-1 -ml-1 rounded hover:bg-black/5 dark:hover:bg-white/5 w-fit"
+						className="mt-1 flex items-center gap-1.5 text-xs text-(--color-muted) hover:text-foreground transition-colors py-1 px-1 -ml-1 rounded hover:bg-black/5 dark:hover:bg-white/5 w-full justify-start"
 					>
 						<svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
 						{t("add_task")}

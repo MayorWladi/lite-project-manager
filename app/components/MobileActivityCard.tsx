@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Activity, TaskStatus } from "@/app/types";
 import { useProjectsManager } from "@/app/context/ProjectContext";
 import { useLanguage } from "@/app/context/LanguageContext";
+import { notifyActivityError } from "@/app/helpers/notifications";
 
 interface MobileActivityCardProps {
 	activity: Activity;
@@ -14,7 +15,7 @@ interface MobileActivityCardProps {
 }
 
 export default function MobileActivityCard({ activity, sprintId, columns, onStatusChange }: MobileActivityCardProps) {
-	const { selectedProjectId, toggleTaskCompletion, addTaskToActivity, deleteTask, renameActivity, deleteActivity } = useProjectsManager();
+	const { selectedProjectId, toggleTaskCompletion, addTaskToActivity, deleteTask, renameActivity, deleteActivity, renameTask } = useProjectsManager();
 	const { t } = useLanguage();
 	const [newTaskTitle, setNewTaskTitle] = useState("");
 	const [isAddingTask, setIsAddingTask] = useState(false);
@@ -23,6 +24,9 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 	const [showMenu, setShowMenu] = useState(false);
 	const [isRenaming, setIsRenaming] = useState(false);
 	const [renameValue, setRenameValue] = useState("");
+	const [isShaking, setIsShaking] = useState(false);
+	const [renamingTaskId, setRenamingTaskId] = useState<string | null>(null);
+	const [renameTaskValue, setRenameTaskValue] = useState("");
 
 	const tasks = activity.tasks || [];
 	const completedTasks = tasks.filter(t => t.isCompleted).length;
@@ -56,6 +60,20 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 			return;
 		}
 
+		// Verify first
+		if (newStatusId === 'review' || newStatusId === 'done') {
+			if (activity.tasks && activity.tasks.length > 0) {
+				const hasUncompleted = activity.tasks.some(t => !t.isCompleted);
+				if (hasUncompleted) {
+					setIsShaking(true);
+					setTimeout(() => setIsShaking(false), 400);
+					setShowStatusPicker(false);
+					notifyActivityError();
+					return;
+				}
+			}
+		}
+
 		const currentIndex = columns.findIndex(c => c.id === activity.status);
 		const targetIndex = columns.findIndex(c => c.id === newStatusId);
 
@@ -75,6 +93,13 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 		setIsRenaming(false);
 	};
 
+	const handleRenameTaskSubmit = (taskId: string) => {
+		if (renameTaskValue.trim() && selectedProjectId) {
+			renameTask(selectedProjectId, sprintId, activity.id, taskId, renameTaskValue.trim());
+		}
+		setRenamingTaskId(null);
+	};
+
 	const handleDeleteActivity = () => {
 		if (selectedProjectId) {
 			deleteActivity(selectedProjectId, sprintId, activity.id);
@@ -83,7 +108,7 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 	};
 
 	return (
-		<div className={`bg-(--color-card-bg) border border-(--color-border) rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 animate-fade-in ${isAnimatingOut === "right" ? "translate-x-[120%] opacity-0" : isAnimatingOut === "left" ? "translate-x-[-120%] opacity-0" : "translate-x-0 opacity-100"
+		<div className={`bg-(--color-card-bg) border border-(--color-border) rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 animate-fade-in ${isShaking ? 'animate-shake border-red-500/50' : ''} ${isAnimatingOut === "right" ? "translate-x-[120%] opacity-0" : isAnimatingOut === "left" ? "translate-x-[-120%] opacity-0" : "translate-x-0 opacity-100"
 			}`}>
 			{/* Header: Title + Menu + Status Chip */}
 			<div className="flex items-start justify-between gap-2">
@@ -102,7 +127,10 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 						</form>
 					) : (
 						<div className="flex-1 min-w-0">
-							<h4 className="font-semibold text-sm text-foreground leading-tight">
+							<h4 
+								onDoubleClick={(e) => { e.stopPropagation(); setIsRenaming(true); setRenameValue(activity.name); }}
+								className="font-semibold text-sm text-foreground leading-tight truncate cursor-text"
+							>
 								{activity.name}
 							</h4>
 							{activity.description && (
@@ -205,9 +233,26 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 									</svg>
 								)}
 							</button>
-							<span className={`text-sm flex-1 ${task.isCompleted ? 'text-(--color-muted) line-through' : 'text-foreground'}`}>
+							{renamingTaskId === task.id ? (
+							<form onSubmit={(e) => { e.preventDefault(); handleRenameTaskSubmit(task.id); }} className="flex-1">
+								<input
+									autoFocus
+									type="text"
+									value={renameTaskValue}
+									onChange={(e) => setRenameTaskValue(e.target.value)}
+									onBlur={() => handleRenameTaskSubmit(task.id)}
+									onKeyDown={(e) => { if (e.key === 'Escape') setRenamingTaskId(null); }}
+									className="w-full text-sm px-1.5 py-0.5 bg-transparent border border-(--color-border) rounded outline-none focus:border-(--color-muted) text-foreground"
+								/>
+							</form>
+						) : (
+							<span 
+								onDoubleClick={(e) => { e.stopPropagation(); setRenamingTaskId(task.id); setRenameTaskValue(task.title); }}
+								className={`text-sm flex-1 select-none cursor-text ${task.isCompleted ? 'text-(--color-muted) line-through' : 'text-foreground'}`}
+							>
 								{task.title}
 							</span>
+						)}
 							<button
 								onClick={() => handleDelete(task.id)}
 								className="text-(--color-muted) active:text-[#9F2F2D] p-1"
@@ -221,7 +266,7 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 
 			{/* Add Task */}
 			{isAddingTask ? (
-				<form onSubmit={handleAddTask} className="mt-1">
+				<form onSubmit={handleAddTask} className="mt-1 w-full">
 					<input
 						autoFocus
 						type="text"
@@ -236,7 +281,7 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 				<button
 					type="button"
 					onClick={() => setIsAddingTask(true)}
-					className="mt-1 flex items-center gap-1.5 text-xs text-(--color-muted) active:text-foreground transition-colors py-1.5 px-2 -ml-1 rounded-lg active:bg-black/5 dark:active:bg-white/5 w-fit"
+					className="mt-1 flex items-center gap-1.5 text-xs text-(--color-muted) active:text-foreground transition-colors py-1.5 px-2 -ml-1 rounded-lg active:bg-black/5 dark:active:bg-white/5 w-full justify-start"
 				>
 					<svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
 					{t("add_task")}
