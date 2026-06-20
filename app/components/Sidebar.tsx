@@ -54,8 +54,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 			<aside className={`fixed inset-y-0 left-0 z-50 w-[260px] bg-(--color-card-bg) border-r border-(--color-border) flex flex-col transition-transform duration-300 ease-in-out md:translate-x-0 md:static ${isOpen ? 'translate-x-0 shadow-[20px_0_40px_rgba(0,0,0,0.05)]' : '-translate-x-full'}`}>
 				{/* Encabezado */}
 				<div className="h-16 flex justify-between items-center px-6 border-b border-(--color-border) shrink-0">
-					<h1 className="font-editorial text-xl italic font-medium text-foreground tracking-tight">
-						lite Project Manager
+					<h1 className="text-lg font-medium text-foreground tracking-tight truncate">
+						Lite Project Manager
 					</h1>
 					<button className="md:hidden p-1 -mr-2 text-(--color-muted) hover:text-foreground transition-colors" onClick={onClose}>
 						<svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
