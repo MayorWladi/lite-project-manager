@@ -49,6 +49,13 @@ const DICTIONARY: Translations = {
 	danger_zone: { en: "Danger Zone", es: "Zona de Peligro" },
 	delete_all_data: { en: "Delete All Data", es: "Borrar Todos los Datos" },
 	delete_warning: { en: "This will permanently delete all your projects, sprints, and tasks.", es: "Esto eliminará permanentemente todos tus proyectos, sprints y tareas." },
+	
+	col_todo: { en: "To Do", es: "Por Hacer" },
+	col_working: { en: "In Progress", es: "En Progreso" },
+	col_review: { en: "Review", es: "Revisión" },
+	col_dropped: { en: "Dropped", es: "Descartado" },
+	col_done: { en: "Done", es: "Terminado" },
+
 	done: { en: "Done", es: "Listo" },
 
 	rename: { en: "Rename", es: "Renombrar" },

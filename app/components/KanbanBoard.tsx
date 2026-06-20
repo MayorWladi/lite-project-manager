@@ -12,17 +12,18 @@ import ActivityCard from "./ActivityCard";
 import MobileActivityCard from "./MobileActivityCard"
 import { createPortal } from "react-dom";
 
-const COLUMNS: { id: TaskStatus; title: string }[] = [
-	{ id: "todo", title: "To Do" },
-	{ id: "working", title: "Working" },
-	{ id: "review", title: "Review" },
-	{ id: "dropped", title: "Dropped" },
-	{ id: "done", title: "Done" },
+export const getColumns = (t: (k: string) => string): { id: TaskStatus; title: string }[] => [
+	{ id: "todo", title: t("col_todo") },
+	{ id: "working", title: t("col_working") },
+	{ id: "review", title: t("col_review") },
+	{ id: "dropped", title: t("col_dropped") },
+	{ id: "done", title: t("col_done") },
 ];
 
 export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 	const { selectedProjectId, updateSprintActivities, addActivity } = useProjectsManager();
 	const { t } = useLanguage();
+	const COLUMNS = getColumns(t);
 	const [activeActivity, setActiveActivity] = useState<Activity | null>(null);
 	const [localActivities, setLocalActivities] = useState<Activity[]>(sprint.activities || []);
 
