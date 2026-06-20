@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             options={{
               fill: '#ffffff',
               roundness: 8,
-              border: '1px solid #EAEAEA',
+              // border: '1px solid #EAEAEA',
               styles: {
                 title: 'text-[#111111]! font-medium! tracking-tight!',
                 description: 'text-[#787774]! text-sm!',
