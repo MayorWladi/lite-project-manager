@@ -34,9 +34,9 @@ export default function Sidebar() {
 						<button
 							key={project.id}
 							onClick={() => setSelectedProjectId(project.id)}
-							className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${selectedProjectId === project.id
-								? "bg-black/5 dark:bg-white/10 text-foreground"
-								: "text-(--color-muted) hover:bg-black/5 dark:hover:bg-white/5 hover:text-foreground"
+							className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all duration-200 ${selectedProjectId === project.id
+								? "bg-black/4 dark:bg-white/10 text-foreground font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+								: "text-(--color-muted) font-medium hover:bg-black/3 dark:hover:bg-white/5 hover:text-foreground hover:translate-x-0.5"
 								}`}
 						>
 							{project.name}

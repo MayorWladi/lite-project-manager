@@ -57,8 +57,8 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 			style={style}
 			{...(isOverlay ? {} : listeners)}
 			{...(isOverlay ? {} : attributes)}
-			className={`bg-background border rounded-xl p-4 pt-3 flex flex-col gap-3 transition-colors cursor-grab active:cursor-grabbing shadow-sm group relative
-        ${isOverlay ? 'border-(--color-border) cursor-grabbing' : (isDragging ? 'border-dashed border-(--color-muted)' : 'border-(--color-border) hover:border-(--color-muted)')}
+			className={`bg-(--color-card-bg) border rounded-xl p-4 pt-3 flex flex-col gap-3 transition-all duration-300 cursor-grab active:cursor-grabbing shadow-[0_2px_8px_rgba(0,0,0,0.02)] group relative
+        ${isOverlay ? 'border-(--color-border) cursor-grabbing shadow-none' : (isDragging ? 'border-dashed border-(--color-muted) opacity-60' : 'border-(--color-border) hover:border-(--color-muted) hover:translate-y-[-2px] hover:shadow-[0_8px_20px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_8px_20px_rgba(0,0,0,0.4)]')}
       `}
 		>
 			<div className="w-full flex justify-center pb-1">

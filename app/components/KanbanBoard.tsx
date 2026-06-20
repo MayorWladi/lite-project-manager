@@ -214,7 +214,7 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 			{mounted && createPortal(
 				<DragOverlay>
 					{activeActivity ? (
-						<div className="rotate-2 scale-105 shadow-[0_8px_30px_rgb(0,0,0,0.15)] dark:shadow-[0_8px_30px_rgb(255,255,255,0.05)] cursor-grabbing w-[264px]">
+						<div className="rotate-3 scale-105 shadow-[0_12px_40px_rgba(58,54,50,0.15)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.4)] cursor-grabbing w-[264px]">
 							<ActivityCard activity={activeActivity} sprintId={sprint.id} isOverlay />
 						</div>
 					) : null}
