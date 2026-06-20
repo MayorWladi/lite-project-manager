@@ -76,7 +76,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 			style={style}
 			{...(isOverlay ? {} : listeners)}
 			{...(isOverlay ? {} : attributes)}
-			className={`bg-(--color-card-bg) border rounded-xl p-4 pt-3 flex flex-col gap-3 transition-all duration-300 cursor-grab active:cursor-grabbing shadow-[0_2px_8px_rgba(0,0,0,0.02)] group relative
+			className={`bg-(--color-card-bg) border rounded-xl p-4 pt-3 flex flex-col gap-3 transition-all duration-300 cursor-grab active:cursor-grabbing shadow-[0_2px_8px_rgba(0,0,0,0.02)] group relative animate-fade-in
         ${isOverlay ? 'border-(--color-border) cursor-grabbing shadow-none' : (isDragging ? 'border-dashed border-(--color-muted) opacity-60' : 'border-(--color-border) hover:border-(--color-muted) hover:translate-y-[-2px] hover:shadow-[0_8px_20px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_8px_20px_rgba(0,0,0,0.4)]')}
       `}
 		>

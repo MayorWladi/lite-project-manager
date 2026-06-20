@@ -83,7 +83,7 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 	};
 
 	return (
-		<div className={`bg-(--color-card-bg) border border-(--color-border) rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 ${isAnimatingOut === "right" ? "translate-x-[120%] opacity-0" : isAnimatingOut === "left" ? "translate-x-[-120%] opacity-0" : "translate-x-0 opacity-100"
+		<div className={`bg-(--color-card-bg) border border-(--color-border) rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 animate-fade-in ${isAnimatingOut === "right" ? "translate-x-[120%] opacity-0" : isAnimatingOut === "left" ? "translate-x-[-120%] opacity-0" : "translate-x-0 opacity-100"
 			}`}>
 			{/* Header: Title + Menu + Status Chip */}
 			<div className="flex items-start justify-between gap-2">
