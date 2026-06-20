@@ -43,6 +43,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 		setSelectedProjectId(newProject.id);
 	};
 
+
 	const addSprint = (projectId: string, name: string) => {
 		// TODO: Implementar lógica de agregar sprint
 	};
@@ -52,8 +53,26 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 	};
 
 	const moveTask = (projectId: string, sprintId: string, taskId: string, newStatus: TaskStatus) => {
-		// TODO: Implementar lógica de drag and drop para cambiar estado
+		setProjects((prevProjects) =>
+			prevProjects.map((project) => {
+				if (project.id !== projectId) return project;
+				return {
+					...project,
+					sprints: project.sprints.map((sprint) => {
+						if (sprint.id !== sprintId) return sprint;
+						return {
+							...sprint,
+							tasks: sprint.tasks.map((task) => {
+								if (task.id !== taskId) return task;
+								return { ...task, status: newStatus };
+							}),
+						};
+					}),
+				};
+			})
+		);
 	};
+
 
 	return (
 		<ProjectContext.Provider
