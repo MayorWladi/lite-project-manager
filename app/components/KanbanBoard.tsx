@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { Sprint, TaskStatus, Activity } from "@/app/types";
-import { DndContext, DragEndEvent, DragOverEvent, DragStartEvent, DragOverlay, pointerWithin } from "@dnd-kit/core";
+import { DndContext, DragEndEvent, DragOverEvent, DragStartEvent, DragOverlay, pointerWithin, useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useProjectsManager } from "@/app/context/ProjectContext";
 import { useLanguage } from "@/app/context/LanguageContext";
@@ -42,6 +42,14 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 	useEffect(() => {
 		setLocalActivities(sprint.activities || []);
 	}, [sprint.activities]);
+
+	const sensors = useSensors(
+		useSensor(PointerSensor, {
+			activationConstraint: {
+				distance: 5,
+			},
+		})
+	);
 
 	// --- Drag handlers (desktop only) ---
 	const handleDragStart = (event: DragStartEvent) => {
@@ -291,7 +299,7 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 			</div>
 
 			{/* ===== DESKTOP VIEW ===== */}
-			<DndContext collisionDetection={pointerWithin} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
+			<DndContext sensors={sensors} collisionDetection={pointerWithin} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
 				<div className="hidden md:flex h-full flex-col">
 					{/* Desktop Add Activity Header */}
 					<div className="mb-4 px-2 lg:px-6">
@@ -320,7 +328,7 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 						)}
 					</div>
 
-					<div className="flex-1 overflow-x-auto overflow-y-auto scrollbar-hide pb-4 flex">
+					<div className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide pb-4 flex">
 						<div className="flex flex-col min-w-max h-full mx-auto px-2 lg:px-6">
 							{/* Headers */}
 							<div className="flex gap-4 mb-4 sticky top-0 bg-background z-10 py-2 border-b border-(--color-border)">
@@ -338,7 +346,7 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 							</div>
 
 							{/* Columns */}
-							<div className="flex gap-4 h-full">
+							<div className="flex gap-4 flex-1 min-h-0">
 								{COLUMNS.map((col) => {
 									const activities = localActivities.filter((a) => a.status === col.id);
 									return <KanbanCell key={col.id} sprintId={sprint.id} statusId={col.id} activities={activities} />;

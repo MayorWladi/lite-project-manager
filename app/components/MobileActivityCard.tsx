@@ -129,7 +129,7 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 						<div className="flex-1 min-w-0">
 							<h4 
 								onDoubleClick={(e) => { e.stopPropagation(); setIsRenaming(true); setRenameValue(activity.name); }}
-								className="font-semibold text-sm text-foreground leading-tight truncate cursor-text"
+								className="font-semibold text-sm text-foreground leading-tight truncate cursor-default"
 							>
 								{activity.name}
 							</h4>
@@ -248,7 +248,7 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 						) : (
 							<span 
 								onDoubleClick={(e) => { e.stopPropagation(); setRenamingTaskId(task.id); setRenameTaskValue(task.title); }}
-								className={`text-sm flex-1 select-none cursor-text ${task.isCompleted ? 'text-(--color-muted) line-through' : 'text-foreground'}`}
+								className={`text-sm flex-1 select-none cursor-default ${task.isCompleted ? 'text-(--color-muted) line-through' : 'text-foreground'}`}
 							>
 								{task.title}
 							</span>

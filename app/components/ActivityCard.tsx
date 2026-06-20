@@ -111,7 +111,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 						<>
 							<h4 
 								onDoubleClick={(e) => { e.stopPropagation(); setIsRenaming(true); setRenameValue(activity.name); }}
-								className="font-semibold text-sm text-foreground leading-tight group-hover:text-(--color-muted) transition-colors select-none truncate cursor-text"
+								className="font-semibold text-sm text-foreground leading-tight group-hover:text-(--color-muted) transition-colors select-none truncate cursor-default"
 							>
 								{activity.name}
 							</h4>
@@ -196,7 +196,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 						) : (
 							<span 
 								onDoubleClick={(e) => { e.stopPropagation(); setRenamingTaskId(task.id); setRenameTaskValue(task.title); }}
-								className={`text-xs flex-1 select-none cursor-text ${task.isCompleted ? 'text-(--color-muted) line-through' : 'text-foreground'}`}
+								className={`text-xs flex-1 select-none cursor-default ${task.isCompleted ? 'text-(--color-muted) line-through' : 'text-foreground'}`}
 							>
 								{task.title}
 							</span>
