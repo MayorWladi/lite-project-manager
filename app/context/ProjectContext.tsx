@@ -2,13 +2,14 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { Project, TaskStatus, Task, Activity } from "@/app/types";
+import { Project, Sprint, TaskStatus, Task, Activity } from "@/app/types";
 
 interface ProjectContextType {
 	projects: Project[];
 	selectedProjectId: string | null;
 	setSelectedProjectId: (id: string | null) => void;
 	addProject: (name: string) => void;
+	addSprint: (projectId: string, name: string) => void;
 	addActivity: (projectId: string, sprintId: string, name: string) => void;
 	addTaskToActivity: (projectId: string, sprintId: string, activityId: string, title: string, description: string) => void;
 	moveTask: (projectId: string, sprintId: string, activityId: string, taskId: string, newStatus: TaskStatus) => void;
@@ -87,6 +88,26 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 		setSelectedProjectId(newProject.id);
 	};
 
+	const addSprint = (projectId: string, name: string) => {
+		setProjects((prevProjects) =>
+			prevProjects.map((project) => {
+				if (project.id !== projectId) return project;
+				return {
+					...project,
+					sprints: [
+						...project.sprints,
+						{
+							id: `s-${Date.now()}`,
+							name,
+							activities: [], // Inicializa sin actividades
+							startDate: Date.now()
+						},
+					],
+				};
+			})
+		);
+	};
+
 	const addActivity = (projectId: string, sprintId: string, name: string) => {
 		// TODO: Implementar lógica de agregar actividad
 	};
@@ -133,6 +154,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 				selectedProjectId,
 				setSelectedProjectId,
 				addProject,
+				addSprint,
 				addActivity,
 				addTaskToActivity,
 				moveTask,
