@@ -18,25 +18,25 @@ const DICTIONARY: Translations = {
 	new_project: { en: "New Project", es: "Nuevo Proyecto" },
 	project_placeholder: { en: "Ex: Web Redesign...", es: "Ej: Rediseño Web..." },
 	settings: { en: "Settings", es: "Ajustes" },
-	
+
 	select_project_msg: { en: "Select or create a project from the sidebar", es: "Selecciona o crea un proyecto de la barra lateral" },
 	no_sprints_yet: { en: "This project has no sprints yet.", es: "Este proyecto aún no tiene sprints." },
 	create_sprint_msg: { en: "Use the button above to create a new one.", es: "Utiliza el botón de arriba para crear uno nuevo." },
 	new_sprint: { en: "New Sprint", es: "Nuevo Sprint" },
 	sprint_placeholder: { en: "Sprint name...", es: "Nombre del sprint..." },
-	
+
 	add_activity: { en: "Add Activity", es: "Añadir Actividad" },
 	new_activity_placeholder: { en: "New activity name...", es: "Nombre de la nueva actividad..." },
 	no_activities_here: { en: "No activities here", es: "Sin actividades aquí" },
 	add: { en: "Add", es: "Añadir" },
-	
+
 	checklist: { en: "Checklist", es: "Checklist" },
 	add_task: { en: "Add task", es: "Añadir tarea" },
 	new_task_placeholder: { en: "New task...", es: "Nueva tarea..." },
-	
+
 	drop_here: { en: "Drop here", es: "Suelta aquí" },
 	add_activity_here: { en: "+ Add activity", es: "+ Añadir actividad" },
-	
+
 	appearance: { en: "Appearance", es: "Apariencia" },
 	theme: { en: "Theme", es: "Tema" },
 	light: { en: "Light", es: "Claro" },
@@ -45,11 +45,17 @@ const DICTIONARY: Translations = {
 	language: { en: "Language", es: "Idioma" },
 	english: { en: "English", es: "Inglés" },
 	spanish: { en: "Spanish", es: "Español" },
-	
+
 	danger_zone: { en: "Danger Zone", es: "Zona de Peligro" },
 	delete_all_data: { en: "Delete All Data", es: "Borrar Todos los Datos" },
 	delete_warning: { en: "This will permanently delete all your projects, sprints, and tasks.", es: "Esto eliminará permanentemente todos tus proyectos, sprints y tareas." },
-	done: { en: "Done", es: "Listo" }
+	done: { en: "Done", es: "Listo" },
+
+	rename: { en: "Rename", es: "Renombrar" },
+	delete_item: { en: "Delete", es: "Eliminar" },
+	cancel: { en: "Cancel", es: "Cancelar" },
+	save: { en: "Save", es: "Guardar" },
+	rename_placeholder: { en: "New name...", es: "Nuevo nombre..." }
 };
 
 interface LanguageContextType {

@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { Sprint } from "@/app/types";
-import { useSprintMetrics } from "@/app/context/ProjectContext";
+import { useSprintMetrics, useProjectsManager } from "@/app/context/ProjectContext";
 import { useLanguage } from "@/app/context/LanguageContext";
 import ProgressBar from "./ProgressBar";
 
@@ -18,6 +18,10 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 	const [isAdding, setIsAdding] = useState(false);
 	const [newSprintName, setNewSprintName] = useState("");
 	const { t } = useLanguage();
+	const { selectedProjectId, renameSprint, deleteSprint } = useProjectsManager();
+	const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
+	const [renamingId, setRenamingId] = useState<string | null>(null);
+	const [renameValue, setRenameValue] = useState("");
 
 	const metrics = useSprintMetrics(activeSprint);
 
@@ -30,21 +34,84 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 		}
 	};
 
+	const handleRenameSubmit = (sprintId: string) => {
+		if (renameValue.trim() && selectedProjectId) {
+			renameSprint(selectedProjectId, sprintId, renameValue.trim());
+		}
+		setRenamingId(null);
+	};
+
+	const handleDelete = (sprintId: string) => {
+		if (selectedProjectId) {
+			deleteSprint(selectedProjectId, sprintId);
+			// Auto-select first remaining sprint
+			const remaining = sprints.filter(s => s.id !== sprintId);
+			if (remaining.length > 0) {
+				onSelectSprint(remaining[0].id);
+			}
+		}
+		setMenuOpenId(null);
+	};
+
 	return (
 		<div className="flex items-center border-b border-(--color-border) pb-2 md:pb-3 mb-3 md:mb-6 relative">
 			<div className="hidden md:block flex-1" />
 			<div className="flex items-center gap-2 overflow-x-auto scrollbar-hide shrink-0 md:justify-center md:max-w-[calc(100%-100px)] px-0 md:px-2">
 				{sprints.map((sprint) => (
-					<button
-						key={sprint.id}
-						onClick={() => onSelectSprint(sprint.id)}
-						className={`px-3 md:px-4 py-1.5 rounded-md text-xs md:text-sm font-medium transition-colors whitespace-nowrap ${activeSprint?.id === sprint.id
-							? "bg-foreground text-background shadow-sm"
-							: "text-(--color-muted) hover:bg-black/5 dark:hover:bg-white/10 hover:text-foreground"
-							}`}
-					>
-						{sprint.name}
-					</button>
+					<div key={sprint.id} className="relative shrink-0 group/sprint">
+						{renamingId === sprint.id ? (
+							<form onSubmit={(e) => { e.preventDefault(); handleRenameSubmit(sprint.id); }}>
+								<input
+									autoFocus
+									type="text"
+									value={renameValue}
+									onChange={(e) => setRenameValue(e.target.value)}
+									onBlur={() => handleRenameSubmit(sprint.id)}
+									onKeyDown={(e) => { if (e.key === 'Escape') setRenamingId(null); }}
+									className="px-3 py-1.5 bg-transparent border border-(--color-border) rounded-md text-sm outline-none focus:border-(--color-muted) text-foreground w-36"
+								/>
+							</form>
+						) : (
+							<button
+								onClick={() => onSelectSprint(sprint.id)}
+								className={`px-3 md:px-4 py-1.5 rounded-md text-xs md:text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1 ${activeSprint?.id === sprint.id
+									? "bg-foreground text-background shadow-sm"
+									: "text-(--color-muted) hover:bg-black/5 dark:hover:bg-white/10 hover:text-foreground"
+									}`}
+							>
+								{sprint.name}
+								{activeSprint?.id === sprint.id && (
+									<span
+										onClick={(e) => { e.stopPropagation(); setMenuOpenId(menuOpenId === sprint.id ? null : sprint.id); }}
+										className="ml-0.5 opacity-70 hover:opacity-100"
+									>
+										<svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" /></svg>
+									</span>
+								)}
+							</button>
+						)}
+
+						{/* Sprint Context Menu */}
+						{menuOpenId === sprint.id && (
+							<>
+								<div className="fixed inset-0 z-40" onClick={() => setMenuOpenId(null)} />
+								<div className="absolute left-0 top-full mt-1 z-50 bg-(--color-card-bg) border border-(--color-border) rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-1 min-w-[120px]">
+									<button
+										onClick={() => { setRenamingId(sprint.id); setRenameValue(sprint.name); setMenuOpenId(null); }}
+										className="w-full text-left px-3 py-1.5 text-xs font-medium text-(--color-muted) hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+									>
+										{t("rename")}
+									</button>
+									<button
+										onClick={() => handleDelete(sprint.id)}
+										className="w-full text-left px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-500/10 transition-colors"
+									>
+										{t("delete_item")}
+									</button>
+								</div>
+							</>
+						)}
+					</div>
 				))}
 
 				{isAdding ? (
@@ -74,7 +141,6 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 			</div>
 
 			<div className="hidden md:flex flex-1 justify-end shrink-0">
-				{/* Renderizado de la barra de progreso */}
 				{activeSprint && (
 					<div className="ml-4">
 						<ProgressBar percentage={metrics.percentage} />

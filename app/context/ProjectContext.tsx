@@ -9,8 +9,14 @@ interface ProjectContextType {
 	selectedProjectId: string | null;
 	setSelectedProjectId: (id: string | null) => void;
 	addProject: (name: string) => void;
+	renameProject: (projectId: string, newName: string) => void;
+	deleteProject: (projectId: string) => void;
 	addSprint: (projectId: string, name: string) => void;
+	renameSprint: (projectId: string, sprintId: string, newName: string) => void;
+	deleteSprint: (projectId: string, sprintId: string) => void;
 	addActivity: (projectId: string, sprintId: string, name: string) => void;
+	renameActivity: (projectId: string, sprintId: string, activityId: string, newName: string) => void;
+	deleteActivity: (projectId: string, sprintId: string, activityId: string) => void;
 	updateSprintActivities: (projectId: string, sprintId: string, newActivities: Activity[]) => void;
 	addTaskToActivity: (projectId: string, sprintId: string, activityId: string, title: string) => void;
 	toggleTaskCompletion: (projectId: string, sprintId: string, activityId: string, taskId: string) => void;
@@ -62,14 +68,12 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 	}, [selectedProjectId, isHydrated]);
 
 	const addProject = (name: string) => {
-		// 1. Crear Tareas de prueba
 		const mockTasks: Task[] = [
 			{ id: `t1-${Date.now()}`, title: "Diseñar wireframes", isCompleted: true, createdAt: Date.now() },
 			{ id: `t2-${Date.now()}`, title: "Configurar Next.js", isCompleted: true, createdAt: Date.now() },
 			{ id: `t3-${Date.now()}`, title: "Revisar Context API", isCompleted: false, createdAt: Date.now() },
 		];
 
-		// 2. Agruparlas en una Actividad de prueba
 		const mockActivities: Activity[] = [
 			{
 				id: `act1-${Date.now()}`,
@@ -81,7 +85,6 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 			}
 		];
 
-		// 3. Crear el Proyecto con el Sprint y la Actividad anidada
 		const newProject: Project = {
 			id: Date.now().toString(),
 			name,
@@ -91,6 +94,17 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
 		setProjects((prev) => [...prev, newProject]);
 		setSelectedProjectId(newProject.id);
+	};
+
+	const renameProject = (projectId: string, newName: string) => {
+		setProjects(prev => prev.map(p => p.id === projectId ? { ...p, name: newName } : p));
+	};
+
+	const deleteProject = (projectId: string) => {
+		setProjects(prev => prev.filter(p => p.id !== projectId));
+		if (selectedProjectId === projectId) {
+			setSelectedProjectId(null);
+		}
 	};
 
 	const addSprint = (projectId: string, name: string) => {
@@ -104,13 +118,33 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 						{
 							id: `s-${Date.now()}`,
 							name,
-							activities: [], // Inicializa sin actividades
+							activities: [],
 							startDate: Date.now()
 						},
 					],
 				};
 			})
 		);
+	};
+
+	const renameSprint = (projectId: string, sprintId: string, newName: string) => {
+		setProjects(prev => prev.map(p => {
+			if (p.id !== projectId) return p;
+			return {
+				...p,
+				sprints: p.sprints.map(s => s.id === sprintId ? { ...s, name: newName } : s)
+			};
+		}));
+	};
+
+	const deleteSprint = (projectId: string, sprintId: string) => {
+		setProjects(prev => prev.map(p => {
+			if (p.id !== projectId) return p;
+			return {
+				...p,
+				sprints: p.sprints.filter(s => s.id !== sprintId)
+			};
+		}));
 	};
 
 	const addActivity = (projectId: string, sprintId: string, name: string) => {
@@ -132,6 +166,38 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 				};
 			})
 		);
+	};
+
+	const renameActivity = (projectId: string, sprintId: string, activityId: string, newName: string) => {
+		setProjects(prev => prev.map(p => {
+			if (p.id !== projectId) return p;
+			return {
+				...p,
+				sprints: p.sprints.map(s => {
+					if (s.id !== sprintId) return s;
+					return {
+						...s,
+						activities: (s.activities || []).map(a => a.id === activityId ? { ...a, name: newName } : a)
+					};
+				})
+			};
+		}));
+	};
+
+	const deleteActivity = (projectId: string, sprintId: string, activityId: string) => {
+		setProjects(prev => prev.map(p => {
+			if (p.id !== projectId) return p;
+			return {
+				...p,
+				sprints: p.sprints.map(s => {
+					if (s.id !== sprintId) return s;
+					return {
+						...s,
+						activities: (s.activities || []).filter(a => a.id !== activityId)
+					};
+				})
+			};
+		}));
 	};
 
 	const updateSprintActivities = (projectId: string, sprintId: string, newActivities: Activity[]) => {
@@ -226,8 +292,14 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 				selectedProjectId,
 				setSelectedProjectId,
 				addProject,
+				renameProject,
+				deleteProject,
 				addSprint,
+				renameSprint,
+				deleteSprint,
 				addActivity,
+				renameActivity,
+				deleteActivity,
 				updateSprintActivities,
 				addTaskToActivity,
 				toggleTaskCompletion,

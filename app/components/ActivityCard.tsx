@@ -9,10 +9,13 @@ import { useProjectsManager } from "@/app/context/ProjectContext";
 import { useLanguage } from "@/app/context/LanguageContext";
 
 export default function ActivityCard({ activity, sprintId, isOverlay }: { activity: Activity; sprintId: string, isOverlay?: boolean }) {
-	const { selectedProjectId, toggleTaskCompletion, addTaskToActivity, deleteTask } = useProjectsManager();
+	const { selectedProjectId, toggleTaskCompletion, addTaskToActivity, deleteTask, renameActivity, deleteActivity } = useProjectsManager();
 	const { t } = useLanguage();
 	const [newTaskTitle, setNewTaskTitle] = useState("");
 	const [isAddingTask, setIsAddingTask] = useState(false);
+	const [showMenu, setShowMenu] = useState(false);
+	const [isRenaming, setIsRenaming] = useState(false);
+	const [renameValue, setRenameValue] = useState("");
 
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: activity.id,
@@ -27,7 +30,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 	};
 
 	const handleToggle = (e: React.MouseEvent, taskId: string) => {
-		e.stopPropagation(); // Evitar interferir con el drag
+		e.stopPropagation();
 		if (selectedProjectId) {
 			toggleTaskCompletion(selectedProjectId, sprintId, activity.id, taskId);
 		}
@@ -50,6 +53,20 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 		}
 	};
 
+	const handleRenameSubmit = () => {
+		if (renameValue.trim() && selectedProjectId) {
+			renameActivity(selectedProjectId, sprintId, activity.id, renameValue.trim());
+		}
+		setIsRenaming(false);
+	};
+
+	const handleDeleteActivity = () => {
+		if (selectedProjectId) {
+			deleteActivity(selectedProjectId, sprintId, activity.id);
+		}
+		setShowMenu(false);
+	};
+
 	const tasks = activity.tasks || [];
 	const completedTasks = tasks.filter(t => t.isCompleted).length;
 
@@ -67,14 +84,64 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 				<div className="w-8 h-1 rounded-full bg-(--color-border) group-hover:bg-(--color-muted) transition-colors" />
 			</div>
 
-			<div>
-				<h4 className="font-semibold text-sm text-foreground leading-tight group-hover:text-(--color-muted) transition-colors select-none">
-					{activity.name}
-				</h4>
-				{activity.description && (
-					<p className="text-xs text-(--color-muted) mt-1.5 leading-relaxed select-none">
-						{activity.description}
-					</p>
+			<div className="flex items-start justify-between gap-1" onPointerDown={e => e.stopPropagation()}>
+				<div className="flex-1 min-w-0">
+					{isRenaming ? (
+						<form onSubmit={(e) => { e.preventDefault(); handleRenameSubmit(); }}>
+							<input
+								autoFocus
+								type="text"
+								value={renameValue}
+								onChange={(e) => setRenameValue(e.target.value)}
+								onBlur={handleRenameSubmit}
+								onKeyDown={(e) => { if (e.key === 'Escape') setIsRenaming(false); }}
+								className="w-full px-1.5 py-0.5 bg-transparent border border-(--color-border) rounded text-sm outline-none focus:border-(--color-muted) text-foreground -ml-1.5"
+							/>
+						</form>
+					) : (
+						<>
+							<h4 className="font-semibold text-sm text-foreground leading-tight group-hover:text-(--color-muted) transition-colors select-none">
+								{activity.name}
+							</h4>
+							{activity.description && (
+								<p className="text-xs text-(--color-muted) mt-1.5 leading-relaxed select-none">
+									{activity.description}
+								</p>
+							)}
+						</>
+					)}
+				</div>
+
+				{/* ⋯ Menu Button */}
+				{!isOverlay && !isRenaming && (
+					<div className="relative shrink-0">
+						<button
+							onClick={() => setShowMenu(!showMenu)}
+							className="p-0.5 rounded text-(--color-muted) hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+						>
+							<svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" /></svg>
+						</button>
+
+						{showMenu && (
+							<>
+								<div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
+								<div className="absolute right-0 top-full mt-0.5 z-50 bg-(--color-card-bg) border border-(--color-border) rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-1 min-w-[120px]">
+									<button
+										onClick={() => { setIsRenaming(true); setRenameValue(activity.name); setShowMenu(false); }}
+										className="w-full text-left px-3 py-1.5 text-xs font-medium text-(--color-muted) hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+									>
+										{t("rename")}
+									</button>
+									<button
+										onClick={handleDeleteActivity}
+										className="w-full text-left px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-500/10 transition-colors"
+									>
+										{t("delete_item")}
+									</button>
+								</div>
+							</>
+						)}
+					</div>
 				)}
 			</div>
 

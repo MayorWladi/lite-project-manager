@@ -14,12 +14,15 @@ interface MobileActivityCardProps {
 }
 
 export default function MobileActivityCard({ activity, sprintId, columns, onStatusChange }: MobileActivityCardProps) {
-	const { selectedProjectId, toggleTaskCompletion, addTaskToActivity, deleteTask } = useProjectsManager();
+	const { selectedProjectId, toggleTaskCompletion, addTaskToActivity, deleteTask, renameActivity, deleteActivity } = useProjectsManager();
 	const { t } = useLanguage();
 	const [newTaskTitle, setNewTaskTitle] = useState("");
 	const [isAddingTask, setIsAddingTask] = useState(false);
 	const [showStatusPicker, setShowStatusPicker] = useState(false);
 	const [isAnimatingOut, setIsAnimatingOut] = useState<"left" | "right" | null>(null);
+	const [showMenu, setShowMenu] = useState(false);
+	const [isRenaming, setIsRenaming] = useState(false);
+	const [renameValue, setRenameValue] = useState("");
 
 	const tasks = activity.tasks || [];
 	const completedTasks = tasks.filter(t => t.isCompleted).length;
@@ -65,19 +68,80 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 		}, 300);
 	};
 
+	const handleRenameSubmit = () => {
+		if (renameValue.trim() && selectedProjectId) {
+			renameActivity(selectedProjectId, sprintId, activity.id, renameValue.trim());
+		}
+		setIsRenaming(false);
+	};
+
+	const handleDeleteActivity = () => {
+		if (selectedProjectId) {
+			deleteActivity(selectedProjectId, sprintId, activity.id);
+		}
+		setShowMenu(false);
+	};
+
 	return (
 		<div className={`bg-(--color-card-bg) border border-(--color-border) rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 ${isAnimatingOut === "right" ? "translate-x-[120%] opacity-0" : isAnimatingOut === "left" ? "translate-x-[-120%] opacity-0" : "translate-x-0 opacity-100"
 			}`}>
-			{/* Header: Title + Status Chip */}
+			{/* Header: Title + Menu + Status Chip */}
 			<div className="flex items-start justify-between gap-2">
-				<div className="flex-1 min-w-0">
-					<h4 className="font-semibold text-sm text-foreground leading-tight">
-						{activity.name}
-					</h4>
-					{activity.description && (
-						<p className="text-xs text-(--color-muted) mt-1 leading-relaxed">
-							{activity.description}
-						</p>
+				<div className="flex-1 min-w-0 flex items-start gap-1.5">
+					{isRenaming ? (
+						<form onSubmit={(e) => { e.preventDefault(); handleRenameSubmit(); }} className="flex-1">
+							<input
+								autoFocus
+								type="text"
+								value={renameValue}
+								onChange={(e) => setRenameValue(e.target.value)}
+								onBlur={handleRenameSubmit}
+								onKeyDown={(e) => { if (e.key === 'Escape') setIsRenaming(false); }}
+								className="w-full px-2 py-1 bg-transparent border border-(--color-border) rounded-md text-sm outline-none focus:border-(--color-muted) text-foreground"
+							/>
+						</form>
+					) : (
+						<div className="flex-1 min-w-0">
+							<h4 className="font-semibold text-sm text-foreground leading-tight">
+								{activity.name}
+							</h4>
+							{activity.description && (
+								<p className="text-xs text-(--color-muted) mt-1 leading-relaxed">
+									{activity.description}
+								</p>
+							)}
+						</div>
+					)}
+
+					{/* ⋯ Menu */}
+					{!isRenaming && (
+						<div className="relative shrink-0">
+							<button
+								onClick={() => setShowMenu(!showMenu)}
+								className="p-1 rounded text-(--color-muted) active:text-foreground"
+							>
+								<svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" /></svg>
+							</button>
+							{showMenu && (
+								<>
+									<div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
+									<div className="absolute right-0 top-full mt-0.5 z-50 bg-(--color-card-bg) border border-(--color-border) rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-1 min-w-[120px]">
+										<button
+											onClick={() => { setIsRenaming(true); setRenameValue(activity.name); setShowMenu(false); }}
+											className="w-full text-left px-3 py-1.5 text-xs font-medium text-(--color-muted) hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+										>
+											{t("rename")}
+										</button>
+										<button
+											onClick={handleDeleteActivity}
+											className="w-full text-left px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-500/10 transition-colors"
+										>
+											{t("delete_item")}
+										</button>
+									</div>
+								</>
+							)}
+						</div>
 					)}
 				</div>
 
