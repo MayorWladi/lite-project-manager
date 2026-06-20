@@ -252,13 +252,8 @@ export function useProjectsManager() {
 export function useSprintMetrics(sprint: Sprint | null | undefined) {
 	if (!sprint || !sprint.activities) return { total: 0, done: 0, percentage: 0 };
 
-	let total = 0;
-	let done = 0;
-
-	sprint.activities.forEach(act => {
-		total += act.tasks ? act.tasks.length : 0;
-		done += act.tasks ? act.tasks.filter(t => t.isCompleted).length : 0;
-	});
+	const total = sprint.activities.length;
+	const done = sprint.activities.filter(act => act.status === 'done').length;
 
 	const percentage = total === 0 ? 0 : Math.round((done / total) * 100);
 	return { total, done, percentage };

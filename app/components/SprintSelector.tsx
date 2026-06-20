@@ -29,8 +29,9 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 	};
 
 	return (
-		<div className="flex items-center justify-between border-b border-(--color-border) pb-3 mb-6">
-			<div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+		<div className="flex items-center border-b border-(--color-border) pb-3 mb-6 relative">
+			<div className="flex-1" />
+			<div className="flex items-center justify-center gap-2 overflow-x-auto scrollbar-hide shrink-0 max-w-[calc(100%-100px)] px-2">
 				{sprints.map((sprint) => (
 					<button
 						key={sprint.id}
@@ -69,12 +70,14 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 				)}
 			</div>
 
-			{/* Renderizado de la barra de progreso */}
-			{activeSprint && (
-				<div className="hidden sm:block ml-4 shrink-0">
-					<ProgressBar percentage={metrics.percentage} />
-				</div>
-			)}
+			<div className="flex-1 flex justify-end shrink-0">
+				{/* Renderizado de la barra de progreso */}
+				{activeSprint && (
+					<div className="hidden sm:block ml-4">
+						<ProgressBar percentage={metrics.percentage} />
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }

@@ -37,7 +37,7 @@ export default function Home() {
       {selectedProjectId && selectedProject ? (
         <div className="h-full flex flex-col p-8 animate-scroll-entry">
           <header className="flex flex-col gap-4">
-            <h1 className="font-editorial text-4xl font-medium tracking-tight text-foreground">
+            <h1 className="text-4xl font-semibold tracking-tight text-foreground">
               {selectedProject.name}
             </h1>
 

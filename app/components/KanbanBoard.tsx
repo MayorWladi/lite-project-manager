@@ -161,26 +161,30 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 	return (
 		<DndContext collisionDetection={pointerWithin} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
 			<div className="h-full flex flex-col">
-				<div className="flex gap-4 mb-4 sticky top-0 bg-background z-10 py-2 border-b border-(--color-border)">
-					{COLUMNS.map((col) => {
-						const colActivities = localActivities.filter(a => a.status === col.id);
-						return (
-							<div key={col.id} className="w-[280px] shrink-0 px-2 flex justify-between items-end pb-1">
-								<h3 className="font-editorial text-(--color-muted) text-sm uppercase tracking-widest">{col.title}</h3>
-								<span className="text-[10px] font-bold bg-black/5 dark:bg-white/10 text-(--color-muted) px-1.5 py-0.5 rounded border border-(--color-border)">
-									{colActivities.length}
-								</span>
-							</div>
-						);
-					})}
-				</div>
+				<div className="flex-1 overflow-x-auto overflow-y-auto scrollbar-hide pb-4 flex">
+					<div className="flex flex-col min-w-max h-full mx-auto px-2 lg:px-6">
+						{/* Headers sincronizados con el scroll horizontal */}
+						<div className="flex gap-4 mb-4 sticky top-0 bg-background z-10 py-2 border-b border-(--color-border)">
+							{COLUMNS.map((col) => {
+								const colActivities = localActivities.filter(a => a.status === col.id);
+								return (
+									<div key={col.id} className="w-[280px] shrink-0 px-2 flex justify-between items-end pb-1">
+										<h3 className="font-bold text-(--color-muted) text-sm uppercase tracking-widest">{col.title}</h3>
+										<span className="text-[10px] font-bold bg-black/5 dark:bg-white/10 text-(--color-muted) px-1.5 py-0.5 rounded border border-(--color-border)">
+											{colActivities.length}
+										</span>
+									</div>
+								);
+							})}
+						</div>
 
-				<div className="flex-1 overflow-x-auto overflow-y-auto scrollbar-hide pb-4">
-					<div className="flex gap-4 min-w-max h-full">
-						{COLUMNS.map((col) => {
-							const activities = localActivities.filter((a) => a.status === col.id);
-							return <KanbanCell key={col.id} sprintId={sprint.id} statusId={col.id} activities={activities} />;
-						})}
+						{/* Columns */}
+						<div className="flex gap-4 h-full">
+							{COLUMNS.map((col) => {
+								const activities = localActivities.filter((a) => a.status === col.id);
+								return <KanbanCell key={col.id} sprintId={sprint.id} statusId={col.id} activities={activities} />;
+							})}
+						</div>
 					</div>
 				</div>
 
