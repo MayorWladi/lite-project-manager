@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { Activity } from "@/app/types";
-import { useDraggable } from "@dnd-kit/core";
+import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useProjectsManager } from "@/app/context/ProjectContext";
 
@@ -12,13 +12,15 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 	const [newTaskTitle, setNewTaskTitle] = useState("");
 	const [isAddingTask, setIsAddingTask] = useState(false);
 
-	const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: activity.id,
 		data: { activity, sprintId },
 		disabled: isOverlay,
 	});
 
 	const style = isOverlay ? undefined : {
+		transform: CSS.Transform.toString(transform),
+		transition,
 		opacity: isDragging ? 0.4 : 1,
 	};
 
@@ -55,10 +57,14 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 			style={style}
 			{...(isOverlay ? {} : listeners)}
 			{...(isOverlay ? {} : attributes)}
-			className={`bg-[var(--background)] border rounded-xl p-4 flex flex-col gap-3 transition-colors cursor-grab active:cursor-grabbing shadow-sm group
+			className={`bg-[var(--background)] border rounded-xl p-4 pt-3 flex flex-col gap-3 transition-colors cursor-grab active:cursor-grabbing shadow-sm group relative
         ${isOverlay ? 'border-[var(--color-border)] cursor-grabbing' : (isDragging ? 'border-dashed border-[var(--color-muted)]' : 'border-[var(--color-border)] hover:border-[var(--color-muted)]')}
       `}
 		>
+			<div className="w-full flex justify-center pb-1">
+				<div className="w-8 h-1 rounded-full bg-[var(--color-border)] group-hover:bg-[var(--color-muted)] transition-colors" />
+			</div>
+
 			<div>
 				<h4 className="font-semibold text-sm text-[var(--foreground)] leading-tight group-hover:text-[var(--color-muted)] transition-colors select-none">
 					{activity.name}
@@ -113,6 +119,11 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 							type="text"
 							value={newTaskTitle}
 							onChange={e => setNewTaskTitle(e.target.value)}
+							onKeyDown={e => {
+								if (e.key === 'Enter') {
+									e.stopPropagation();
+								}
+							}}
 							onBlur={() => setIsAddingTask(false)}
 							placeholder="Nueva tarea..."
 							className="w-full text-xs px-2 py-1.5 bg-transparent border border-[var(--color-border)] rounded text-[var(--foreground)] outline-none focus:border-[var(--color-muted)]"
@@ -120,6 +131,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 					</form>
 				) : (
 					<button 
+						type="button"
 						onClick={(e) => { e.stopPropagation(); setIsAddingTask(true); }}
 						className="mt-1 flex items-center gap-1.5 text-xs text-[var(--color-muted)] hover:text-[var(--foreground)] transition-colors py-1 px-1 -ml-1 rounded hover:bg-black/5 dark:hover:bg-white/5 w-fit"
 					>

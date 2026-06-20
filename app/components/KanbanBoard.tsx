@@ -3,7 +3,8 @@
 
 import { useState, useEffect } from "react";
 import { Sprint, TaskStatus, Activity } from "@/app/types";
-import { DndContext, DragEndEvent, DragStartEvent, DragOverlay, closestCorners } from "@dnd-kit/core";
+import { DndContext, DragEndEvent, DragOverEvent, DragStartEvent, DragOverlay, pointerWithin } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 import { useProjectsManager } from "@/app/context/ProjectContext";
 import KanbanCell from "./KanbanCell";
 import ActivityCard from "./ActivityCard";
@@ -18,8 +19,9 @@ const COLUMNS: { id: TaskStatus; title: string }[] = [
 ];
 
 export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
-	const { selectedProjectId, moveActivity, addActivity } = useProjectsManager();
+	const { selectedProjectId, updateSprintActivities, addActivity } = useProjectsManager();
 	const [activeActivity, setActiveActivity] = useState<Activity | null>(null);
+	const [localActivities, setLocalActivities] = useState<Activity[]>(sprint.activities || []);
 
 	const [isAdding, setIsAdding] = useState(false);
 	const [newActivityName, setNewActivityName] = useState("");
@@ -29,24 +31,78 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 		setMounted(true);
 	}, []);
 
+	useEffect(() => {
+		setLocalActivities(sprint.activities || []);
+	}, [sprint.activities]);
+
 	const handleDragStart = (event: DragStartEvent) => {
 		const { active } = event;
 		const activity = active.data.current?.activity as Activity;
 		if (activity) setActiveActivity(activity);
 	};
 
+	const handleDragOver = (event: DragOverEvent) => {
+		const { active, over } = event;
+		if (!over) return;
+
+		const activeId = active.id as string;
+		const overId = over.id as string;
+
+		if (activeId === overId) return;
+
+		setLocalActivities((prev) => {
+			const activeIndex = prev.findIndex((t) => t.id === activeId);
+			const overIndex = prev.findIndex((t) => t.id === overId);
+			const isOverColumn = COLUMNS.some(c => c.id === overId);
+
+			if (activeIndex === -1) return prev;
+
+			const activeItem = prev[activeIndex];
+			const overItem = overIndex !== -1 ? prev[overIndex] : null;
+
+			// Moviendo a una columna vacía o área de columna
+			if (isOverColumn) {
+				if (activeItem.status !== overId) {
+					const newItems = [...prev];
+					newItems[activeIndex] = { ...activeItem, status: overId as TaskStatus };
+					return newItems;
+				}
+			} 
+			// Moviendo sobre otro item en distinta columna
+			else if (overItem && activeItem.status !== overItem.status) {
+				const newItems = [...prev];
+				newItems[activeIndex] = { ...activeItem, status: overItem.status };
+				return arrayMove(newItems, activeIndex, overIndex);
+			}
+
+			return prev;
+		});
+	};
+
 	const handleDragEnd = (event: DragEndEvent) => {
 		const { active, over } = event;
 		setActiveActivity(null);
 
-		if (!over || !selectedProjectId) return;
+		if (!over || !selectedProjectId) {
+			// Revert si se cancela
+			setLocalActivities(sprint.activities || []);
+			return;
+		}
 
-		const activityId = active.id as string;
-		const targetStatus = over.id as TaskStatus;
+		const activeId = active.id as string;
+		const overId = over.id as string;
+		const isOverColumn = COLUMNS.some(c => c.id === overId);
 
-		if (!targetStatus) return;
+		let finalActivities = [...localActivities];
+		const activeIndex = finalActivities.findIndex((t) => t.id === activeId);
+		const overIndex = finalActivities.findIndex((t) => t.id === overId);
 
-		moveActivity(selectedProjectId, sprint.id, activityId, targetStatus);
+		if (activeIndex !== -1 && overIndex !== -1 && activeIndex !== overIndex && !isOverColumn) {
+			finalActivities = arrayMove(finalActivities, activeIndex, overIndex);
+		}
+
+		setLocalActivities(finalActivities);
+		updateSprintActivities(selectedProjectId, sprint.id, finalActivities);
 	};
 
 	const handleAddActivity = (e: React.FormEvent) => {
@@ -59,11 +115,11 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 	};
 
 	return (
-		<DndContext collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+		<DndContext collisionDetection={pointerWithin} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
 			<div className="h-full flex flex-col">
 				<div className="flex gap-4 mb-4 sticky top-0 bg-[var(--background)] z-10 py-2 border-b border-[var(--color-border)]">
 					{COLUMNS.map((col) => {
-						const colActivities = (sprint.activities || []).filter(a => a.status === col.id);
+						const colActivities = localActivities.filter(a => a.status === col.id);
 						return (
 							<div key={col.id} className="w-[280px] shrink-0 px-2 flex justify-between items-end pb-1">
 								<h3 className="font-editorial text-[var(--color-muted)] text-sm uppercase tracking-widest">{col.title}</h3>
@@ -78,7 +134,7 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 				<div className="flex-1 overflow-x-auto overflow-y-auto scrollbar-hide pb-4">
 					<div className="flex gap-4 min-w-max h-full">
 						{COLUMNS.map((col) => {
-							const activities = (sprint.activities || []).filter((a) => a.status === col.id);
+							const activities = localActivities.filter((a) => a.status === col.id);
 							return <KanbanCell key={col.id} sprintId={sprint.id} statusId={col.id} activities={activities} />;
 						})}
 					</div>

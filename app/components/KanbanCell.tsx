@@ -3,6 +3,7 @@
 
 import { Activity, TaskStatus } from "@/app/types";
 import { useDroppable } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import ActivityCard from "./ActivityCard";
 
 interface KanbanCellProps {
@@ -23,9 +24,11 @@ export default function KanbanCell({ sprintId, statusId, activities }: KanbanCel
         ${isOver ? 'border-solid border-[var(--color-muted)] bg-black/5 dark:bg-white/5' : 'border-dashed border-[var(--color-border)] bg-black/[0.01] dark:bg-white/[0.01]'}
       `}
 		>
-			{activities.map((act) => (
-				<ActivityCard key={act.id} activity={act} sprintId={sprintId} />
-			))}
+			<SortableContext items={activities.map(a => a.id)} strategy={verticalListSortingStrategy}>
+				{activities.map((act) => (
+					<ActivityCard key={act.id} activity={act} sprintId={sprintId} />
+				))}
+			</SortableContext>
 		</div>
 	);
 }

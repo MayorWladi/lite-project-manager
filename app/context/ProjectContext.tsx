@@ -11,7 +11,7 @@ interface ProjectContextType {
 	addProject: (name: string) => void;
 	addSprint: (projectId: string, name: string) => void;
 	addActivity: (projectId: string, sprintId: string, name: string) => void;
-	moveActivity: (projectId: string, sprintId: string, activityId: string, newStatus: TaskStatus) => void;
+	updateSprintActivities: (projectId: string, sprintId: string, newActivities: Activity[]) => void;
 	addTaskToActivity: (projectId: string, sprintId: string, activityId: string, title: string) => void;
 	toggleTaskCompletion: (projectId: string, sprintId: string, activityId: string, taskId: string) => void;
 	deleteTask: (projectId: string, sprintId: string, activityId: string, taskId: string) => void;
@@ -134,12 +134,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 		);
 	};
 
-	const moveActivity = (
-		projectId: string,
-		sprintId: string,
-		activityId: string,
-		newStatus: TaskStatus
-	) => {
+	const updateSprintActivities = (projectId: string, sprintId: string, newActivities: Activity[]) => {
 		setProjects((prevProjects) =>
 			prevProjects.map((project) => {
 				if (project.id !== projectId) return project;
@@ -147,12 +142,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 					...project,
 					sprints: project.sprints.map((sprint) => {
 						if (sprint.id !== sprintId) return sprint;
-						return {
-							...sprint,
-							activities: (sprint.activities || []).map((act) =>
-								act.id === activityId ? { ...act, status: newStatus } : act
-							),
-						};
+						return { ...sprint, activities: newActivities };
 					}),
 				};
 			})
@@ -238,7 +228,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 				addProject,
 				addSprint,
 				addActivity,
-				moveActivity,
+				updateSprintActivities,
 				addTaskToActivity,
 				toggleTaskCompletion,
 				deleteTask,
