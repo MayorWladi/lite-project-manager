@@ -1,55 +1,73 @@
 // /app/context/ProjectContext.tsx
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Project, Task, TaskStatus } from "@/app/types";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { Project, TaskStatus, Task } from "@/app/types";
 
 interface ProjectContextType {
 	projects: Project[];
 	selectedProjectId: string | null;
 	setSelectedProjectId: (id: string | null) => void;
 	addProject: (name: string) => void;
-	addSprint: (projectId: string, name: string) => void;
-	addTask: (projectId: string, sprintId: string, title: string, description: string) => void;
 	moveTask: (projectId: string, sprintId: string, taskId: string, newStatus: TaskStatus) => void;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
 export function ProjectProvider({ children }: { children: ReactNode }) {
-	// Estado inicial vacío, preparado para ser hidratado desde localStorage en la Fase 5
 	const [projects, setProjects] = useState<Project[]>([]);
 	const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+	const [isHydrated, setIsHydrated] = useState(false);
 
-	// Lógica funcional temporal para ver los cambios en la UI
+	// 1. Cargar desde localStorage al montar el componente (Hidratación)
+	useEffect(() => {
+		const savedProjects = localStorage.getItem("kanban-projects");
+		const savedSelectedId = localStorage.getItem("kanban-selected-id");
+
+		if (savedProjects) {
+			try {
+				setProjects(JSON.parse(savedProjects));
+			} catch (error) {
+				console.error("Error al parsear proyectos desde localStorage", error);
+			}
+		}
+
+		if (savedSelectedId) {
+			setSelectedProjectId(savedSelectedId);
+		}
+
+		setIsHydrated(true);
+	}, []);
+
+	// 2. Guardar en localStorage cada vez que el estado de 'projects' cambie
+	useEffect(() => {
+		if (isHydrated) {
+			localStorage.setItem("kanban-projects", JSON.stringify(projects));
+		}
+	}, [projects, isHydrated]);
+
+	// 3. Persistir el proyecto seleccionado
+	useEffect(() => {
+		if (isHydrated) {
+			if (selectedProjectId) {
+				localStorage.setItem("kanban-selected-id", selectedProjectId);
+			} else {
+				localStorage.removeItem("kanban-selected-id");
+			}
+		}
+	}, [selectedProjectId, isHydrated]);
+
 	const addProject = (name: string) => {
-		// Tareas de prueba para visualizar el KanbanBoard
-		const mockTasks: Task[] = [
-			{ id: `t1-${Date.now()}`, title: "Diseñar wireframes", description: "Esbozos en papel de la arquitectura", status: "todo", createdAt: Date.now() },
-			{ id: `t2-${Date.now()}`, title: "Configurar Next.js", description: "Setup base con Tailwind y tipografías", status: "working", createdAt: Date.now() },
-			{ id: `t3-${Date.now()}`, title: "Revisar Context API", description: "Asegurar que el estado no re-renderice todo", status: "review", createdAt: Date.now() },
-			{ id: `t4-${Date.now()}`, title: "Prueba técnica inicial", description: "Subir a Vercel el MVP", status: "done", createdAt: Date.now() },
-		];
-
 		const newProject: Project = {
 			id: Date.now().toString(),
 			name,
-			// Creamos un Sprint por defecto con las tareas de prueba
-			sprints: [{ id: `s1-${Date.now()}`, name: "Sprint 1", tasks: mockTasks, startDate: Date.now() }],
+			// Creamos un Sprint vacío. Si prefieres mantener las tareas de prueba de la Fase 3, puedes inyectarlas aquí.
+			sprints: [{ id: `s1-${Date.now()}`, name: "Sprint 1", tasks: [], startDate: Date.now() }],
 			createdAt: Date.now(),
 		};
 
-		setProjects([...projects, newProject]);
+		setProjects((prev) => [...prev, newProject]);
 		setSelectedProjectId(newProject.id);
-	};
-
-
-	const addSprint = (projectId: string, name: string) => {
-		// TODO: Implementar lógica de agregar sprint
-	};
-
-	const addTask = (projectId: string, sprintId: string, title: string, description: string) => {
-		// TODO: Implementar lógica de agregar tarea
 	};
 
 	const moveTask = (projectId: string, sprintId: string, taskId: string, newStatus: TaskStatus) => {
@@ -73,6 +91,11 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 		);
 	};
 
+	// Previene el renderizado del árbol de componentes hasta que localStorage haya sido leído
+	// Esto elimina el parpadeo y los errores de hidratación en Next.js
+	if (!isHydrated) {
+		return null;
+	}
 
 	return (
 		<ProjectContext.Provider
@@ -81,8 +104,6 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 				selectedProjectId,
 				setSelectedProjectId,
 				addProject,
-				addSprint,
-				addTask,
 				moveTask,
 			}}
 		>
