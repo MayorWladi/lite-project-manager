@@ -37,7 +37,7 @@ export default function Home() {
       {selectedProjectId && selectedProject ? (
         <div className="h-full flex flex-col p-8 animate-scroll-entry">
           <header className="flex flex-col gap-4">
-            <h1 className="font-editorial text-4xl font-medium tracking-tight text-[var(--foreground)]">
+            <h1 className="font-editorial text-4xl font-medium tracking-tight text-foreground)">
               {selectedProject.name}
             </h1>
 
@@ -53,16 +53,16 @@ export default function Home() {
             {activeSprint ? (
               <KanbanBoard sprint={activeSprint} />
             ) : (
-              <div className="h-full border-2 border-dashed border-[var(--color-border)] rounded-xl flex flex-col items-center justify-center gap-2">
-                <p className="text-[var(--color-muted)] text-sm">Este proyecto aún no tiene sprints.</p>
-                <p className="text-xs text-[var(--color-muted)]/70">Utiliza el botón de arriba para crear uno nuevo.</p>
+              <div className="h-full border-2 border-dashed border-(--color-border) rounded-xl flex flex-col items-center justify-center gap-2">
+                <p className="text-(--color-muted) text-sm">Este proyecto aún no tiene sprints.</p>
+                <p className="text-xs text-(--color-muted)/70">Utiliza el botón de arriba para crear uno nuevo.</p>
               </div>
             )}
           </div>
         </div>
       ) : (
         <div className="h-full flex items-center justify-center">
-          <p className="text-[var(--color-muted)] text-sm italic select-none">
+          <p className="text-(--color-muted) text-sm italic select-none">
             Selecciona o crea un proyecto de la barra lateral
           </p>
         </div>
