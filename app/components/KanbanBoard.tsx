@@ -41,6 +41,72 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 		if (activity) setActiveActivity(activity);
 	};
 
+	const getReorderedActivities = (activities: Activity[], activeId: string, overId: string): Activity[] => {
+		const activeItem = activities.find(a => a.id === activeId);
+		if (!activeItem) return activities;
+
+		const isOverColumn = COLUMNS.some(c => c.id === overId);
+		const overItem = activities.find(a => a.id === overId);
+		const targetStatus = isOverColumn ? overId : overItem?.status;
+
+		if (!targetStatus) return activities;
+
+		const columnsData: Record<string, Activity[]> = {};
+		COLUMNS.forEach(c => { columnsData[c.id] = []; });
+		
+		activities.forEach(a => {
+			if (columnsData[a.status]) {
+				columnsData[a.status].push({ ...a }); // Clone to avoid mutation
+			}
+		});
+
+		const sourceStatus = activeItem.status;
+		const activeItemClone = { ...activeItem, status: targetStatus as TaskStatus };
+
+		if (sourceStatus === targetStatus) {
+			const colItems = columnsData[sourceStatus];
+			const oldIndex = colItems.findIndex(a => a.id === activeId);
+			
+			if (isOverColumn) {
+				// Mover al final de la columna si se suelta en el contenedor
+				colItems.splice(oldIndex, 1);
+				colItems.push(activeItemClone);
+			} else {
+				const newIndex = colItems.findIndex(a => a.id === overId);
+				if (newIndex !== -1) {
+					columnsData[sourceStatus] = arrayMove(colItems, oldIndex, newIndex);
+				}
+			}
+		} else {
+			const sourceItems = columnsData[sourceStatus];
+			const targetItems = columnsData[targetStatus as string];
+
+			const oldIndex = sourceItems.findIndex(a => a.id === activeId);
+			if (oldIndex !== -1) sourceItems.splice(oldIndex, 1);
+
+			if (isOverColumn) {
+				targetItems.push(activeItemClone);
+			} else {
+				const newIndex = targetItems.findIndex(a => a.id === overId);
+				// En dnd-kit, al arrastrar hacia otra columna, queremos insertarlo en el índice objetivo
+				// Pero si estamos arrastrando hacia abajo o arriba, dnd-kit a veces da el over.id de la tarjeta a desplazar
+				// Para simplificar, lo insertamos justo en el newIndex
+				if (newIndex !== -1) {
+					targetItems.splice(newIndex, 0, activeItemClone);
+				} else {
+					targetItems.push(activeItemClone);
+				}
+			}
+		}
+
+		const result: Activity[] = [];
+		COLUMNS.forEach(c => {
+			result.push(...columnsData[c.id]);
+		});
+		
+		return result;
+	};
+
 	const handleDragOver = (event: DragOverEvent) => {
 		const { active, over } = event;
 		if (!over) return;
@@ -51,31 +117,17 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 		if (activeId === overId) return;
 
 		setLocalActivities((prev) => {
-			const activeIndex = prev.findIndex((t) => t.id === activeId);
-			const overIndex = prev.findIndex((t) => t.id === overId);
+			const activeItem = prev.find(a => a.id === activeId);
+			const overItem = prev.find(a => a.id === overId);
 			const isOverColumn = COLUMNS.some(c => c.id === overId);
+			const targetStatus = isOverColumn ? overId : overItem?.status;
 
-			if (activeIndex === -1) return prev;
-
-			const activeItem = prev[activeIndex];
-			const overItem = overIndex !== -1 ? prev[overIndex] : null;
-
-			// Moviendo a una columna vacía o área de columna
-			if (isOverColumn) {
-				if (activeItem.status !== overId) {
-					const newItems = [...prev];
-					newItems[activeIndex] = { ...activeItem, status: overId as TaskStatus };
-					return newItems;
-				}
-			} 
-			// Moviendo sobre otro item en distinta columna
-			else if (overItem && activeItem.status !== overItem.status) {
-				const newItems = [...prev];
-				newItems[activeIndex] = { ...activeItem, status: overItem.status };
-				return arrayMove(newItems, activeIndex, overIndex);
+			// Solo actuamos en onDragOver si se cambia de columna
+			if (!activeItem || !targetStatus || activeItem.status === targetStatus) {
+				return prev;
 			}
 
-			return prev;
+			return getReorderedActivities(prev, activeId, overId);
 		});
 	};
 
@@ -84,23 +136,15 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 		setActiveActivity(null);
 
 		if (!over || !selectedProjectId) {
-			// Revert si se cancela
 			setLocalActivities(sprint.activities || []);
 			return;
 		}
 
 		const activeId = active.id as string;
 		const overId = over.id as string;
-		const isOverColumn = COLUMNS.some(c => c.id === overId);
 
-		let finalActivities = [...localActivities];
-		const activeIndex = finalActivities.findIndex((t) => t.id === activeId);
-		const overIndex = finalActivities.findIndex((t) => t.id === overId);
-
-		if (activeIndex !== -1 && overIndex !== -1 && activeIndex !== overIndex && !isOverColumn) {
-			finalActivities = arrayMove(finalActivities, activeIndex, overIndex);
-		}
-
+		// Reordenamos finalmente en el drop
+		const finalActivities = getReorderedActivities(localActivities, activeId, overId);
 		setLocalActivities(finalActivities);
 		updateSprintActivities(selectedProjectId, sprint.id, finalActivities);
 	};
