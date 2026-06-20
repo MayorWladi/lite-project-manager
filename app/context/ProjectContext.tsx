@@ -12,7 +12,7 @@ interface ProjectContextType {
 	addSprint: (projectId: string, name: string) => void;
 	addActivity: (projectId: string, sprintId: string, name: string) => void;
 	addTaskToActivity: (projectId: string, sprintId: string, activityId: string, title: string, description: string) => void;
-	moveTask: (projectId: string, sprintId: string, activityId: string, taskId: string, newStatus: TaskStatus) => void;
+	moveTask: (projectId: string, sprintId: string, sourceActivityId: string, targetActivityId: string, taskId: string, newStatus: TaskStatus) => void;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
