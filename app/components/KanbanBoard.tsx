@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { Sprint, TaskStatus, Task } from "@/app/types";
 import { DndContext, DragEndEvent, DragStartEvent, DragOverlay, closestCorners } from "@dnd-kit/core";
-import { useProjectsManager } from "@/app/context/ProjectContext";
+import { useProjectsManager, getActivityMetrics } from "@/app/context/ProjectContext";
 import KanbanCell from "./KanbanCell";
 import TaskCard from "./TaskCard";
 
@@ -76,21 +76,32 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 
 					{/* Carriles (Swimlanes) por Actividad */}
 					<div className="flex flex-col gap-6">
-						{sprint.activities.map((act) => (
-							<div key={act.id} className="flex gap-4 group">
-								{/* Nombre de la Actividad (Columna Izquierda fija) */}
-								<div className="w-64 shrink-0 py-2 px-2 flex flex-col gap-1 border-r border-[var(--color-border)]">
-									<h4 className="font-bold text-[var(--foreground)] text-sm leading-snug">{act.name}</h4>
-									<span className="text-xs text-[var(--color-muted)]">{act.tasks.length} tareas</span>
-								</div>
+						{sprint.activities.map((act) => {
+							const { total, done } = getActivityMetrics(act);
 
-								{/* Celdas de estados */}
-								{COLUMNS.map((col) => {
-									const tasks = act.tasks.filter((t) => t.status === col.id);
-									return <KanbanCell key={col.id} activityId={act.id} statusId={col.id} tasks={tasks} />;
-								})}
-							</div>
-						))}
+							return (
+								<div key={act.id} className="flex gap-4 group">
+									{/* Nombre de la Actividad (Columna Izquierda fija) */}
+									<div className="w-64 shrink-0 py-2 px-2 flex flex-col gap-1 border-r border-[var(--color-border)]">
+										<h4 className="font-bold text-[var(--foreground)] text-sm leading-snug">{act.name}</h4>
+
+										{/* Contador tipográfico de tareas */}
+										<div className="flex items-center gap-1.5 mt-1">
+											<span className="text-[10px] font-mono font-medium text-[var(--color-muted)] bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded border border-[var(--color-border)]">
+												{done}/{total}
+											</span>
+											<span className="text-xs text-[var(--color-muted)]">tareas</span>
+										</div>
+									</div>
+
+									{/* Celdas de estados */}
+									{COLUMNS.map((col) => {
+										const tasks = act.tasks.filter((t) => t.status === col.id);
+										return <KanbanCell key={col.id} activityId={act.id} statusId={col.id} tasks={tasks} />;
+									})}
+								</div>
+							);
+						})}
 					</div>
 
 					{/* Fila inferior para añadir nueva Actividad */}

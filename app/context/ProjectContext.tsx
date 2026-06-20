@@ -11,8 +11,10 @@ interface ProjectContextType {
 	addProject: (name: string) => void;
 	addSprint: (projectId: string, name: string) => void;
 	addActivity: (projectId: string, sprintId: string, name: string) => void;
-	addTaskToActivity: (projectId: string, sprintId: string, activityId: string, title: string, description: string) => void;
+	// addTaskToActivity: (projectId: string, sprintId: string, activityId: string, title: string, description: string) => void;
 	moveTask: (projectId: string, sprintId: string, sourceActivityId: string, targetActivityId: string, taskId: string, newStatus: TaskStatus) => void;
+	useSprintMetrics: (sprint: Sprint | null | undefined) => { total: number; done: number; percentage: number };
+	getActivityMetrics: (activity: Activity) => { total: number; done: number };
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -129,10 +131,6 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 		);
 	};
 
-	const addTaskToActivity = (projectId: string, sprintId: string, activityId: string, title: string, description: string) => {
-		// TODO: Implementar lógica de agregar tarea a una actividad específica
-	};
-
 	// Ahora recibe sourceActivityId y targetActivityId
 	const moveTask = (
 		projectId: string,
@@ -194,8 +192,9 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 				addProject,
 				addSprint,
 				addActivity,
-				addTaskToActivity,
 				moveTask,
+				useSprintMetrics,
+				getActivityMetrics,
 			}}
 		>
 			{children}
@@ -209,4 +208,25 @@ export function useProjectsManager() {
 		throw new Error("useProjectsManager debe ser utilizado dentro de un ProjectProvider");
 	}
 	return context;
+}
+
+export function useSprintMetrics(sprint: Sprint | null | undefined) {
+	if (!sprint) return { total: 0, done: 0, percentage: 0 };
+
+	let total = 0;
+	let done = 0;
+
+	sprint.activities.forEach(act => {
+		total += act.tasks.length;
+		done += act.tasks.filter(t => t.status === 'done').length;
+	});
+
+	const percentage = total === 0 ? 0 : Math.round((done / total) * 100);
+	return { total, done, percentage };
+}
+
+export function getActivityMetrics(activity: Activity) {
+	const total = activity.tasks.length;
+	const done = activity.tasks.filter(t => t.status === 'done').length;
+	return { total, done };
 }
