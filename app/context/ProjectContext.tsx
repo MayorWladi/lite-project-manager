@@ -109,16 +109,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 	};
 
 	const addActivity = (projectId: string, sprintId: string, name: string) => {
-		// TODO: Implementar lógica de agregar actividad
-	};
-
-	const addTaskToActivity = (projectId: string, sprintId: string, activityId: string, title: string, description: string) => {
-		// TODO: Implementar lógica de agregar tarea a una actividad específica
-	};
-
-	const moveTask = (projectId: string, sprintId: string, activityId: string, taskId: string, newStatus: TaskStatus) => {
-		setProjects((prevProjects) =>
-			prevProjects.map((project) => {
+		setProjects((prev) =>
+			prev.map((project) => {
 				if (project.id !== projectId) return project;
 				return {
 					...project,
@@ -126,17 +118,63 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 						if (sprint.id !== sprintId) return sprint;
 						return {
 							...sprint,
-							activities: sprint.activities.map((activity) => {
-								if (activity.id !== activityId) return activity;
-								return {
-									...activity,
-									tasks: activity.tasks.map((task) => {
-										if (task.id !== taskId) return task;
-										return { ...task, status: newStatus };
-									}),
-								};
-							}),
+							activities: [
+								...sprint.activities,
+								{ id: `act-${Date.now()}`, name, tasks: [], createdAt: Date.now() },
+							],
 						};
+					}),
+				};
+			})
+		);
+	};
+
+	const addTaskToActivity = (projectId: string, sprintId: string, activityId: string, title: string, description: string) => {
+		// TODO: Implementar lógica de agregar tarea a una actividad específica
+	};
+
+	// Ahora recibe sourceActivityId y targetActivityId
+	const moveTask = (
+		projectId: string,
+		sprintId: string,
+		sourceActivityId: string,
+		targetActivityId: string,
+		taskId: string,
+		newStatus: TaskStatus
+	) => {
+		setProjects((prevProjects) =>
+			prevProjects.map((project) => {
+				if (project.id !== projectId) return project;
+				return {
+					...project,
+					sprints: project.sprints.map((sprint) => {
+						if (sprint.id !== sprintId) return sprint;
+
+						let taskToMove: Task | undefined;
+
+						// 1. Encontrar y extraer la tarea de la actividad original
+						const activitiesAfterRemoval = sprint.activities.map((act) => {
+							if (act.id === sourceActivityId) {
+								taskToMove = act.tasks.find((t) => t.id === taskId);
+								return { ...act, tasks: act.tasks.filter((t) => t.id !== taskId) };
+							}
+							return act;
+						});
+
+						if (!taskToMove) return sprint; // Si no existe, no hacemos nada
+
+						// Actualizamos su estado
+						const updatedTask = { ...taskToMove, status: newStatus };
+
+						// 2. Inyectar la tarea en la actividad destino
+						const finalActivities = activitiesAfterRemoval.map((act) => {
+							if (act.id === targetActivityId) {
+								return { ...act, tasks: [...act.tasks, updatedTask] };
+							}
+							return act;
+						});
+
+						return { ...sprint, activities: finalActivities };
 					}),
 				};
 			})

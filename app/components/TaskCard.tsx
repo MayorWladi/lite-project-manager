@@ -5,10 +5,10 @@ import { Task } from "@/app/types";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 
-export default function TaskCard({ task }: { task: Task }) {
+export default function TaskCard({ task, activityId }: { task: Task; activityId: string }) {
 	const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
 		id: task.id,
-		data: { task }, // Pasamos la tarea para usarla en el DragOverlay
+		data: { task, activityId }, // Añadimos el activityId aquí
 	});
 
 	const style = {
@@ -26,11 +26,9 @@ export default function TaskCard({ task }: { task: Task }) {
         ${isDragging ? 'border-dashed border-[var(--color-muted)]' : 'border-[var(--color-border)] hover:border-[var(--color-muted)]'}
       `}
 		>
-			<div className="flex justify-between items-start">
-				<h4 className="font-semibold text-sm text-[var(--foreground)] leading-tight group-hover:text-[var(--color-muted)] transition-colors">
-					{task.title}
-				</h4>
-			</div>
+			<h4 className="font-semibold text-sm text-[var(--foreground)] leading-tight group-hover:text-[var(--color-muted)] transition-colors">
+				{task.title}
+			</h4>
 
 			{task.description && (
 				<p className="text-xs text-[var(--color-muted)] line-clamp-2 leading-relaxed">
