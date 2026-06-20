@@ -5,12 +5,16 @@ import ProjectItem from './ProjectItem'
 
 interface ProjectListProps {
   projects: Project[]
-  onDeleteProject: (id: number, name: string) => void
-  onDeleteActivity: (projectId: number, index: number, activityName: string) => void
+  selectedProjectId: string | null
+  onSelectProject: (id: string) => void
+  onDeleteProject: (id: string, name: string) => void
+  onDeleteActivity: (projectId: string, index: number, activityName: string) => void
 }
 
 export default function ProjectList({
   projects,
+  selectedProjectId,
+  onSelectProject,
   onDeleteProject,
   onDeleteActivity,
 }: ProjectListProps) {
@@ -20,6 +24,8 @@ export default function ProjectList({
         <ProjectItem
           key={project.id}
           project={project}
+          isSelected={project.id === selectedProjectId}
+          onSelectProject={onSelectProject}
           onDeleteProject={onDeleteProject}
           onDeleteActivity={onDeleteActivity}
         />

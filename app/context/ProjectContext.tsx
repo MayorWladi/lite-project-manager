@@ -11,8 +11,10 @@ interface ProjectContextType {
 	addProject: (name: string) => void;
 	addSprint: (projectId: string, name: string) => void;
 	addActivity: (projectId: string, sprintId: string, name: string) => void;
-	// addTaskToActivity: (projectId: string, sprintId: string, activityId: string, title: string, description: string) => void;
-	moveTask: (projectId: string, sprintId: string, sourceActivityId: string, targetActivityId: string, taskId: string, newStatus: TaskStatus) => void;
+	moveActivity: (projectId: string, sprintId: string, activityId: string, newStatus: TaskStatus) => void;
+	addTaskToActivity: (projectId: string, sprintId: string, activityId: string, title: string) => void;
+	toggleTaskCompletion: (projectId: string, sprintId: string, activityId: string, taskId: string) => void;
+	deleteTask: (projectId: string, sprintId: string, activityId: string, taskId: string) => void;
 	useSprintMetrics: (sprint: Sprint | null | undefined) => { total: number; done: number; percentage: number };
 	getActivityMetrics: (activity: Activity) => { total: number; done: number };
 }
@@ -62,10 +64,9 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 	const addProject = (name: string) => {
 		// 1. Crear Tareas de prueba
 		const mockTasks: Task[] = [
-			{ id: `t1-${Date.now()}`, title: "Diseñar wireframes", description: "Esbozos en papel de la arquitectura", status: "todo", createdAt: Date.now() },
-			{ id: `t2-${Date.now()}`, title: "Configurar Next.js", description: "Setup base con Tailwind y tipografías", status: "working", createdAt: Date.now() },
-			{ id: `t3-${Date.now()}`, title: "Revisar Context API", description: "Asegurar que el estado no re-renderice todo", status: "review", createdAt: Date.now() },
-			{ id: `t4-${Date.now()}`, title: "Prueba técnica inicial", description: "Subir a Vercel el MVP", status: "done", createdAt: Date.now() },
+			{ id: `t1-${Date.now()}`, title: "Diseñar wireframes", isCompleted: true, createdAt: Date.now() },
+			{ id: `t2-${Date.now()}`, title: "Configurar Next.js", isCompleted: true, createdAt: Date.now() },
+			{ id: `t3-${Date.now()}`, title: "Revisar Context API", isCompleted: false, createdAt: Date.now() },
 		];
 
 		// 2. Agruparlas en una Actividad de prueba
@@ -73,6 +74,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 			{
 				id: `act1-${Date.now()}`,
 				name: "Configuración Inicial e Interfaz",
+				description: "Setup base y diseño inicial",
+				status: "working",
 				tasks: mockTasks,
 				createdAt: Date.now()
 			}
@@ -121,8 +124,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 						return {
 							...sprint,
 							activities: [
-								...sprint.activities,
-								{ id: `act-${Date.now()}`, name, tasks: [], createdAt: Date.now() },
+								...(sprint.activities || []),
+								{ id: `act-${Date.now()}`, name, status: 'todo', tasks: [], createdAt: Date.now() },
 							],
 						};
 					}),
@@ -131,13 +134,10 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 		);
 	};
 
-	// Ahora recibe sourceActivityId y targetActivityId
-	const moveTask = (
+	const moveActivity = (
 		projectId: string,
 		sprintId: string,
-		sourceActivityId: string,
-		targetActivityId: string,
-		taskId: string,
+		activityId: string,
 		newStatus: TaskStatus
 	) => {
 		setProjects((prevProjects) =>
@@ -147,36 +147,82 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 					...project,
 					sprints: project.sprints.map((sprint) => {
 						if (sprint.id !== sprintId) return sprint;
-
-						let taskToMove: Task | undefined;
-
-						// 1. Encontrar y extraer la tarea de la actividad original
-						const activitiesAfterRemoval = sprint.activities.map((act) => {
-							if (act.id === sourceActivityId) {
-								taskToMove = act.tasks.find((t) => t.id === taskId);
-								return { ...act, tasks: act.tasks.filter((t) => t.id !== taskId) };
-							}
-							return act;
-						});
-
-						if (!taskToMove) return sprint; // Si no existe, no hacemos nada
-
-						// Actualizamos su estado
-						const updatedTask = { ...taskToMove, status: newStatus };
-
-						// 2. Inyectar la tarea en la actividad destino
-						const finalActivities = activitiesAfterRemoval.map((act) => {
-							if (act.id === targetActivityId) {
-								return { ...act, tasks: [...act.tasks, updatedTask] };
-							}
-							return act;
-						});
-
-						return { ...sprint, activities: finalActivities };
+						return {
+							...sprint,
+							activities: (sprint.activities || []).map((act) =>
+								act.id === activityId ? { ...act, status: newStatus } : act
+							),
+						};
 					}),
 				};
 			})
 		);
+	};
+
+	const addTaskToActivity = (projectId: string, sprintId: string, activityId: string, title: string) => {
+		setProjects(prev => prev.map(project => {
+			if (project.id !== projectId) return project;
+			return {
+				...project,
+				sprints: project.sprints.map(sprint => {
+					if (sprint.id !== sprintId) return sprint;
+					return {
+						...sprint,
+						activities: (sprint.activities || []).map(act => {
+							if (act.id !== activityId) return act;
+							return {
+								...act,
+								tasks: [...(act.tasks || []), { id: `task-${Date.now()}`, title, isCompleted: false, createdAt: Date.now() }]
+							};
+						})
+					};
+				})
+			};
+		}));
+	};
+
+	const toggleTaskCompletion = (projectId: string, sprintId: string, activityId: string, taskId: string) => {
+		setProjects(prev => prev.map(project => {
+			if (project.id !== projectId) return project;
+			return {
+				...project,
+				sprints: project.sprints.map(sprint => {
+					if (sprint.id !== sprintId) return sprint;
+					return {
+						...sprint,
+						activities: (sprint.activities || []).map(act => {
+							if (act.id !== activityId) return act;
+							return {
+								...act,
+								tasks: (act.tasks || []).map(t => t.id === taskId ? { ...t, isCompleted: !t.isCompleted } : t)
+							};
+						})
+					};
+				})
+			};
+		}));
+	};
+
+	const deleteTask = (projectId: string, sprintId: string, activityId: string, taskId: string) => {
+		setProjects(prev => prev.map(project => {
+			if (project.id !== projectId) return project;
+			return {
+				...project,
+				sprints: project.sprints.map(sprint => {
+					if (sprint.id !== sprintId) return sprint;
+					return {
+						...sprint,
+						activities: (sprint.activities || []).map(act => {
+							if (act.id !== activityId) return act;
+							return {
+								...act,
+								tasks: (act.tasks || []).filter(t => t.id !== taskId)
+							};
+						})
+					};
+				})
+			};
+		}));
 	};
 
 	if (!isHydrated) {
@@ -192,7 +238,10 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 				addProject,
 				addSprint,
 				addActivity,
-				moveTask,
+				moveActivity,
+				addTaskToActivity,
+				toggleTaskCompletion,
+				deleteTask,
 				useSprintMetrics,
 				getActivityMetrics,
 			}}
@@ -211,14 +260,14 @@ export function useProjectsManager() {
 }
 
 export function useSprintMetrics(sprint: Sprint | null | undefined) {
-	if (!sprint) return { total: 0, done: 0, percentage: 0 };
+	if (!sprint || !sprint.activities) return { total: 0, done: 0, percentage: 0 };
 
 	let total = 0;
 	let done = 0;
 
 	sprint.activities.forEach(act => {
-		total += act.tasks.length;
-		done += act.tasks.filter(t => t.status === 'done').length;
+		total += act.tasks ? act.tasks.length : 0;
+		done += act.tasks ? act.tasks.filter(t => t.isCompleted).length : 0;
 	});
 
 	const percentage = total === 0 ? 0 : Math.round((done / total) * 100);
@@ -226,7 +275,7 @@ export function useSprintMetrics(sprint: Sprint | null | undefined) {
 }
 
 export function getActivityMetrics(activity: Activity) {
-	const total = activity.tasks.length;
-	const done = activity.tasks.filter(t => t.status === 'done').length;
+	const total = activity.tasks ? activity.tasks.length : 0;
+	const done = activity.tasks ? activity.tasks.filter(t => t.isCompleted).length : 0;
 	return { total, done };
 }

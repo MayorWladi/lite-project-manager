@@ -1,0 +1,133 @@
+// /app/components/ActivityCard.tsx
+"use client";
+
+import { useState } from "react";
+import { Activity } from "@/app/types";
+import { useDraggable } from "@dnd-kit/core";
+import { CSS } from "@dnd-kit/utilities";
+import { useProjectsManager } from "@/app/context/ProjectContext";
+
+export default function ActivityCard({ activity, sprintId, isOverlay }: { activity: Activity; sprintId: string, isOverlay?: boolean }) {
+	const { selectedProjectId, toggleTaskCompletion, addTaskToActivity, deleteTask } = useProjectsManager();
+	const [newTaskTitle, setNewTaskTitle] = useState("");
+	const [isAddingTask, setIsAddingTask] = useState(false);
+
+	const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+		id: activity.id,
+		data: { activity, sprintId },
+		disabled: isOverlay,
+	});
+
+	const style = isOverlay ? undefined : {
+		opacity: isDragging ? 0.4 : 1,
+	};
+
+	const handleToggle = (e: React.MouseEvent, taskId: string) => {
+		e.stopPropagation(); // Evitar interferir con el drag
+		if (selectedProjectId) {
+			toggleTaskCompletion(selectedProjectId, sprintId, activity.id, taskId);
+		}
+	};
+
+	const handleDelete = (e: React.MouseEvent, taskId: string) => {
+		e.stopPropagation();
+		if (selectedProjectId) {
+			deleteTask(selectedProjectId, sprintId, activity.id, taskId);
+		}
+	};
+
+	const handleAddTask = (e: React.FormEvent) => {
+		e.preventDefault();
+		e.stopPropagation();
+		if (newTaskTitle.trim() && selectedProjectId) {
+			addTaskToActivity(selectedProjectId, sprintId, activity.id, newTaskTitle.trim());
+			setNewTaskTitle("");
+			setIsAddingTask(false);
+		}
+	};
+
+	const tasks = activity.tasks || [];
+	const completedTasks = tasks.filter(t => t.isCompleted).length;
+
+	return (
+		<div
+			ref={isOverlay ? undefined : setNodeRef}
+			style={style}
+			{...(isOverlay ? {} : listeners)}
+			{...(isOverlay ? {} : attributes)}
+			className={`bg-[var(--background)] border rounded-xl p-4 flex flex-col gap-3 transition-colors cursor-grab active:cursor-grabbing shadow-sm group
+        ${isOverlay ? 'border-[var(--color-border)] cursor-grabbing' : (isDragging ? 'border-dashed border-[var(--color-muted)]' : 'border-[var(--color-border)] hover:border-[var(--color-muted)]')}
+      `}
+		>
+			<div>
+				<h4 className="font-semibold text-sm text-[var(--foreground)] leading-tight group-hover:text-[var(--color-muted)] transition-colors select-none">
+					{activity.name}
+				</h4>
+				{activity.description && (
+					<p className="text-xs text-[var(--color-muted)] mt-1.5 leading-relaxed select-none">
+						{activity.description}
+					</p>
+				)}
+			</div>
+
+			<div className="flex flex-col gap-1.5 cursor-default" onPointerDown={e => e.stopPropagation()}>
+				<div className="flex items-center justify-between mb-1 select-none">
+					<span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-muted)]">Checklist</span>
+					<span className="text-[10px] font-mono text-[var(--color-muted)]">{completedTasks}/{tasks.length}</span>
+				</div>
+
+				{tasks.map(task => (
+					<div key={task.id} className="flex items-start gap-2 group/task">
+						<button 
+							type="button" 
+							onClick={(e) => handleToggle(e, task.id)}
+							className="mt-0.5 shrink-0 text-[var(--color-muted)] hover:text-[var(--foreground)]"
+						>
+							{task.isCompleted ? (
+								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+									<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+									<polyline points="22 4 12 14.01 9 11.01"></polyline>
+								</svg>
+							) : (
+								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+									<circle cx="12" cy="12" r="10"></circle>
+								</svg>
+							)}
+						</button>
+						<span className={`text-xs flex-1 select-none ${task.isCompleted ? 'text-[var(--color-muted)] line-through' : 'text-[var(--foreground)]'}`}>
+							{task.title}
+						</span>
+						<button 
+							onClick={(e) => handleDelete(e, task.id)}
+							className="opacity-0 group-hover/task:opacity-100 text-[var(--color-muted)] hover:text-[#9F2F2D] transition-opacity"
+						>
+							<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+						</button>
+					</div>
+				))}
+
+				{isAddingTask ? (
+					<form onSubmit={handleAddTask} className="mt-1">
+						<input
+							autoFocus
+							type="text"
+							value={newTaskTitle}
+							onChange={e => setNewTaskTitle(e.target.value)}
+							onBlur={() => setIsAddingTask(false)}
+							placeholder="Nueva tarea..."
+							className="w-full text-xs px-2 py-1.5 bg-transparent border border-[var(--color-border)] rounded text-[var(--foreground)] outline-none focus:border-[var(--color-muted)]"
+						/>
+					</form>
+				) : (
+					<button 
+						onClick={(e) => { e.stopPropagation(); setIsAddingTask(true); }}
+						className="mt-1 flex items-center gap-1.5 text-xs text-[var(--color-muted)] hover:text-[var(--foreground)] transition-colors py-1 px-1 -ml-1 rounded hover:bg-black/5 dark:hover:bg-white/5 w-fit"
+					>
+						<svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+						Añadir tarea
+					</button>
+				)}
+			</div>
+		</div>
+	);
+}

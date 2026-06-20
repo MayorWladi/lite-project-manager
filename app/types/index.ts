@@ -13,14 +13,15 @@ export type TaskStatus = 'todo' | 'working' | 'review' | 'dropped' | 'done';
 export interface Task {
 	id: string;
 	title: string;
-	description: string;
-	status: TaskStatus;
+	isCompleted: boolean;
 	createdAt: number;
 }
 
 export interface Activity {
 	id: string;
 	name: string;
+	description?: string;
+	status: TaskStatus;
 	tasks: Task[];
 	createdAt: number;
 }

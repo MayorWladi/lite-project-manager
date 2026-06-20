@@ -4,12 +4,16 @@ import type { Project } from '@/app/types'
 
 interface ProjectItemProps {
   project: Project
-  onDeleteProject: (id: number, name: string) => void
-  onDeleteActivity: (projectId: number, index: number, activityName: string) => void
+  isSelected: boolean
+  onSelectProject: (id: string) => void
+  onDeleteProject: (id: string, name: string) => void
+  onDeleteActivity: (projectId: string, index: number, activityName: string) => void
 }
 
 export default function ProjectItem({
   project,
+  onSelectProject,
+  isSelected,
   onDeleteProject,
   onDeleteActivity,
 }: ProjectItemProps) {
@@ -50,35 +54,36 @@ export default function ProjectItem({
         </button>
       </div>
       <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-        {project.activities.map((act, idx) => (
-          <li
-            key={idx}
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '0.75rem 0',
-              borderBottom: idx === project.activities.length - 1 ? 'none' : '1px solid var(--color-border)'
-            }}
-          >
-            <span style={{ color: 'var(--color-muted)', fontSize: '0.95rem' }}>{act}</span>
-            <button
-              onClick={() => onDeleteActivity(project.id, idx, act)}
+        {project.sprints.map((sprint) =>
+          (sprint.activities || []).map((act, idx) => (
+            <li
+              key={act.id}
               style={{
-                background: 'transparent',
-                color: '#9F2F2D',
-                border: 'none',
-                padding: '0.2rem',
-                cursor: 'pointer',
-                fontSize: '0.85rem'
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '0.75rem 0',
+                borderBottom: idx === (sprint.activities || []).length - 1 ? 'none' : '1px solid var(--color-border)'
               }}
-              title="Eliminar actividad"
             >
-              ✕
-            </button>
-          </li>
-        ))}
-        {project.activities.length === 0 && (
+              <span style={{ color: 'var(--color-muted)', fontSize: '0.95rem' }}>{act.name}</span>
+              <button
+                onClick={() => onDeleteActivity(project.id, idx, act.name)}
+                style={{
+                  background: 'transparent',
+                  color: '#9F2F2D',
+                  border: 'none',
+                  padding: '0.2rem',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem'
+                }}
+                title="Eliminar actividad"
+              >
+                ✕
+              </button>
+            </li>
+          )))}
+        {project.sprints.every(sprint => (sprint.activities || []).length === 0) && (
           <li style={{ color: 'var(--color-muted)', fontSize: '0.9rem', fontStyle: 'italic', padding: '0.75rem 0' }}>No hay actividades</li>
         )}
       </ul>

@@ -43,7 +43,7 @@ export default function Home() {
 
             <SprintSelector
               sprints={selectedProject.sprints}
-              selectedSprintId={selectedSprintId}
+              activeSprint={activeSprint}
               onSelectSprint={setSelectedSprintId}
               onAddSprint={handleAddSprint}
             />
