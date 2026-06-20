@@ -6,9 +6,11 @@ import AppLayout from "@/app/components/AppLayout";
 import KanbanBoard from "@/app/components/KanbanBoard";
 import SprintSelector from "@/app/components/SprintSelector";
 import { useProjectsManager } from "@/app/context/ProjectContext";
+import { useLanguage } from "@/app/context/LanguageContext";
 
 export default function Home() {
   const { selectedProjectId, projects, addSprint } = useProjectsManager();
+  const { t } = useLanguage();
   const [selectedSprintId, setSelectedSprintId] = useState<string | null>(null);
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
@@ -54,8 +56,8 @@ export default function Home() {
               <KanbanBoard sprint={activeSprint} />
             ) : (
               <div className="h-full border-2 border-dashed border-(--color-border) rounded-xl flex flex-col items-center justify-center gap-2">
-                <p className="text-(--color-muted) text-sm">Este proyecto aún no tiene sprints.</p>
-                <p className="text-xs text-(--color-muted)/70">Utiliza el botón de arriba para crear uno nuevo.</p>
+                <p className="text-(--color-muted) text-sm">{t("no_sprints_yet")}</p>
+                <p className="text-xs text-(--color-muted)/70">{t("create_sprint_msg")}</p>
               </div>
             )}
           </div>
@@ -63,7 +65,7 @@ export default function Home() {
       ) : (
         <div className="h-full flex items-center justify-center">
           <p className="text-(--color-muted) text-sm italic select-none">
-            Selecciona o crea un proyecto de la barra lateral
+            {t("select_project_msg")}
           </p>
         </div>
       )}

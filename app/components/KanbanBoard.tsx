@@ -6,6 +6,7 @@ import { Sprint, TaskStatus, Activity } from "@/app/types";
 import { DndContext, DragEndEvent, DragOverEvent, DragStartEvent, DragOverlay, pointerWithin } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useProjectsManager } from "@/app/context/ProjectContext";
+import { useLanguage } from "@/app/context/LanguageContext";
 import KanbanCell from "./KanbanCell";
 import ActivityCard from "./ActivityCard";
 import MobileActivityCard from "./MobileActivityCard"
@@ -21,6 +22,7 @@ const COLUMNS: { id: TaskStatus; title: string }[] = [
 
 export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 	const { selectedProjectId, updateSprintActivities, addActivity } = useProjectsManager();
+	const { t } = useLanguage();
 	const [activeActivity, setActiveActivity] = useState<Activity | null>(null);
 	const [localActivities, setLocalActivities] = useState<Activity[]>(sprint.activities || []);
 
@@ -205,7 +207,7 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 							<svg width="32" height="32" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" className="mb-3 opacity-40">
 								<path strokeLinecap="round" strokeLinejoin="round" d="M20 13V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7m16 0v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-5m16 0h-2.586a1 1 0 0 0-.707.293l-2.414 2.414a1 1 0 0 1-.707.293h-3.172a1 1 0 0 1-.707-.293l-2.414-2.414A1 1 0 0 0 6.586 13H4" />
 							</svg>
-							<p className="text-sm">Sin actividades aquí</p>
+							<p className="text-sm">{t("no_activities_here")}</p>
 						</div>
 					) : (
 						mobileActivities.map(activity => (
@@ -227,14 +229,14 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 							<input
 								type="text"
 								autoFocus
-								placeholder="Nueva actividad..."
+								placeholder={t("new_activity_placeholder")}
 								value={newActivityName}
 								onChange={(e) => setNewActivityName(e.target.value)}
 								className="w-48 px-3 py-2 bg-transparent border-none rounded-lg text-sm outline-none focus:ring-0 text-foreground"
 								onBlur={() => { if (!newActivityName.trim()) setIsAdding(false); }}
 							/>
 							<button type="submit" className="px-3 py-2 bg-foreground text-background rounded-lg text-sm font-medium shrink-0">
-								Añadir
+								{t("add")}
 							</button>
 						</form>
 					) : (
@@ -260,7 +262,7 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 								<input
 									type="text"
 									autoFocus
-									placeholder="Nombre de la nueva actividad..."
+									placeholder={t("new_activity_placeholder")}
 									value={newActivityName}
 									onChange={(e) => setNewActivityName(e.target.value)}
 									className="w-[280px] px-3 py-2 bg-transparent border border-(--color-border) rounded-md text-sm outline-none transition-colors focus:border-(--color-muted) text-foreground shadow-sm"
@@ -275,7 +277,7 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 								<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
 									<path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
 								</svg>
-								Añadir Actividad
+								{t("add_activity")}
 							</button>
 						)}
 					</div>

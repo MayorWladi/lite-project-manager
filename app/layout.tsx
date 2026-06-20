@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 
 import { Quicksand, Comfortaa, DM_Sans, JetBrains_Mono } from 'next/font/google';
 import { SettingsProvider } from './context/SettingsContext';
+import { LanguageProvider } from './context/LanguageContext';
 
 const quicksand = Quicksand({ subsets: ['latin'], variable: '--font-quicksand' });
 const comfortaa = Comfortaa({ subsets: ['latin'], variable: '--font-comfortaa' });
@@ -18,11 +19,12 @@ const jetBrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mon
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" suppressHydrationWarning className={`${quicksand.variable} ${comfortaa.variable} ${dmSans.variable} ${jetBrainsMono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${quicksand.variable} ${comfortaa.variable} ${dmSans.variable} ${jetBrainsMono.variable}`}>
       <body className="antialiased font-dm-sans transition-colors duration-300">
-        <SettingsProvider>
-          <ProjectProvider>
-            {children}
+        <LanguageProvider>
+          <SettingsProvider>
+            <ProjectProvider>
+              {children}
             <Toaster
               position="top-right"
               options={{
@@ -38,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             />
           </ProjectProvider>
         </SettingsProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

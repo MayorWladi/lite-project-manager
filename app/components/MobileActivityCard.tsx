@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { Activity, TaskStatus } from "@/app/types";
 import { useProjectsManager } from "@/app/context/ProjectContext";
+import { useLanguage } from "@/app/context/LanguageContext";
 
 interface MobileActivityCardProps {
 	activity: Activity;
@@ -14,6 +15,7 @@ interface MobileActivityCardProps {
 
 export default function MobileActivityCard({ activity, sprintId, columns, onStatusChange }: MobileActivityCardProps) {
 	const { selectedProjectId, toggleTaskCompletion, addTaskToActivity, deleteTask } = useProjectsManager();
+	const { t } = useLanguage();
 	const [newTaskTitle, setNewTaskTitle] = useState("");
 	const [isAddingTask, setIsAddingTask] = useState(false);
 	const [showStatusPicker, setShowStatusPicker] = useState(false);
@@ -53,7 +55,7 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 
 		const currentIndex = columns.findIndex(c => c.id === activity.status);
 		const targetIndex = columns.findIndex(c => c.id === newStatusId);
-		
+
 		const direction = targetIndex > currentIndex ? "right" : "left";
 		setIsAnimatingOut(direction);
 		setShowStatusPicker(false);
@@ -64,9 +66,8 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 	};
 
 	return (
-		<div className={`bg-(--color-card-bg) border border-(--color-border) rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 ${
-			isAnimatingOut === "right" ? "translate-x-[120%] opacity-0" : isAnimatingOut === "left" ? "-translate-x-[120%] opacity-0" : "translate-x-0 opacity-100"
-		}`}>
+		<div className={`bg-(--color-card-bg) border border-(--color-border) rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 ${isAnimatingOut === "right" ? "translate-x-[120%] opacity-0" : isAnimatingOut === "left" ? "translate-x-[-120%] opacity-0" : "translate-x-0 opacity-100"
+			}`}>
 			{/* Header: Title + Status Chip */}
 			<div className="flex items-start justify-between gap-2">
 				<div className="flex-1 min-w-0">
@@ -100,11 +101,10 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 									<button
 										key={col.id}
 										onClick={() => handleStatusChange(col.id)}
-										className={`w-full text-left px-3 py-2 text-xs font-medium transition-colors ${
-											activity.status === col.id
-												? "text-foreground bg-black/5 dark:bg-white/10"
-												: "text-(--color-muted) active:bg-black/5 dark:active:bg-white/5"
-										}`}
+										className={`w-full text-left px-3 py-2 text-xs font-medium transition-colors ${activity.status === col.id
+											? "text-foreground bg-black/5 dark:bg-white/10"
+											: "text-(--color-muted) active:bg-black/5 dark:active:bg-white/5"
+											}`}
 									>
 										{col.title}
 									</button>
@@ -119,7 +119,7 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 			{tasks.length > 0 && (
 				<div className="flex flex-col gap-1.5">
 					<div className="flex items-center justify-between mb-1">
-						<span className="text-[10px] font-bold uppercase tracking-wider text-(--color-muted)">Checklist</span>
+						<span className="text-[10px] font-bold uppercase tracking-wider text-(--color-muted)">{t("checklist")}</span>
 						<span className="text-[10px] font-mono text-(--color-muted)">{completedTasks}/{tasks.length}</span>
 					</div>
 
@@ -164,7 +164,7 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 						value={newTaskTitle}
 						onChange={e => setNewTaskTitle(e.target.value)}
 						onBlur={() => setIsAddingTask(false)}
-						placeholder="Nueva tarea..."
+						placeholder={t("new_task_placeholder")}
 						className="w-full text-sm px-3 py-2 bg-transparent border border-(--color-border) rounded-lg text-foreground outline-none focus:border-(--color-muted)"
 					/>
 				</form>
@@ -175,7 +175,7 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 					className="mt-1 flex items-center gap-1.5 text-xs text-(--color-muted) active:text-foreground transition-colors py-1.5 px-2 -ml-1 rounded-lg active:bg-black/5 dark:active:bg-white/5 w-fit"
 				>
 					<svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-					Añadir tarea
+					{t("add_task")}
 				</button>
 			)}
 		</div>

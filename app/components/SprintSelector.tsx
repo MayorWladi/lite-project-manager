@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { Sprint } from "@/app/types";
 import { useSprintMetrics } from "@/app/context/ProjectContext";
+import { useLanguage } from "@/app/context/LanguageContext";
 import ProgressBar from "./ProgressBar";
 
 interface SprintSelectorProps {
@@ -16,6 +17,7 @@ interface SprintSelectorProps {
 export default function SprintSelector({ sprints, activeSprint, onSelectSprint, onAddSprint }: SprintSelectorProps) {
 	const [isAdding, setIsAdding] = useState(false);
 	const [newSprintName, setNewSprintName] = useState("");
+	const { t } = useLanguage();
 
 	const metrics = useSprintMetrics(activeSprint);
 
@@ -50,7 +52,7 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 						<input
 							type="text"
 							autoFocus
-							placeholder="Nombre del sprint..."
+							placeholder={t("sprint_placeholder")}
 							value={newSprintName}
 							onChange={(e) => setNewSprintName(e.target.value)}
 							className="px-3 py-1.5 bg-transparent border border-(--color-border) rounded-md text-sm outline-none transition-colors focus:border-(--color-muted) text-foreground w-36 md:w-48"
@@ -65,7 +67,7 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 						<svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
 							<path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
 						</svg>
-						<span className="hidden sm:inline">Nuevo Sprint</span>
+						<span className="hidden sm:inline">{t("new_sprint")}</span>
 						<span className="sm:hidden">+</span>
 					</button>
 				)}

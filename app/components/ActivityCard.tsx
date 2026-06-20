@@ -6,9 +6,11 @@ import { Activity } from "@/app/types";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useProjectsManager } from "@/app/context/ProjectContext";
+import { useLanguage } from "@/app/context/LanguageContext";
 
 export default function ActivityCard({ activity, sprintId, isOverlay }: { activity: Activity; sprintId: string, isOverlay?: boolean }) {
 	const { selectedProjectId, toggleTaskCompletion, addTaskToActivity, deleteTask } = useProjectsManager();
+	const { t } = useLanguage();
 	const [newTaskTitle, setNewTaskTitle] = useState("");
 	const [isAddingTask, setIsAddingTask] = useState(false);
 
@@ -78,7 +80,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 
 			<div className="flex flex-col gap-1.5 cursor-default" onPointerDown={e => e.stopPropagation()}>
 				<div className="flex items-center justify-between mb-1 select-none">
-					<span className="text-[10px] font-bold uppercase tracking-wider text-(--color-muted)">Checklist</span>
+					<span className="text-[10px] font-bold uppercase tracking-wider text-(--color-muted)">{t("checklist")}</span>
 					<span className="text-[10px] font-mono text-(--color-muted)">{completedTasks}/{tasks.length}</span>
 				</div>
 
@@ -125,7 +127,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 								}
 							}}
 							onBlur={() => setIsAddingTask(false)}
-							placeholder="Nueva tarea..."
+							placeholder={t("new_task_placeholder")}
 							className="w-full text-xs px-2 py-1.5 bg-transparent border border-(--color-border) rounded text-foreground outline-none focus:border-(--color-muted)"
 						/>
 					</form>
@@ -136,7 +138,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 						className="mt-1 flex items-center gap-1.5 text-xs text-(--color-muted) hover:text-foreground transition-colors py-1 px-1 -ml-1 rounded hover:bg-black/5 dark:hover:bg-white/5 w-fit"
 					>
 						<svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-						Añadir tarea
+						{t("add_task")}
 					</button>
 				)}
 			</div>
