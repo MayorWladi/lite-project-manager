@@ -3,8 +3,7 @@ import type { Project } from '@/app/types'
 
 export const handleAddProject = (
 	newProjectName: string,
-	addProject: (name: string) => Project,
-	setNewProjectName: (name: string) => void
+	addProject: (name: string) => Project
 ) => {
 	if (!newProjectName.trim()) {
 		sileo.warning({ title: 'Nombre requerido', description: 'Escribe un nombre para el proyecto.' })
@@ -12,7 +11,6 @@ export const handleAddProject = (
 	}
 	const project = addProject(newProjectName)
 	sileo.success({ title: 'Proyecto creado', description: `"${project.name}" agregado.` })
-	setNewProjectName('')
 }
 
 export const handleDeleteProject = (

@@ -21,7 +21,7 @@ export default function ActivityForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedProjectId) {
-      // La notificación se manejará en el padre o aquí mismo
+      // La notificación se maneja en el controlador (padre)
       return
     }
     if (activityName.trim()) {

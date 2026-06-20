@@ -4,8 +4,7 @@ import type { Project } from '@/app/types'
 export const handleAddActivity = (
   selectedProjectId: number | null,
   newActivityName: string,
-  addActivity: (projectId: number, activityName: string) => Project | undefined,
-  setNewActivityName: (name: string) => void
+  addActivity: (projectId: number, activityName: string) => Project | undefined
 ) => {
   if (!selectedProjectId) {
     sileo.info({ title: 'Selecciona un proyecto', description: 'Primero elige un proyecto para agregar actividad.' })
@@ -19,7 +18,6 @@ export const handleAddActivity = (
   if (project) {
     sileo.success({ title: 'Actividad agregada', description: `"${newActivityName}" añadida a "${project.name}".` })
   }
-  setNewActivityName('')
 }
 
 export const handleDeleteActivity = (
