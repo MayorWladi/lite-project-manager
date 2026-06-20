@@ -161,7 +161,7 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 	return (
 		<DndContext collisionDetection={pointerWithin} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
 			<div className="h-full flex flex-col">
-				<div className="flex gap-4 mb-4 sticky top-0 bg-(--background) z-10 py-2 border-b border-(--color-border)">
+				<div className="flex gap-4 mb-4 sticky top-0 bg-background z-10 py-2 border-b border-(--color-border)">
 					{COLUMNS.map((col) => {
 						const colActivities = localActivities.filter(a => a.status === col.id);
 						return (
@@ -193,14 +193,14 @@ export default function KanbanBoard({ sprint }: { sprint: Sprint }) {
 								placeholder="Nombre de la nueva actividad..."
 								value={newActivityName}
 								onChange={(e) => setNewActivityName(e.target.value)}
-								className="w-[280px] px-3 py-2 bg-transparent border border-(--color-border) rounded-md text-sm outline-none transition-colors focus:border-(--color-muted) text-(--foreground)"
+								className="w-[280px] px-3 py-2 bg-transparent border border-(--color-border) rounded-md text-sm outline-none transition-colors focus:border-(--color-muted) text-foreground"
 								onBlur={() => setIsAdding(false)}
 							/>
 						</form>
 					) : (
 						<button
 							onClick={() => setIsAdding(true)}
-							className="w-[280px] px-4 py-3 rounded-xl border border-dashed border-(--color-border) text-(--color-muted) hover:text-(--foreground) hover:border-(--color-muted) hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-sm font-medium flex items-center justify-center gap-2"
+							className="w-[280px] px-4 py-3 rounded-xl border border-dashed border-(--color-border) text-(--color-muted) hover:text-foreground hover:border-(--color-muted) hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-sm font-medium flex items-center justify-center gap-2"
 						>
 							<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
 								<path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />

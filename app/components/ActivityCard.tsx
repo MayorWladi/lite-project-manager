@@ -57,7 +57,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 			style={style}
 			{...(isOverlay ? {} : listeners)}
 			{...(isOverlay ? {} : attributes)}
-			className={`bg-(--background) border rounded-xl p-4 pt-3 flex flex-col gap-3 transition-colors cursor-grab active:cursor-grabbing shadow-sm group relative
+			className={`bg-background border rounded-xl p-4 pt-3 flex flex-col gap-3 transition-colors cursor-grab active:cursor-grabbing shadow-sm group relative
         ${isOverlay ? 'border-(--color-border) cursor-grabbing' : (isDragging ? 'border-dashed border-(--color-muted)' : 'border-(--color-border) hover:border-(--color-muted)')}
       `}
 		>
@@ -66,7 +66,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 			</div>
 
 			<div>
-				<h4 className="font-semibold text-sm text-(--foreground) leading-tight group-hover:text-(--color-muted) transition-colors select-none">
+				<h4 className="font-semibold text-sm text-foreground leading-tight group-hover:text-(--color-muted) transition-colors select-none">
 					{activity.name}
 				</h4>
 				{activity.description && (
@@ -87,7 +87,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 						<button
 							type="button"
 							onClick={(e) => handleToggle(e, task.id)}
-							className="mt-0.5 shrink-0 text-(--color-muted) hover:text-(--foreground)"
+							className="mt-0.5 shrink-0 text-(--color-muted) hover:text-foreground"
 						>
 							{task.isCompleted ? (
 								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -100,7 +100,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 								</svg>
 							)}
 						</button>
-						<span className={`text-xs flex-1 select-none ${task.isCompleted ? 'text-(--color-muted) line-through' : 'text-(--foreground)'}`}>
+						<span className={`text-xs flex-1 select-none ${task.isCompleted ? 'text-(--color-muted) line-through' : 'text-foreground'}`}>
 							{task.title}
 						</span>
 						<button
@@ -126,14 +126,14 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 							}}
 							onBlur={() => setIsAddingTask(false)}
 							placeholder="Nueva tarea..."
-							className="w-full text-xs px-2 py-1.5 bg-transparent border border-(--color-border) rounded text-(--foreground) outline-none focus:border-(--color-muted)"
+							className="w-full text-xs px-2 py-1.5 bg-transparent border border-(--color-border) rounded text-foreground outline-none focus:border-(--color-muted)"
 						/>
 					</form>
 				) : (
 					<button
 						type="button"
 						onClick={(e) => { e.stopPropagation(); setIsAddingTask(true); }}
-						className="mt-1 flex items-center gap-1.5 text-xs text-(--color-muted) hover:text-(--foreground) transition-colors py-1 px-1 -ml-1 rounded hover:bg-black/5 dark:hover:bg-white/5 w-fit"
+						className="mt-1 flex items-center gap-1.5 text-xs text-(--color-muted) hover:text-foreground transition-colors py-1 px-1 -ml-1 rounded hover:bg-black/5 dark:hover:bg-white/5 w-fit"
 					>
 						<svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
 						Añadir tarea

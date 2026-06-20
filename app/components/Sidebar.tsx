@@ -17,7 +17,7 @@ export default function Sidebar() {
 	};
 
 	return (
-		<aside className="w-64 border-r border-(--color-border) bg-(--background) flex flex-col h-full shrink-0">
+		<aside className="w-64 border-r border-(--color-border) bg-background flex flex-col h-full shrink-0">
 			{/* Cabecera del Sidebar */}
 			<div className="p-5 border-b border-(--color-border)">
 				<h2 className="font-editorial text-xl font-medium tracking-tight">Proyectos</h2>
@@ -35,8 +35,8 @@ export default function Sidebar() {
 							key={project.id}
 							onClick={() => setSelectedProjectId(project.id)}
 							className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${selectedProjectId === project.id
-								? "bg-black/5 dark:bg-white/10 text-(--foreground)"
-								: "text-(--color-muted) hover:bg-black/5 dark:hover:bg-white/5 hover:text-(--foreground)"
+								? "bg-black/5 dark:bg-white/10 text-foreground"
+								: "text-(--color-muted) hover:bg-black/5 dark:hover:bg-white/5 hover:text-foreground"
 								}`}
 						>
 							{project.name}
@@ -56,7 +56,7 @@ export default function Sidebar() {
 						placeholder="Ej: Rediseño Web..."
 						value={newProjectName}
 						onChange={(e) => setNewProjectName(e.target.value)}
-						className="w-full px-3 py-2 bg-transparent border border-(--color-border) rounded-md text-sm outline-none transition-colors focus:border-(--color-muted) text-(--foreground)"
+						className="w-full px-3 py-2 bg-transparent border border-(--color-border) rounded-md text-sm outline-none transition-colors focus:border-(--color-muted) text-foreground"
 					/>
 				</form>
 			</div>

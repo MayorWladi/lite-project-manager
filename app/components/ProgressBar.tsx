@@ -6,7 +6,7 @@ export default function ProgressBar({ percentage }: { percentage: number }) {
 		<div className="flex items-center gap-3 w-48">
 			<div className="flex-1 h-1 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
 				<div
-					className="h-full bg-(--foreground) transition-all duration-500 ease-out"
+					className="h-full bg-foreground transition-all duration-500 ease-out"
 					style={{ width: `${percentage}%` }}
 				/>
 			</div>
