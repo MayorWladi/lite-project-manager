@@ -18,10 +18,17 @@ export interface Task {
 	createdAt: number;
 }
 
-export interface Sprint {
+export interface Activity {
 	id: string;
 	name: string;
 	tasks: Task[];
+	createdAt: number;
+}
+
+export interface Sprint {
+	id: string;
+	name: string;
+	activities: Activity[];
 	startDate: number;
 }
 

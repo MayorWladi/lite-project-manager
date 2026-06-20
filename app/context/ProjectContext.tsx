@@ -2,14 +2,16 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { Project, TaskStatus, Task } from "@/app/types";
+import { Project, TaskStatus, Task, Activity } from "@/app/types";
 
 interface ProjectContextType {
 	projects: Project[];
 	selectedProjectId: string | null;
 	setSelectedProjectId: (id: string | null) => void;
 	addProject: (name: string) => void;
-	moveTask: (projectId: string, sprintId: string, taskId: string, newStatus: TaskStatus) => void;
+	addActivity: (projectId: string, sprintId: string, name: string) => void;
+	addTaskToActivity: (projectId: string, sprintId: string, activityId: string, title: string, description: string) => void;
+	moveTask: (projectId: string, sprintId: string, activityId: string, taskId: string, newStatus: TaskStatus) => void;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -19,7 +21,6 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 	const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 	const [isHydrated, setIsHydrated] = useState(false);
 
-	// 1. Cargar desde localStorage al montar el componente (Hidratación)
 	useEffect(() => {
 		const savedProjects = localStorage.getItem("kanban-projects");
 		const savedSelectedId = localStorage.getItem("kanban-selected-id");
@@ -39,14 +40,12 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 		setIsHydrated(true);
 	}, []);
 
-	// 2. Guardar en localStorage cada vez que el estado de 'projects' cambie
 	useEffect(() => {
 		if (isHydrated) {
 			localStorage.setItem("kanban-projects", JSON.stringify(projects));
 		}
 	}, [projects, isHydrated]);
 
-	// 3. Persistir el proyecto seleccionado
 	useEffect(() => {
 		if (isHydrated) {
 			if (selectedProjectId) {
@@ -58,11 +57,29 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 	}, [selectedProjectId, isHydrated]);
 
 	const addProject = (name: string) => {
+		// 1. Crear Tareas de prueba
+		const mockTasks: Task[] = [
+			{ id: `t1-${Date.now()}`, title: "Diseñar wireframes", description: "Esbozos en papel de la arquitectura", status: "todo", createdAt: Date.now() },
+			{ id: `t2-${Date.now()}`, title: "Configurar Next.js", description: "Setup base con Tailwind y tipografías", status: "working", createdAt: Date.now() },
+			{ id: `t3-${Date.now()}`, title: "Revisar Context API", description: "Asegurar que el estado no re-renderice todo", status: "review", createdAt: Date.now() },
+			{ id: `t4-${Date.now()}`, title: "Prueba técnica inicial", description: "Subir a Vercel el MVP", status: "done", createdAt: Date.now() },
+		];
+
+		// 2. Agruparlas en una Actividad de prueba
+		const mockActivities: Activity[] = [
+			{
+				id: `act1-${Date.now()}`,
+				name: "Configuración Inicial e Interfaz",
+				tasks: mockTasks,
+				createdAt: Date.now()
+			}
+		];
+
+		// 3. Crear el Proyecto con el Sprint y la Actividad anidada
 		const newProject: Project = {
 			id: Date.now().toString(),
 			name,
-			// Creamos un Sprint vacío. Si prefieres mantener las tareas de prueba de la Fase 3, puedes inyectarlas aquí.
-			sprints: [{ id: `s1-${Date.now()}`, name: "Sprint 1", tasks: [], startDate: Date.now() }],
+			sprints: [{ id: `s1-${Date.now()}`, name: "Sprint 1", activities: mockActivities, startDate: Date.now() }],
 			createdAt: Date.now(),
 		};
 
@@ -70,7 +87,15 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 		setSelectedProjectId(newProject.id);
 	};
 
-	const moveTask = (projectId: string, sprintId: string, taskId: string, newStatus: TaskStatus) => {
+	const addActivity = (projectId: string, sprintId: string, name: string) => {
+		// TODO: Implementar lógica de agregar actividad
+	};
+
+	const addTaskToActivity = (projectId: string, sprintId: string, activityId: string, title: string, description: string) => {
+		// TODO: Implementar lógica de agregar tarea a una actividad específica
+	};
+
+	const moveTask = (projectId: string, sprintId: string, activityId: string, taskId: string, newStatus: TaskStatus) => {
 		setProjects((prevProjects) =>
 			prevProjects.map((project) => {
 				if (project.id !== projectId) return project;
@@ -80,9 +105,15 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 						if (sprint.id !== sprintId) return sprint;
 						return {
 							...sprint,
-							tasks: sprint.tasks.map((task) => {
-								if (task.id !== taskId) return task;
-								return { ...task, status: newStatus };
+							activities: sprint.activities.map((activity) => {
+								if (activity.id !== activityId) return activity;
+								return {
+									...activity,
+									tasks: activity.tasks.map((task) => {
+										if (task.id !== taskId) return task;
+										return { ...task, status: newStatus };
+									}),
+								};
 							}),
 						};
 					}),
@@ -91,8 +122,6 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 		);
 	};
 
-	// Previene el renderizado del árbol de componentes hasta que localStorage haya sido leído
-	// Esto elimina el parpadeo y los errores de hidratación en Next.js
 	if (!isHydrated) {
 		return null;
 	}
@@ -104,6 +133,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 				selectedProjectId,
 				setSelectedProjectId,
 				addProject,
+				addActivity,
+				addTaskToActivity,
 				moveTask,
 			}}
 		>
