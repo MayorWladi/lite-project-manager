@@ -1,4 +1,5 @@
 // /app/layout.tsx
+import './globals.css';
 import { ProjectProvider } from '@/app/context/ProjectContext';
 // ... tus otras importaciones
 
