@@ -16,48 +16,71 @@ export default function ProjectItem({
   return (
     <div
       style={{
-        border: '1px solid #ccc',
-        padding: '1rem',
-        marginBottom: '1rem',
-        borderRadius: '8px',
+        border: '1px solid var(--color-border)',
+        padding: '24px',
+        marginBottom: '2rem',
+        borderRadius: '12px',
+        backgroundColor: 'var(--background)',
+        transition: 'box-shadow 0.2s',
       }}
+      onMouseEnter={(e) => (e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)')}
+      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = 'none')}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3>{project.name}</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+        <h3 style={{ fontSize: '1.25rem', fontWeight: 600, margin: 0, color: 'var(--foreground)' }}>{project.name}</h3>
         <button
           onClick={() => onDeleteProject(project.id, project.name)}
           style={{
-            background: 'red',
-            color: 'white',
+            backgroundColor: '#FDEBEC',
+            color: '#9F2F2D',
             border: 'none',
-            padding: '0.3rem 0.8rem',
-            borderRadius: '4px',
+            padding: '0.4rem 0.8rem',
+            borderRadius: '9999px',
+            fontSize: '0.75rem',
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            cursor: 'pointer',
+            transition: 'background-color 0.2s'
           }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#fcd5d7')}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#FDEBEC')}
         >
-          Eliminar proyecto
+          Eliminar
         </button>
       </div>
-      <ul>
+      <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
         {project.activities.map((act, idx) => (
           <li
             key={idx}
-            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '0.75rem 0',
+              borderBottom: idx === project.activities.length - 1 ? 'none' : '1px solid var(--color-border)'
+            }}
           >
-            <span>{act}</span>
+            <span style={{ color: 'var(--color-muted)', fontSize: '0.95rem' }}>{act}</span>
             <button
               onClick={() => onDeleteActivity(project.id, idx, act)}
               style={{
-                background: '#ff6b6b',
-                color: 'white',
+                background: 'transparent',
+                color: '#9F2F2D',
                 border: 'none',
-                padding: '0.2rem 0.6rem',
-                borderRadius: '4px',
+                padding: '0.2rem',
+                cursor: 'pointer',
+                fontSize: '0.85rem'
               }}
+              title="Eliminar actividad"
             >
-              X
+              ✕
             </button>
           </li>
         ))}
+        {project.activities.length === 0 && (
+          <li style={{ color: 'var(--color-muted)', fontSize: '0.9rem', fontStyle: 'italic', padding: '0.75rem 0' }}>No hay actividades</li>
+        )}
       </ul>
     </div>
   )

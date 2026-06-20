@@ -31,8 +31,10 @@ function HomeContent() {
   }
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-      <h1>📋 Gestor de Proyectos</h1>
+    <div className="animate-scroll-entry" style={{ padding: '6rem 2rem', maxWidth: '56rem', margin: '0 auto' }}>
+      <h1 className="font-editorial" style={{ fontSize: '3rem', fontWeight: 400, color: 'var(--foreground)', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: '3rem' }}>
+        Gestor de Proyectos
+      </h1>
 
       <ProjectForm onAddProject={onAddProject} />
 

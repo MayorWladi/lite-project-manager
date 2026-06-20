@@ -14,18 +14,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body>
+      <body className="antialiased">
         {children}
         <Toaster
           position="top-right"
           options={{
-            fill: '#1e293b',
-            roundness: 20,
+            fill: '#ffffff',
+            roundness: 8,
+            border: '1px solid #EAEAEA',
             styles: {
-              title: 'text-white!',
-              description: 'text-gray-300!',
-              badge: 'bg-slate-700!',
-              button: 'bg-slate-600! hover:bg-slate-500!',
+              title: 'text-[#111111]! font-medium! tracking-tight!',
+              description: 'text-[#787774]! text-sm!',
+              badge: 'bg-[#F7F6F3]! text-[#111111]!',
+              button: 'bg-[#111111]! hover:bg-[#333333]! text-[#FFFFFF]! rounded-md!',
             },
           }}
         />

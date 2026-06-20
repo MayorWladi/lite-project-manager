@@ -15,7 +15,7 @@ export default function ProjectList({
   onDeleteActivity,
 }: ProjectListProps) {
   return (
-    <div>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem', marginTop: '2rem' }}>
       {projects.map((project) => (
         <ProjectItem
           key={project.id}

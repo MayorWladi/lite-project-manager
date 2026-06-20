@@ -31,13 +31,25 @@ export default function ActivityForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
-      <h2>Agregar actividad</h2>
-      <div>
+    <form onSubmit={handleSubmit} style={{ marginBottom: '4rem' }}>
+      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 500, color: 'var(--color-muted)', marginBottom: '0.5rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+        Agregar actividad
+      </label>
+      <div style={{ display: 'flex', gap: '1rem' }}>
         <select
           value={selectedProjectId ?? ''}
           onChange={(e) => onSelectProject(e.target.value ? Number(e.target.value) : null)}
-          style={{ marginRight: '0.5rem', padding: '0.5rem' }}
+          style={{
+            flex: '0 0 30%',
+            padding: '0.75rem 1rem',
+            border: '1px solid var(--color-border)',
+            borderRadius: '6px',
+            fontSize: '1rem',
+            backgroundColor: 'transparent',
+            outline: 'none',
+            color: 'var(--foreground)',
+            cursor: 'pointer'
+          }}
         >
           <option value="">Selecciona un proyecto</option>
           {projects.map((p) => (
@@ -48,12 +60,45 @@ export default function ActivityForm({
         </select>
         <input
           type="text"
-          placeholder="Nombre de actividad"
+          placeholder="Nombre de la actividad..."
           value={activityName}
           onChange={(e) => setActivityName(e.target.value)}
-          style={{ marginRight: '0.5rem', padding: '0.5rem' }}
+          style={{
+            flex: 1,
+            padding: '0.75rem 1rem',
+            border: '1px solid var(--color-border)',
+            borderRadius: '6px',
+            fontSize: '1rem',
+            backgroundColor: 'transparent',
+            transition: 'border-color 0.2s',
+            outline: 'none',
+            color: 'var(--foreground)'
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = 'var(--color-muted)'
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = 'var(--color-border)'
+          }}
         />
-        <button type="submit" style={{ padding: '0.5rem 1rem' }}>
+        <button
+          type="submit"
+          style={{
+            padding: '0.75rem 1.5rem',
+            backgroundColor: '#111111',
+            color: '#FFFFFF',
+            border: 'none',
+            borderRadius: '6px',
+            fontSize: '0.9rem',
+            fontWeight: 500,
+            cursor: 'pointer',
+            transition: 'background-color 0.2s, transform 0.1s',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#333333')}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#111111')}
+          onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.98)')}
+          onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+        >
           Añadir
         </button>
       </div>
