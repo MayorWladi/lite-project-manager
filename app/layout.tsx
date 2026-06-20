@@ -1,7 +1,13 @@
-// /app/layout.tsx
-import './globals.css';
-import { ProjectProvider } from '@/app/context/ProjectContext';
-// ... tus otras importaciones
+import { Toaster } from 'sileo'
+import './globals.css'
+import type { Metadata } from 'next'
+import { ProjectProvider } from './context/ProjectContext';
+
+export const metadata: Metadata = {
+  title: 'Gestor de Actividades',
+  description: 'Aprende a usar Sileo con Next.js y TypeScript',
+}
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
