@@ -1,0 +1,183 @@
+// /app/components/MobileActivityCard.tsx
+"use client";
+
+import { useState } from "react";
+import { Activity, TaskStatus } from "@/app/types";
+import { useProjectsManager } from "@/app/context/ProjectContext";
+
+interface MobileActivityCardProps {
+	activity: Activity;
+	sprintId: string;
+	columns: { id: TaskStatus; title: string }[];
+	onStatusChange: (activityId: string, newStatus: TaskStatus) => void;
+}
+
+export default function MobileActivityCard({ activity, sprintId, columns, onStatusChange }: MobileActivityCardProps) {
+	const { selectedProjectId, toggleTaskCompletion, addTaskToActivity, deleteTask } = useProjectsManager();
+	const [newTaskTitle, setNewTaskTitle] = useState("");
+	const [isAddingTask, setIsAddingTask] = useState(false);
+	const [showStatusPicker, setShowStatusPicker] = useState(false);
+	const [isAnimatingOut, setIsAnimatingOut] = useState<"left" | "right" | null>(null);
+
+	const tasks = activity.tasks || [];
+	const completedTasks = tasks.filter(t => t.isCompleted).length;
+
+	const currentCol = columns.find(c => c.id === activity.status);
+
+	const handleToggle = (taskId: string) => {
+		if (selectedProjectId) {
+			toggleTaskCompletion(selectedProjectId, sprintId, activity.id, taskId);
+		}
+	};
+
+	const handleDelete = (taskId: string) => {
+		if (selectedProjectId) {
+			deleteTask(selectedProjectId, sprintId, activity.id, taskId);
+		}
+	};
+
+	const handleAddTask = (e: React.FormEvent) => {
+		e.preventDefault();
+		if (newTaskTitle.trim() && selectedProjectId) {
+			addTaskToActivity(selectedProjectId, sprintId, activity.id, newTaskTitle.trim());
+			setNewTaskTitle("");
+			setIsAddingTask(false);
+		}
+	};
+
+	const handleStatusChange = (newStatusId: TaskStatus) => {
+		if (newStatusId === activity.status) {
+			setShowStatusPicker(false);
+			return;
+		}
+
+		const currentIndex = columns.findIndex(c => c.id === activity.status);
+		const targetIndex = columns.findIndex(c => c.id === newStatusId);
+		
+		const direction = targetIndex > currentIndex ? "right" : "left";
+		setIsAnimatingOut(direction);
+		setShowStatusPicker(false);
+
+		setTimeout(() => {
+			onStatusChange(activity.id, newStatusId);
+		}, 300);
+	};
+
+	return (
+		<div className={`bg-(--color-card-bg) border border-(--color-border) rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 ${
+			isAnimatingOut === "right" ? "translate-x-[120%] opacity-0" : isAnimatingOut === "left" ? "-translate-x-[120%] opacity-0" : "translate-x-0 opacity-100"
+		}`}>
+			{/* Header: Title + Status Chip */}
+			<div className="flex items-start justify-between gap-2">
+				<div className="flex-1 min-w-0">
+					<h4 className="font-semibold text-sm text-foreground leading-tight">
+						{activity.name}
+					</h4>
+					{activity.description && (
+						<p className="text-xs text-(--color-muted) mt-1 leading-relaxed">
+							{activity.description}
+						</p>
+					)}
+				</div>
+
+				{/* Status Chip / Picker */}
+				<div className="relative shrink-0">
+					<button
+						onClick={() => setShowStatusPicker(!showStatusPicker)}
+						className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border border-(--color-border) bg-black/3 dark:bg-white/5 text-(--color-muted) active:scale-95 transition-transform flex items-center gap-1"
+					>
+						{currentCol?.title || activity.status}
+						<svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+							<path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+						</svg>
+					</button>
+
+					{showStatusPicker && (
+						<>
+							<div className="fixed inset-0 z-40" onClick={() => setShowStatusPicker(false)} />
+							<div className="absolute right-0 top-full mt-1 z-50 bg-(--color-card-bg) border border-(--color-border) rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-1 min-w-[130px]">
+								{columns.map(col => (
+									<button
+										key={col.id}
+										onClick={() => handleStatusChange(col.id)}
+										className={`w-full text-left px-3 py-2 text-xs font-medium transition-colors ${
+											activity.status === col.id
+												? "text-foreground bg-black/5 dark:bg-white/10"
+												: "text-(--color-muted) active:bg-black/5 dark:active:bg-white/5"
+										}`}
+									>
+										{col.title}
+									</button>
+								))}
+							</div>
+						</>
+					)}
+				</div>
+			</div>
+
+			{/* Checklist */}
+			{tasks.length > 0 && (
+				<div className="flex flex-col gap-1.5">
+					<div className="flex items-center justify-between mb-1">
+						<span className="text-[10px] font-bold uppercase tracking-wider text-(--color-muted)">Checklist</span>
+						<span className="text-[10px] font-mono text-(--color-muted)">{completedTasks}/{tasks.length}</span>
+					</div>
+
+					{tasks.map(task => (
+						<div key={task.id} className="flex items-start gap-2.5">
+							<button
+								type="button"
+								onClick={() => handleToggle(task.id)}
+								className="mt-0.5 shrink-0 text-(--color-muted) active:scale-90 transition-transform"
+							>
+								{task.isCompleted ? (
+									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+										<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+										<polyline points="22 4 12 14.01 9 11.01"></polyline>
+									</svg>
+								) : (
+									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+										<circle cx="12" cy="12" r="10"></circle>
+									</svg>
+								)}
+							</button>
+							<span className={`text-sm flex-1 ${task.isCompleted ? 'text-(--color-muted) line-through' : 'text-foreground'}`}>
+								{task.title}
+							</span>
+							<button
+								onClick={() => handleDelete(task.id)}
+								className="text-(--color-muted) active:text-[#9F2F2D] p-1"
+							>
+								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+							</button>
+						</div>
+					))}
+				</div>
+			)}
+
+			{/* Add Task */}
+			{isAddingTask ? (
+				<form onSubmit={handleAddTask} className="mt-1">
+					<input
+						autoFocus
+						type="text"
+						value={newTaskTitle}
+						onChange={e => setNewTaskTitle(e.target.value)}
+						onBlur={() => setIsAddingTask(false)}
+						placeholder="Nueva tarea..."
+						className="w-full text-sm px-3 py-2 bg-transparent border border-(--color-border) rounded-lg text-foreground outline-none focus:border-(--color-muted)"
+					/>
+				</form>
+			) : (
+				<button
+					type="button"
+					onClick={() => setIsAddingTask(true)}
+					className="mt-1 flex items-center gap-1.5 text-xs text-(--color-muted) active:text-foreground transition-colors py-1.5 px-2 -ml-1 rounded-lg active:bg-black/5 dark:active:bg-white/5 w-fit"
+				>
+					<svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+					Añadir tarea
+				</button>
+			)}
+		</div>
+	);
+}

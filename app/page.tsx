@@ -35,9 +35,9 @@ export default function Home() {
   return (
     <AppLayout>
       {selectedProjectId && selectedProject ? (
-        <div className="h-full flex flex-col p-8 animate-scroll-entry">
+        <div className="h-full flex flex-col p-4 md:p-8 animate-scroll-entry">
           <header className="flex flex-col gap-4">
-            <h1 className="text-4xl font-semibold tracking-tight text-foreground">
+            <h1 className="text-2xl md:text-4xl font-semibold tracking-tight text-foreground">
               {selectedProject.name}
             </h1>
 

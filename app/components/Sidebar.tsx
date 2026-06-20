@@ -5,7 +5,12 @@ import { useState } from "react";
 import { useProjectsManager } from "@/app/context/ProjectContext";
 import SettingsModal from "./SettingsModal";
 
-export default function Sidebar() {
+interface SidebarProps {
+	isOpen: boolean;
+	onClose: () => void;
+}
+
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 	const { projects, selectedProjectId, setSelectedProjectId, addProject } = useProjectsManager();
 	const [newProjectName, setNewProjectName] = useState("");
 
@@ -21,10 +26,21 @@ export default function Sidebar() {
 
 	return (
 		<>
-			<aside className="w-64 border-r border-(--color-border) bg-background flex flex-col h-full shrink-0">
+			{/* Backdrop móvil */}
+			{isOpen && (
+				<div 
+					className="fixed inset-0 z-40 bg-black/20 dark:bg-black/40 backdrop-blur-sm md:hidden transition-opacity"
+					onClick={onClose}
+				/>
+			)}
+
+			<aside className={`fixed inset-y-0 left-0 z-50 w-64 border-r border-(--color-border) bg-background flex flex-col h-full shrink-0 transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
 				{/* Cabecera del Sidebar */}
-				<div className="p-5 border-b border-(--color-border)">
+				<div className="p-5 border-b border-(--color-border) flex justify-between items-center">
 					<h2 className="text-xl font-bold tracking-tight">Proyectos</h2>
+					<button className="md:hidden p-1 text-(--color-muted) hover:text-foreground" onClick={onClose}>
+						<svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+					</button>
 				</div>
 
 				{/* Lista de Proyectos */}
