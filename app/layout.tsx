@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import { ProjectProvider } from './context/ProjectContext';
 
 export const metadata: Metadata = {
-  title: 'lite Project Manager',
+  title: 'Lite Project Manager',
   description: 'Fast, lightweight, and local-first project manager',
 }
 
@@ -25,21 +25,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <SettingsProvider>
             <ProjectProvider>
               {children}
-            <Toaster
-              position="top-right"
-              options={{
-                fill: '#ffffff',
-                roundness: 8,
-                styles: {
-                  title: 'text-[#111111]! font-medium! tracking-tight!',
-                  description: 'text-[#787774]! text-sm!',
-                  badge: 'bg-[#F7F6F3]! text-[#111111]!',
-                  button: 'bg-[#111111]! hover:bg-[#333333]! text-[#FFFFFF]! rounded-md!',
-                },
-              }}
-            />
-          </ProjectProvider>
-        </SettingsProvider>
+              <Toaster
+                position="top-right"
+                options={{
+                  fill: '#ffffff',
+                  roundness: 8,
+                  styles: {
+                    title: 'text-[#111111]! font-medium! tracking-tight!',
+                    description: 'text-[#787774]! text-sm!',
+                    badge: 'bg-[#F7F6F3]! text-[#111111]!',
+                    button: 'bg-[#111111]! hover:bg-[#333333]! text-[#FFFFFF]! rounded-md!',
+                  },
+                }}
+              />
+            </ProjectProvider>
+          </SettingsProvider>
         </LanguageProvider>
       </body>
     </html>

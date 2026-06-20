@@ -56,7 +56,7 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 	return (
 		<div className="flex items-center border-b border-(--color-border) pb-2 md:pb-3 mb-3 md:mb-6 relative">
 			<div className="hidden md:block flex-1" />
-			<div className="flex items-center gap-2 overflow-x-auto scrollbar-hide shrink-0 md:justify-center md:max-w-[calc(100%-100px)] px-0 md:px-2 pb-32 -mb-32 z-10 relative">
+			<div className="flex items-center gap-2 overflow-x-auto scrollbar-hide shrink-0 md:justify-center md:max-w-[calc(100%-100px)] px-0 md:px-2">
 				{sprints.map((sprint) => (
 					<div key={sprint.id} className="relative shrink-0 flex items-center">
 						{renamingId === sprint.id ? (
@@ -89,27 +89,6 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 									</span>
 								)}
 							</button>
-						)}
-
-						{/* Sprint Context Menu */}
-						{menuOpenId === sprint.id && (
-							<>
-								<div className="fixed inset-0 z-40 cursor-default" onClick={(e) => { e.stopPropagation(); setMenuOpenId(null); }} />
-								<div className="absolute left-0 top-full mt-1 z-50 bg-(--color-card-bg) border border-(--color-border) rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-1 min-w-[120px]">
-									<button
-										onClick={(e) => { e.stopPropagation(); setRenamingId(sprint.id); setRenameValue(sprint.name); setMenuOpenId(null); }}
-										className="w-full text-left px-3 py-1.5 text-xs font-medium text-(--color-muted) hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-									>
-										{t("rename")}
-									</button>
-									<button
-										onClick={(e) => { e.stopPropagation(); handleDelete(sprint.id); }}
-										className="w-full text-left px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-500/10 transition-colors"
-									>
-										{t("delete_item")}
-									</button>
-								</div>
-							</>
 						)}
 					</div>
 				))}

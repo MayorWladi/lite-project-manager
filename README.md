@@ -1,4 +1,4 @@
-# lite Project Manager
+# Lite Project Manager
 
 A lightning-fast, minimalist, and local-first Kanban project manager designed for personal use and ultimate focus.
 
