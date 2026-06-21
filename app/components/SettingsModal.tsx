@@ -19,22 +19,23 @@ const FONTS: { id: FontType; name: string; class: string; description: { en: str
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 	const { theme, setTheme, font, setFont } = useSettings();
 	const { language, setLanguage, t } = useLanguage();
-	const [show, setShow] = useState(isOpen);
-	const [isClosing, setIsClosing] = useState(false);
+	const [isMounted, setIsMounted] = useState(isOpen);
+	const [isVisible, setIsVisible] = useState(false);
 
 	useEffect(() => {
 		if (isOpen) {
-			setShow(true);
-			setIsClosing(false);
-		} else if (show) {
-			setIsClosing(true);
-			const timer = setTimeout(() => {
-				setShow(false);
-				setIsClosing(false);
-			}, 300); // 300ms para coincidir con la transición
+			setIsMounted(true);
+			// Un micro-retraso para permitir que el DOM renderice el elemento base
+			// antes de aplicar las clases de visibilidad, forzando la transición.
+			const timer = setTimeout(() => setIsVisible(true), 10);
+			return () => clearTimeout(timer);
+		} else if (isMounted) {
+			setIsVisible(false);
+			// Espera a que termine la animación (300ms) para desmontar
+			const timer = setTimeout(() => setIsMounted(false), 300);
 			return () => clearTimeout(timer);
 		}
-	}, [isOpen, show]);
+	}, [isOpen, isMounted]);
 
 	// Close on escape
 	useEffect(() => {
@@ -45,18 +46,23 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 		return () => window.removeEventListener("keydown", handleEsc);
 	}, [onClose]);
 
-	if (!show) return null;
+	if (!isMounted) return null;
 
 	return (
 		<div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6">
 			{/* Backdrop */}
 			<div
-				className={`absolute inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'opacity-100'}`}
+				className={`absolute inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'
+					}`}
 				onClick={onClose}
 			/>
 
 			{/* Modal Content */}
-			<div className={`relative w-full max-w-md bg-(--color-card-bg) rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.5)] border border-(--color-border) p-6 transition-all duration-300 ease-out max-h-[90vh] overflow-y-auto scrollbar-hide ${isClosing ? 'opacity-0 translate-y-8 scale-95' : 'animate-scroll-entry'}`}>
+			<div
+				className={`relative w-full max-w-md bg-(--color-card-bg) rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.5)] border border-(--color-border) p-6 transition-all duration-300 ease-out max-h-[90vh] overflow-y-auto scrollbar-hide ${isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
+					}`}
+			>
+				{/* Contenido del modal */}
 
 				<div className="flex items-center justify-between mb-6">
 					<h2 className="text-xl font-semibold text-foreground tracking-tight">{t("settings")}</h2>
@@ -160,6 +166,6 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 					</section>
 				</div>
 			</div>
-		</div>
+		</div >
 	);
 }
