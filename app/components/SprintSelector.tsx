@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { createPortal } from "react-dom";
 import { Sprint } from "@/app/types";
 import { useSprintMetrics, useProjectsManager } from "@/app/context/ProjectContext";
 import { useLanguage } from "@/app/context/LanguageContext";
@@ -51,7 +50,6 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 	const handleDelete = (sprintId: string) => {
 		if (selectedProjectId) {
 			deleteSprint(selectedProjectId, sprintId);
-			// Auto-select first remaining sprint
 			const remaining = sprints.filter(s => s.id !== sprintId);
 			if (remaining.length > 0) {
 				onSelectSprint(remaining[0].id);
@@ -155,9 +153,26 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 					</button>
 				)}
 			</div>
-			
+
+			{/* Componente unificado: Progreso del Sprint */}
 			<div className="hidden md:flex justify-end flex-1 shrink-0">
-				{activeSprint && <ProgressBar percentage={metrics.percentage} total={metrics.total} done={metrics.done} />}
+				{activeSprint && (
+					<ProgressBar
+						percentage={metrics.percentage}
+						variant="inline"
+						className="w-48"
+						tooltipPosition="bottom"
+						tooltipTitle="Progreso del Sprint"
+						tooltipStats={
+							metrics.total !== undefined && metrics.done !== undefined ? [
+								{ label: "Completadas", value: metrics.done },
+								{ label: "Pendientes", value: metrics.total - metrics.done },
+								'divider',
+								{ label: "Total", value: `${metrics.total} actividades` },
+							] : []
+						}
+					/>
+				)}
 			</div>
 		</div>
 	);
