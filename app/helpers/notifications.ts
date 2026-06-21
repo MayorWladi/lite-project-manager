@@ -10,8 +10,8 @@ export const notify = (title: string, description?: string, type: NotificationTy
 	sileo[type]({
 		title,
 		description,
-		position: 'bottom-right',
-		duration: 3000,
+		position: 'top-center',
+		duration: 4500,
 	});
 };
 
