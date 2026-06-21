@@ -9,6 +9,8 @@ interface SettingsModalProps {
 	onClose: () => void;
 }
 
+const ANIMATION_DURATION = 150; // Controla la velocidad de toda la animación en milisegundos
+
 const FONTS: { id: FontType; name: string; class: string; description: { en: string; es: string } }[] = [
 	{ id: "dm-sans", name: "DM Sans", class: "font-dm-sans", description: { en: "Minimal and warm. Excellent readability.", es: "Minimalista y cálida. Excelente legibilidad." } },
 	{ id: "quicksand", name: "Quicksand", class: "font-quicksand", description: { en: "Soft and very rounded. Ultra relaxing.", es: "Suave y muy redondeada. Ultra relajante." } },
@@ -25,14 +27,11 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 	useEffect(() => {
 		if (isOpen) {
 			setIsMounted(true);
-			// Un micro-retraso para permitir que el DOM renderice el elemento base
-			// antes de aplicar las clases de visibilidad, forzando la transición.
 			const timer = setTimeout(() => setIsVisible(true), 10);
 			return () => clearTimeout(timer);
 		} else if (isMounted) {
 			setIsVisible(false);
-			// Espera a que termine la animación (300ms) para desmontar
-			const timer = setTimeout(() => setIsMounted(false), 300);
+			const timer = setTimeout(() => setIsMounted(false), ANIMATION_DURATION);
 			return () => clearTimeout(timer);
 		}
 	}, [isOpen, isMounted]);
@@ -52,15 +51,17 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 		<div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6">
 			{/* Backdrop */}
 			<div
-				className={`absolute inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'
+				className={`absolute inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm transition-opacity ${isVisible ? 'opacity-100' : 'opacity-0'
 					}`}
+				style={{ transitionDuration: `${ANIMATION_DURATION}ms` }}
 				onClick={onClose}
 			/>
 
 			{/* Modal Content */}
 			<div
-				className={`relative w-full max-w-md bg-(--color-card-bg) rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.5)] border border-(--color-border) p-6 transition-all duration-300 ease-out max-h-[90vh] overflow-y-auto scrollbar-hide ${isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
+				className={`relative w-full max-w-md bg-(--color-card-bg) rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.5)] border border-(--color-border) p-6 transition-all ease-out max-h-[90vh] overflow-y-auto scrollbar-hide ${isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
 					}`}
+				style={{ transitionDuration: `${ANIMATION_DURATION}ms` }}
 			>
 				{/* Contenido del modal */}
 
