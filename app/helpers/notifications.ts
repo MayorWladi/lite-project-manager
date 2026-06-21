@@ -12,6 +12,9 @@ export const notify = (title: string, description?: string, type: NotificationTy
 		description,
 		position: 'top-center',
 		duration: 4500,
+		styles: {
+			description: 'text-foreground! font-medium! tracking-tight! opacity-90!',
+		}
 	});
 };
 

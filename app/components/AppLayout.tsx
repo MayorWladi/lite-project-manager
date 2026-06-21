@@ -55,7 +55,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 			{/* Tostadora única conectada a tu tema y colores */}
 			<Toaster
 				theme={theme}
-				position="top-right"
 				options={{
 					fill: 'var(--color-card-bg)',
 					roundness: 8,
