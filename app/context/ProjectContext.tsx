@@ -81,7 +81,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 				id: `act1-${Date.now()}`,
 				name: "Configuración Inicial e Interfaz",
 				description: "Setup base y diseño inicial",
-				status: "working",
+				status: "todo",
 				tasks: mockTasks,
 				createdAt: Date.now()
 			}
