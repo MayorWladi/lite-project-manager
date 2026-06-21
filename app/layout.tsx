@@ -25,19 +25,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <SettingsProvider>
             <ProjectProvider>
               {children}
-              {/* <Toaster
-                position="top-right"
-                options={{
-                  fill: '#ffffff',
-                  roundness: 8,
-                  styles: {
-                    title: 'text-[#111111]! font-medium! tracking-tight!',
-                    description: 'text-[#787774]! text-sm!',
-                    badge: 'bg-[#F7F6F3]! text-[#111111]!',
-                    button: 'bg-[#111111]! hover:bg-[#333333]! text-[#FFFFFF]! rounded-md!',
-                  },
-                }}
-              /> */}
             </ProjectProvider>
           </SettingsProvider>
         </LanguageProvider>

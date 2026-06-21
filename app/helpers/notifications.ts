@@ -13,7 +13,7 @@ export const notify = (title: string, description?: string, type: NotificationTy
 		position: 'top-center',
 		duration: 4500,
 		styles: {
-			description: 'text-foreground! font-medium! tracking-tight! opacity-90!',
+			description: 'text-foreground! font-medium! tracking-tight! opacity-90! text-center!',
 		}
 	});
 };
