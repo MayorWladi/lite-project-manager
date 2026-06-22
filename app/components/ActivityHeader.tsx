@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import ActivityMenu from "./ActivityMenu";
+import DropdownMenu from "./DropdownMenu";
 
 interface ActivityHeaderProps {
   name: string;
@@ -25,6 +25,21 @@ export default function ActivityHeader({ name, description, isOverlay, onRenameS
     }
     setIsRenaming(false);
   };
+
+  const menuItems = [
+    {
+      label: t("rename"),
+      onClick: () => {
+        setIsRenaming(true);
+        setRenameValue(name);
+      },
+    },
+    {
+      label: t("delete_item"),
+      onClick: onDeleteActivity,
+      isDanger: true,
+    },
+  ];
 
   return (
     <div className="flex items-start justify-between gap-1" onPointerDown={e => e.stopPropagation()}>
@@ -64,11 +79,9 @@ export default function ActivityHeader({ name, description, isOverlay, onRenameS
       </div>
 
       {!isOverlay && !isRenaming && (
-        <ActivityMenu
-          onRename={() => { setIsRenaming(true); setRenameValue(name); }}
-          onDelete={onDeleteActivity}
-          renameText={t("rename")}
-          deleteText={t("delete_item")}
+        <DropdownMenu
+          items={menuItems}
+          triggerClassName="text-(--color-muted) opacity-0 group-hover:opacity-100"
         />
       )}
     </div>
