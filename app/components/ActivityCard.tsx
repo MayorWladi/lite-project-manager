@@ -27,7 +27,6 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 		opacity: isDragging ? 0.4 : 1,
 	};
 
-	// Memoizando funciones para evitar re-renderizados en los hijos
 	const handleRenameActivity = useCallback((newName: string) => {
 		if (selectedProjectId) renameActivity(selectedProjectId, sprintId, activity.id, newName);
 	}, [selectedProjectId, sprintId, activity.id, renameActivity]);
@@ -61,8 +60,8 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 			style={style}
 			{...(isOverlay ? {} : listeners)}
 			{...(isOverlay ? {} : attributes)}
-			className={`bg-(--color-card-bg) border rounded-xl p-4 pt-3 flex flex-col gap-3 transition-all duration-300 cursor-grab active:cursor-grabbing shadow-[0_2px_8px_rgba(0,0,0,0.02)] group relative animate-fade-in
-        ${isOverlay ? 'border-(--color-border) cursor-grabbing shadow-none' : (isDragging ? 'border-dashed border-(--color-muted) opacity-60' : 'border-(--color-border) hover:border-(--color-muted) hover:translate-y-[-2px] hover:shadow-[0_8px_20px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_8px_20px_rgba(0,0,0,0.4)]')}
+			className={`bg-(--color-card-bg) border rounded-xl p-4 pt-3 flex flex-col gap-3 transition-all duration-500 ease-out cursor-grab active:cursor-grabbing shadow-[0_2px_8px_rgba(0,0,0,0.02)] group relative animate-fade-in
+        ${isOverlay ? 'border-(--color-border) cursor-grabbing shadow-none' : (isDragging ? 'border-dashed border-(--color-muted) opacity-60' : 'border-(--color-border) hover:border-(--color-muted) hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)]')}
       `}
 		>
 			<div className="w-full flex justify-center pb-1">
@@ -78,21 +77,25 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 				t={t}
 			/>
 
+			{/* Contenedor group/list para el efecto Spotlight */}
 			<div className="flex flex-col gap-1.5 cursor-default" onPointerDown={e => e.stopPropagation()}>
 				<div className="flex items-center justify-between mb-1 select-none">
 					<span className="text-[10px] font-bold uppercase tracking-wider text-(--color-muted)">{t("checklist")}</span>
 					<span className="text-[10px] font-mono text-(--color-muted)">{completedTasks}/{tasks.length}</span>
 				</div>
 
-				{tasks.map((task) => (
-					<ActivityTaskItem
-						key={task.id}
-						task={task}
-						onToggle={(e) => { e.stopPropagation(); handleToggleTask(task.id); }}
-						onDelete={(e) => { e.stopPropagation(); handleDeleteTask(task.id); }}
-						onRename={(newTitle) => handleRenameTask(task.id, newTitle)}
-					/>
-				))}
+				{/* Contenedor exclusivo para tareas con efecto spotlight */}
+				<div className="flex flex-col gap-1.5 group/tasklist transition-opacity duration-300">
+					{tasks.map((task) => (
+						<ActivityTaskItem
+							key={task.id}
+							task={task}
+							onToggle={(e) => { e.stopPropagation(); handleToggleTask(task.id); }}
+							onDelete={(e) => { e.stopPropagation(); handleDeleteTask(task.id); }}
+							onRename={(newTitle) => handleRenameTask(task.id, newTitle)}
+						/>
+					))}
+				</div>
 
 				<AddTaskForm
 					onAdd={handleAddTask}

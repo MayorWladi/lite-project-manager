@@ -65,7 +65,7 @@ export default function ActivityHeader({ name, description, isOverlay, onRenameS
           <>
             <h4
               onDoubleClick={(e) => { e.stopPropagation(); setIsRenaming(true); setRenameValue(name); }}
-              className="font-semibold text-sm text-foreground leading-tight group-hover:text-(--color-muted) transition-colors select-none truncate cursor-default"
+              className="font-semibold text-sm text-foreground leading-tight transition-colors select-none truncate cursor-default"
             >
               {name}
             </h4>
