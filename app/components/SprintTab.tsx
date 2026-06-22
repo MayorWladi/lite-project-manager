@@ -91,7 +91,7 @@ export default function SprintTab({ sprint, isActive, onSelect, onRename, onDele
           <DropdownMenu
             items={menuItems}
             triggerClassName="opacity-70"
-            menuClassName="absolute left-0 md:left-auto md:right-0 top-full mt-1 z-50 bg-(--color-card-bg) border border-(--color-border) rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-1 min-w-[120px] animate-fade-in"
+          // ✅ Eliminamos menuClassName para usar el predeterminado
           />
         </div>
       )}
