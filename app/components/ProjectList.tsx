@@ -1,3 +1,4 @@
+// /app/components/ProjectList.tsx
 'use client'
 
 import type { Project } from '@/app/types'
@@ -8,7 +9,6 @@ interface ProjectListProps {
   selectedProjectId: string | null
   onSelectProject: (id: string) => void
   onDeleteProject: (id: string, name: string) => void
-  onDeleteActivity: (projectId: string, index: number, activityName: string) => void
 }
 
 export default function ProjectList({
@@ -16,10 +16,10 @@ export default function ProjectList({
   selectedProjectId,
   onSelectProject,
   onDeleteProject,
-  onDeleteActivity,
 }: ProjectListProps) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem', marginTop: '2rem' }}>
+    // Usamos flex-col con un gap pequeño para una lista compacta en el sidebar
+    <div className="flex flex-col gap-1 mt-2">
       {projects.map((project) => (
         <ProjectItem
           key={project.id}
@@ -27,7 +27,6 @@ export default function ProjectList({
           isSelected={project.id === selectedProjectId}
           onSelectProject={onSelectProject}
           onDeleteProject={onDeleteProject}
-          onDeleteActivity={onDeleteActivity}
         />
       ))}
     </div>

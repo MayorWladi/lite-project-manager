@@ -1,12 +1,12 @@
 // /app/components/Sidebar.tsx
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { useProjectsManager } from "@/app/context/ProjectContext";
 import { useLanguage } from "@/app/context/LanguageContext";
 import SettingsModal from "./SettingsModal";
 import ProgressBar from "./ProgressBar";
-import { useDoubleTapById } from "@/app/hooks/useDoubleTap";
+import ProjectList from "./ProjectList"; // <-- INTEGRACIÓN PERFECTA
 
 interface SidebarProps {
 	isOpen: boolean;
@@ -16,19 +16,11 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDesktopToggle }: SidebarProps) {
-	const { projects, selectedProjectId, setSelectedProjectId, addProject, renameProject, deleteProject } = useProjectsManager();
+	const { projects, selectedProjectId, setSelectedProjectId, addProject, deleteProject } = useProjectsManager();
 	const { t } = useLanguage();
 	const [newProjectName, setNewProjectName] = useState("");
 	const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-	const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
-	const [renamingId, setRenamingId] = useState<string | null>(null);
-	const [renameValue, setRenameValue] = useState("");
 	const [storageUsage, setStorageUsage] = useState(0);
-
-	const handleProjectDoubleTap = useDoubleTapById(useCallback((projectId) => {
-		const project = projects.find(p => p.id === projectId);
-		if (project) startRename(project);
-	}, [projects]));
 
 	React.useEffect(() => {
 		const calculateStorage = () => {
@@ -50,19 +42,6 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
 			addProject(newProjectName.trim());
 			setNewProjectName("");
 		}
-	};
-
-	const handleRenameSubmit = (projectId: string) => {
-		if (renameValue.trim()) {
-			renameProject(projectId, renameValue.trim());
-		}
-		setRenamingId(null);
-	};
-
-	const startRename = (project: { id: string; name: string }) => {
-		setRenamingId(project.id);
-		setRenameValue(project.name);
-		setMenuOpenId(null);
 	};
 
 	return (
@@ -100,64 +79,12 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
 						{projects.length === 0 ? (
 							<p className="text-sm text-(--color-muted) px-3 italic">{t("no_projects")}</p>
 						) : (
-							<div className="space-y-0.5">
-								{projects.map(project => (
-									<div key={project.id} className="relative group">
-										{renamingId === project.id ? (
-											<form onSubmit={(e) => { e.preventDefault(); handleRenameSubmit(project.id); }} className="px-1">
-												<input
-													autoFocus
-													type="text"
-													value={renameValue}
-													onChange={(e) => setRenameValue(e.target.value)}
-													onBlur={() => handleRenameSubmit(project.id)}
-													onKeyDown={(e) => { if (e.key === 'Escape') setRenamingId(null); }}
-													className="w-full px-2 py-1.5 bg-transparent border border-(--color-border) rounded-md text-sm outline-none focus:border-(--color-muted) text-foreground"
-												/>
-											</form>
-										) : (
-											<button
-												onClick={() => setSelectedProjectId(project.id)}
-												onDoubleClick={(e) => { e.stopPropagation(); startRename(project); }}
-												onTouchEnd={(e) => handleProjectDoubleTap(e, project.id)}
-												className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all duration-200 flex items-center justify-between ${selectedProjectId === project.id
-													? "bg-black/4 dark:bg-white/10 text-foreground font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
-													: "text-(--color-muted) font-medium hover:bg-black/3 dark:hover:bg-white/5 hover:text-foreground hover:translate-x-0.5"
-													}`}
-											>
-												<span className="truncate">{project.name}</span>
-												<span
-													onClick={(e) => { e.stopPropagation(); setMenuOpenId(menuOpenId === project.id ? null : project.id); }}
-													className={`shrink-0 p-0.5 rounded text-(--color-muted) hover:text-foreground transition-opacity ${selectedProjectId === project.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
-												>
-													<svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" /></svg>
-												</span>
-											</button>
-										)}
-
-										{/* Context Menu */}
-										{menuOpenId === project.id && (
-											<>
-												<div className="fixed inset-0 z-40" onClick={() => setMenuOpenId(null)} />
-												<div className="absolute right-2 top-full mt-0.5 z-50 bg-(--color-card-bg) border border-(--color-border) rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-1 min-w-[120px]">
-													<button
-														onClick={() => startRename(project)}
-														className="w-full text-left px-3 py-1.5 text-xs font-medium text-(--color-muted) hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-													>
-														{t("rename")}
-													</button>
-													<button
-														onClick={() => { deleteProject(project.id); setMenuOpenId(null); }}
-														className="w-full text-left px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-500/10 transition-colors"
-													>
-														{t("delete_item")}
-													</button>
-												</div>
-											</>
-										)}
-									</div>
-								))}
-							</div>
+							<ProjectList
+								projects={projects}
+								selectedProjectId={selectedProjectId}
+								onSelectProject={setSelectedProjectId}
+								onDeleteProject={(id) => deleteProject(id)}
+							/>
 						)}
 					</div>
 
@@ -177,7 +104,7 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
 						</form>
 					</div>
 
-					{/* Componente unificado: Almacenamiento Local */}
+					{/* Almacenamiento Local */}
 					<div className="px-4 py-3 border-t border-(--color-border)">
 						<ProgressBar
 							percentage={storageUsage}
