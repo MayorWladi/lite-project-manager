@@ -7,6 +7,7 @@ import { useProjectsManager } from "@/app/context/ProjectContext";
 import { useLanguage } from "@/app/context/LanguageContext";
 import { notifyActivityError } from "@/app/helpers/notifications";
 import { useDoubleTap, useDoubleTapById } from "@/app/hooks/useDoubleTap";
+import DropdownMenu from "./DropdownMenu";
 
 interface MobileActivityCardProps {
 	activity: Activity;
@@ -127,69 +128,35 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 		<div className={`bg-(--color-card-bg) border border-(--color-border) rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 animate-fade-in ${isShaking ? 'animate-shake border-red-500/50' : ''} ${isAnimatingOut === "right" ? "translate-x-[120%] opacity-0" : isAnimatingOut === "left" ? "translate-x-[-120%] opacity-0" : "translate-x-0 opacity-100"
 			}`}>
 			{/* Header: Title + Menu + Status Chip */}
-			<div className="flex items-start justify-between gap-2">
-				<div className="flex-1 min-w-0 flex items-start gap-1.5">
-					{isRenaming ? (
-						<form onSubmit={(e) => { e.preventDefault(); handleRenameSubmit(); }} className="flex-1">
-							<input
-								autoFocus
-								type="text"
-								value={renameValue}
-								onChange={(e) => setRenameValue(e.target.value)}
-								onBlur={handleRenameSubmit}
-								onKeyDown={(e) => { if (e.key === 'Escape') setIsRenaming(false); }}
-								className="w-full px-2 py-1 bg-transparent border border-(--color-border) rounded-md text-sm outline-none focus:border-(--color-muted) text-foreground"
-							/>
-						</form>
-					) : (
-						<div className="flex-1 min-w-0">
-							<h4 
-								onDoubleClick={(e) => { e.stopPropagation(); setIsRenaming(true); setRenameValue(activity.name); }}
-								onTouchEnd={handleActivityTitleDoubleTap}
-								className="font-semibold text-sm text-foreground leading-tight truncate cursor-default"
-							>
-								{activity.name}
-							</h4>
-							{activity.description && (
-								<p className="text-xs text-(--color-muted) mt-1 leading-relaxed">
-									{activity.description}
-								</p>
-							)}
-						</div>
-					)}
-
-					{/* ⋯ Menu */}
-					{!isRenaming && (
-						<div className="relative shrink-0">
-							<button
-								onClick={() => setShowMenu(!showMenu)}
-								className="p-1 rounded text-(--color-muted) active:text-foreground"
-							>
-								<svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" /></svg>
-							</button>
-							{showMenu && (
-								<>
-									<div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
-									<div className="absolute right-0 top-full mt-0.5 z-50 bg-(--color-card-bg) border border-(--color-border) rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-1 min-w-[120px]">
-										<button
-											onClick={() => { setIsRenaming(true); setRenameValue(activity.name); setShowMenu(false); }}
-											className="w-full text-left px-3 py-1.5 text-xs font-medium text-(--color-muted) hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-										>
-											{t("rename")}
-										</button>
-										<button
-											onClick={handleDeleteActivity}
-											className="w-full text-left px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-500/10 transition-colors"
-										>
-											{t("delete_item")}
-										</button>
-									</div>
-								</>
-							)}
-						</div>
-					)}
-				</div>
-
+			<div className="flex-1 min-w-0 flex items-center gap-1.5">
+				{isRenaming ? (
+					<form onSubmit={(e) => { e.preventDefault(); handleRenameSubmit(); }} className="flex-1">
+						<input
+							autoFocus
+							type="text"
+							value={renameValue}
+							onChange={(e) => setRenameValue(e.target.value)}
+							onBlur={handleRenameSubmit}
+							onKeyDown={(e) => { if (e.key === 'Escape') setIsRenaming(false); }}
+							className="w-full px-2 py-1 bg-transparent border border-(--color-border) rounded-md text-sm outline-none focus:border-(--color-muted) text-foreground"
+						/>
+					</form>
+				) : (
+					<div className="flex-1 min-w-0">
+						<h4
+							onDoubleClick={(e) => { e.stopPropagation(); setIsRenaming(true); setRenameValue(activity.name); }}
+							onTouchEnd={handleActivityTitleDoubleTap}
+							className="font-semibold text-sm text-foreground leading-tight truncate cursor-default"
+						>
+							{activity.name}
+						</h4>
+						{activity.description && (
+							<p className="text-xs text-(--color-muted) mt-1 leading-relaxed">
+								{activity.description}
+							</p>
+						)}
+					</div>
+				)}
 				{/* Status Chip / Picker */}
 				<div className="relative shrink-0">
 					<button
@@ -222,6 +189,23 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 						</>
 					)}
 				</div>
+
+				{/* ⋯ Menu */}
+				<DropdownMenu
+					triggerClassName="p-1 rounded text-(--color-muted) active:text-foreground"
+					menuClassName="left-0 top-full mt-0.5 z-50 bg-(--color-card-bg) border border-(--color-border) rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-1 min-w-[120px] max-w-[calc(100vw-50%)]"
+					items={[
+						{
+							label: t("rename"),
+							onClick: () => setIsRenaming(true),
+						},
+						{
+							label: t("delete_item"),
+							onClick: handleDeleteActivity,
+							isDanger: true,
+						},
+					]}
+				/>
 			</div>
 
 			{/* Checklist */}
@@ -251,26 +235,26 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 								)}
 							</button>
 							{renamingTaskId === task.id ? (
-							<form onSubmit={(e) => { e.preventDefault(); handleRenameTaskSubmit(task.id); }} className="flex-1">
-								<input
-									autoFocus
-									type="text"
-									value={renameTaskValue}
-									onChange={(e) => setRenameTaskValue(e.target.value)}
-									onBlur={() => handleRenameTaskSubmit(task.id)}
-									onKeyDown={(e) => { if (e.key === 'Escape') setRenamingTaskId(null); }}
-									className="w-full text-sm px-1.5 py-0.5 bg-transparent border border-(--color-border) rounded outline-none focus:border-(--color-muted) text-foreground"
-								/>
-							</form>
-						) : (
-							<span 
-								onDoubleClick={(e) => { e.stopPropagation(); setRenamingTaskId(task.id); setRenameTaskValue(task.title); }}
-								onTouchEnd={(e) => handleTaskDoubleTap(e, task.id)}
-								className={`text-sm flex-1 select-none cursor-default ${task.isCompleted ? 'text-(--color-muted) line-through' : 'text-foreground'}`}
-							>
-								{task.title}
-							</span>
-						)}
+								<form onSubmit={(e) => { e.preventDefault(); handleRenameTaskSubmit(task.id); }} className="flex-1">
+									<input
+										autoFocus
+										type="text"
+										value={renameTaskValue}
+										onChange={(e) => setRenameTaskValue(e.target.value)}
+										onBlur={() => handleRenameTaskSubmit(task.id)}
+										onKeyDown={(e) => { if (e.key === 'Escape') setRenamingTaskId(null); }}
+										className="w-full text-sm px-1.5 py-0.5 bg-transparent border border-(--color-border) rounded outline-none focus:border-(--color-muted) text-foreground"
+									/>
+								</form>
+							) : (
+								<span
+									onDoubleClick={(e) => { e.stopPropagation(); setRenamingTaskId(task.id); setRenameTaskValue(task.title); }}
+									onTouchEnd={(e) => handleTaskDoubleTap(e, task.id)}
+									className={`text-sm flex-1 select-none cursor-default ${task.isCompleted ? 'text-(--color-muted) line-through' : 'text-foreground'}`}
+								>
+									{task.title}
+								</span>
+							)}
 							<button
 								onClick={() => handleDelete(task.id)}
 								className="text-(--color-muted) active:text-[#9F2F2D] p-1"
