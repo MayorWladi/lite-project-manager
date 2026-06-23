@@ -21,6 +21,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 		disabled: isOverlay,
 	});
 
+	// Estilos estándar de dnd-kit. Ahora solo se aplican al contenedor externo.
 	const style = isOverlay ? undefined : {
 		transform: CSS.Transform.toString(transform),
 		transition,
@@ -55,53 +56,59 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 	const completedTasks = tasks.filter(t => t.isCompleted).length;
 
 	return (
+		/* CONTENEDOR EXTERNO: Solo maneja dnd-kit, posiciones e interacciones */
 		<div
 			ref={isOverlay ? undefined : setNodeRef}
 			style={style}
 			{...(isOverlay ? {} : listeners)}
 			{...(isOverlay ? {} : attributes)}
-			className={`bg-(--color-card-bg) border rounded-xl p-4 pt-3 flex flex-col gap-3 transition-all duration-500 ease-out cursor-grab active:cursor-grabbing shadow-[0_2px_8px_rgba(0,0,0,0.02)] group relative animate-fade-in
-        ${isOverlay ? 'border-(--color-border) cursor-grabbing shadow-none' : (isDragging ? 'border-dashed border-(--color-muted) opacity-60' : 'border-(--color-border) hover:border-(--color-muted) hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)]')}
-      `}
+			className={`w-full ${isOverlay ? 'cursor-grabbing' : 'cursor-grab active:cursor-grabbing'}`}
 		>
-			<div className="w-full flex justify-center pb-1">
-				<div className="w-8 h-1 rounded-full bg-(--color-border) group-hover:bg-(--color-muted) transition-colors" />
-			</div>
-
-			<ActivityHeader
-				name={activity.name}
-				description={activity.description}
-				isOverlay={isOverlay}
-				onRenameSubmit={handleRenameActivity}
-				onDeleteActivity={handleDeleteActivity}
-				t={t}
-			/>
-
-			{/* Contenedor group/list para el efecto Spotlight */}
-			<div className="flex flex-col gap-1.5 cursor-default" onPointerDown={e => e.stopPropagation()}>
-				<div className="flex items-center justify-between mb-1 select-none">
-					<span className="text-[10px] font-bold uppercase tracking-wider text-(--color-muted)">{t("checklist")}</span>
-					<span className="text-[10px] font-mono text-(--color-muted)">{completedTasks}/{tasks.length}</span>
+			{/* CONTENEDOR INTERNO: Solo maneja diseño, bordes y animaciones de Tailwind */}
+			<div
+				className={`bg-(--color-card-bg) border rounded-xl p-4 pt-3 flex flex-col gap-3 transition-all duration-300 ease-out shadow-[0_2px_8px_rgba(0,0,0,0.02)] group relative animate-fade-in
+				${isOverlay ? 'border-(--color-border) shadow-none' : (isDragging ? 'border-dashed border-(--color-muted)' : 'border-(--color-border) hover:border-(--color-muted) hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)]')}
+			  `}
+			>
+				<div className="w-full flex justify-center pb-1">
+					<div className="w-8 h-1 rounded-full bg-(--color-border) group-hover:bg-(--color-muted) transition-colors" />
 				</div>
 
-				{/* Contenedor exclusivo para tareas con efecto spotlight */}
-				<div className="flex flex-col gap-1.5 group/tasklist transition-opacity duration-300">
-					{tasks.map((task) => (
-						<ActivityTaskItem
-							key={task.id}
-							task={task}
-							onToggle={(e) => { e.stopPropagation(); handleToggleTask(task.id); }}
-							onDelete={(e) => { e.stopPropagation(); handleDeleteTask(task.id); }}
-							onRename={(newTitle) => handleRenameTask(task.id, newTitle)}
-						/>
-					))}
-				</div>
-
-				<AddTaskForm
-					onAdd={handleAddTask}
-					placeholderText={t("new_task_placeholder")}
-					buttonText={t("add_task")}
+				<ActivityHeader
+					name={activity.name}
+					description={activity.description}
+					isOverlay={isOverlay}
+					onRenameSubmit={handleRenameActivity}
+					onDeleteActivity={handleDeleteActivity}
+					t={t}
 				/>
+
+				{/* Contenedor group/list para el efecto Spotlight */}
+				<div className="flex flex-col gap-1.5 cursor-default" onPointerDown={e => e.stopPropagation()}>
+					<div className="flex items-center justify-between mb-1 select-none">
+						<span className="text-[10px] font-bold uppercase tracking-wider text-(--color-muted)">{t("checklist")}</span>
+						<span className="text-[10px] font-mono text-(--color-muted)">{completedTasks}/{tasks.length}</span>
+					</div>
+
+					{/* Contenedor exclusivo para tareas con efecto spotlight */}
+					<div className="flex flex-col gap-1.5 group/tasklist transition-opacity duration-300">
+						{tasks.map((task) => (
+							<ActivityTaskItem
+								key={task.id}
+								task={task}
+								onToggle={(e) => { e.stopPropagation(); handleToggleTask(task.id); }}
+								onDelete={(e) => { e.stopPropagation(); handleDeleteTask(task.id); }}
+								onRename={(newTitle) => handleRenameTask(task.id, newTitle)}
+							/>
+						))}
+					</div>
+
+					<AddTaskForm
+						onAdd={handleAddTask}
+						placeholderText={t("new_task_placeholder")}
+						buttonText={t("add_task")}
+					/>
+				</div>
 			</div>
 		</div>
 	);
