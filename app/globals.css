@@ -25,10 +25,21 @@
   --color-card-bg: #262423;
 }
 
-.font-quicksand { font-family: var(--font-quicksand); }
-.font-comfortaa { font-family: var(--font-comfortaa); }
-.font-dm-sans { font-family: var(--font-dm-sans); }
-.font-mono { font-family: var(--font-mono); }
+.font-quicksand {
+  font-family: var(--font-quicksand);
+}
+
+.font-comfortaa {
+  font-family: var(--font-comfortaa);
+}
+
+.font-dm-sans {
+  font-family: var(--font-dm-sans);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
 
 
 body {
@@ -58,13 +69,25 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes columnEnter {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-column-enter {
@@ -72,9 +95,17 @@ body {
 }
 
 @keyframes taskComplete {
-  0%   { opacity: 1; }
-  40%  { opacity: 0.5; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+
+  40% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 .animate-task-complete {
@@ -82,11 +113,27 @@ body {
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-4px); }
-  40% { transform: translateX(4px); }
-  60% { transform: translateX(-2px); }
-  80% { transform: translateX(2px); }
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-4px);
+  }
+
+  40% {
+    transform: translateX(4px);
+  }
+
+  60% {
+    transform: translateX(-2px);
+  }
+
+  80% {
+    transform: translateX(2px);
+  }
 }
 
 .animate-shake {
@@ -98,27 +145,54 @@ body {
 }
 
 @keyframes popCount {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.4); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.4);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
+
 .animate-pop-count {
   animation: popCount 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar (Auto-Hide) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+*:hover {
+  scrollbar-color: var(--color-border) transparent;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  background-color: var(--color-border);
+  background-color: transparent;
   border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+*:hover::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
   border: 2px solid var(--background);
 }
-::-webkit-scrollbar-thumb:hover {
+
+*:hover::-webkit-scrollbar-thumb:hover {
   background-color: var(--color-muted);
 }
