@@ -9,6 +9,17 @@ interface ProjectContextType {
 	projects: Project[];
 	selectedProjectId: string | null;
 	setSelectedProjectId: (id: string | null) => void;
+
+	// --- CONTROLADORES DEL SIDEBAR DERECHO ---
+	selectedSprintId: string | null;
+	selectedActivityId: string | null;
+	selectedActivity: Activity | null;
+	openActivityDetails: (sprintId: string, activityId: string) => void;
+	closeActivityDetails: () => void;
+	updateActivityDescription: (projectId: string, sprintId: string, activityId: string, description: string) => void;
+	updateActivityStatus: (projectId: string, sprintId: string, activityId: string, status: TaskStatus) => void;
+	// -----------------------------------------
+
 	addProject: (name: string) => void;
 	renameProject: (projectId: string, newName: string) => void;
 	deleteProject: (projectId: string) => void;
@@ -34,66 +45,62 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 	const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 	const [isHydrated, setIsHydrated] = useState(false);
 
+	// Estados del Sidebar
+	const [selectedSprintId, setSelectedSprintId] = useState<string | null>(null);
+	const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
+
+	// Actividad computada en tiempo real
+	const currentProject = projects.find(p => p.id === selectedProjectId);
+	const currentSprint = currentProject?.sprints.find(s => s.id === selectedSprintId);
+	const selectedActivity = currentSprint?.activities.find(a => a.id === selectedActivityId) || null;
+
+	const openActivityDetails = (sprintId: string, activityId: string) => {
+		setSelectedSprintId(sprintId);
+		setSelectedActivityId(activityId);
+	};
+
+	const closeActivityDetails = () => {
+		setSelectedSprintId(null);
+		setSelectedActivityId(null);
+	};
+
+	const updateActivityDescription = (projectId: string, sprintId: string, activityId: string, description: string) => {
+		setProjects(prev => prev.map(p => p.id !== projectId ? p : {
+			...p, sprints: p.sprints.map(s => s.id !== sprintId ? s : {
+				...s, activities: s.activities.map(a => a.id === activityId ? { ...a, description } : a)
+			})
+		}));
+	};
+
+	const updateActivityStatus = (projectId: string, sprintId: string, activityId: string, status: TaskStatus) => {
+		setProjects(prev => prev.map(p => p.id !== projectId ? p : {
+			...p, sprints: p.sprints.map(s => s.id !== sprintId ? s : {
+				...s, activities: s.activities.map(a => a.id === activityId ? { ...a, status } : a)
+			})
+		}));
+	};
+
 	useEffect(() => {
 		const savedProjects = localStorage.getItem("kanban-projects");
 		const savedSelectedId = localStorage.getItem("kanban-selected-id");
-
-		if (savedProjects) {
-			try {
-				setProjects(JSON.parse(savedProjects));
-			} catch (error) {
-				console.error("Error al parsear proyectos desde localStorage", error);
-			}
-		}
-
-		if (savedSelectedId) {
-			setSelectedProjectId(savedSelectedId);
-		}
-
+		if (savedProjects) { try { setProjects(JSON.parse(savedProjects)); } catch (e) { console.error(e); } }
+		if (savedSelectedId) setSelectedProjectId(savedSelectedId);
 		setIsHydrated(true);
 	}, []);
 
 	useEffect(() => {
-		if (isHydrated) {
-			localStorage.setItem("kanban-projects", JSON.stringify(projects));
-		}
+		if (isHydrated) localStorage.setItem("kanban-projects", JSON.stringify(projects));
 	}, [projects, isHydrated]);
 
 	useEffect(() => {
 		if (isHydrated) {
-			if (selectedProjectId) {
-				localStorage.setItem("kanban-selected-id", selectedProjectId);
-			} else {
-				localStorage.removeItem("kanban-selected-id");
-			}
+			if (selectedProjectId) localStorage.setItem("kanban-selected-id", selectedProjectId);
+			else localStorage.removeItem("kanban-selected-id");
 		}
 	}, [selectedProjectId, isHydrated]);
 
 	const addProject = (name: string) => {
-		const mockTasks: Task[] = [
-			{ id: `t1-${Date.now()}`, title: "Diseñar wireframes", isCompleted: true, createdAt: Date.now() },
-			{ id: `t2-${Date.now()}`, title: "Configurar Next.js", isCompleted: true, createdAt: Date.now() },
-			{ id: `t3-${Date.now()}`, title: "Revisar Context API", isCompleted: false, createdAt: Date.now() },
-		];
-
-		const mockActivities: Activity[] = [
-			{
-				id: `act1-${Date.now()}`,
-				name: "Configuración Inicial e Interfaz",
-				description: "Setup base y diseño inicial",
-				status: "todo",
-				tasks: mockTasks,
-				createdAt: Date.now()
-			}
-		];
-
-		const newProject: Project = {
-			id: Date.now().toString(),
-			name,
-			sprints: [{ id: `s1-${Date.now()}`, name: "Sprint 1", activities: mockActivities, startDate: Date.now() }],
-			createdAt: Date.now(),
-		};
-
+		const newProject: Project = { id: Date.now().toString(), name, sprints: [], createdAt: Date.now() };
 		setProjects((prev) => [...prev, newProject]);
 		setSelectedProjectId(newProject.id);
 	};
@@ -104,255 +111,67 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
 	const deleteProject = (projectId: string) => {
 		setProjects(prev => prev.filter(p => p.id !== projectId));
-		if (selectedProjectId === projectId) {
-			setSelectedProjectId(null);
-		}
+		if (selectedProjectId === projectId) setSelectedProjectId(null);
 	};
 
 	const addSprint = (projectId: string, name: string) => {
-		setProjects((prevProjects) =>
-			prevProjects.map((project) => {
-				if (project.id !== projectId) return project;
-				return {
-					...project,
-					sprints: [
-						...project.sprints,
-						{
-							id: `s-${Date.now()}`,
-							name,
-							activities: [],
-							startDate: Date.now()
-						},
-					],
-				};
-			})
-		);
+		setProjects(prev => prev.map(p => p.id !== projectId ? p : { ...p, sprints: [...p.sprints, { id: `s-${Date.now()}`, name, activities: [], startDate: Date.now() }] }));
 	};
 
 	const renameSprint = (projectId: string, sprintId: string, newName: string) => {
-		setProjects(prev => prev.map(p => {
-			if (p.id !== projectId) return p;
-			return {
-				...p,
-				sprints: p.sprints.map(s => s.id === sprintId ? { ...s, name: newName } : s)
-			};
-		}));
+		setProjects(prev => prev.map(p => p.id !== projectId ? p : { ...p, sprints: p.sprints.map(s => s.id === sprintId ? { ...s, name: newName } : s) }));
 	};
 
 	const deleteSprint = (projectId: string, sprintId: string) => {
-		setProjects(prev => prev.map(p => {
-			if (p.id !== projectId) return p;
-			return {
-				...p,
-				sprints: p.sprints.filter(s => s.id !== sprintId)
-			};
-		}));
+		setProjects(prev => prev.map(p => p.id !== projectId ? p : { ...p, sprints: p.sprints.filter(s => s.id !== sprintId) }));
 	};
 
 	const addActivity = (projectId: string, sprintId: string, name: string) => {
-		setProjects((prev) =>
-			prev.map((project) => {
-				if (project.id !== projectId) return project;
-				return {
-					...project,
-					sprints: project.sprints.map((sprint) => {
-						if (sprint.id !== sprintId) return sprint;
-						return {
-							...sprint,
-							activities: [
-								...(sprint.activities || []),
-								{ id: `act-${Date.now()}`, name, status: 'todo', tasks: [], createdAt: Date.now() },
-							],
-						};
-					}),
-				};
-			})
-		);
+		setProjects(prev => prev.map(p => p.id !== projectId ? p : { ...p, sprints: p.sprints.map(s => s.id !== sprintId ? s : { ...s, activities: [...(s.activities || []), { id: `act-${Date.now()}`, name, status: 'todo', tasks: [], createdAt: Date.now() }] }) }));
 	};
 
 	const renameActivity = (projectId: string, sprintId: string, activityId: string, newName: string) => {
-		setProjects(prev => prev.map(p => {
-			if (p.id !== projectId) return p;
-			return {
-				...p,
-				sprints: p.sprints.map(s => {
-					if (s.id !== sprintId) return s;
-					return {
-						...s,
-						activities: (s.activities || []).map(a => a.id === activityId ? { ...a, name: newName } : a)
-					};
-				})
-			};
-		}));
+		setProjects(prev => prev.map(p => p.id !== projectId ? p : { ...p, sprints: p.sprints.map(s => s.id !== sprintId ? s : { ...s, activities: (s.activities || []).map(a => a.id === activityId ? { ...a, name: newName } : a) }) }));
 	};
 
 	const deleteActivity = (projectId: string, sprintId: string, activityId: string) => {
-		setProjects(prev => prev.map(p => {
-			if (p.id !== projectId) return p;
-			return {
-				...p,
-				sprints: p.sprints.map(s => {
-					if (s.id !== sprintId) return s;
-					return {
-						...s,
-						activities: (s.activities || []).filter(a => a.id !== activityId)
-					};
-				})
-			};
-		}));
+		setProjects(prev => prev.map(p => p.id !== projectId ? p : { ...p, sprints: p.sprints.map(s => s.id !== sprintId ? s : { ...s, activities: (s.activities || []).filter(a => a.id !== activityId) }) }));
 	};
 
 	const updateSprintActivities = (projectId: string, sprintId: string, newActivities: Activity[]) => {
-		setProjects((prevProjects) =>
-			prevProjects.map((project) => {
-				if (project.id !== projectId) return project;
-				return {
-					...project,
-					sprints: project.sprints.map((sprint) => {
-						if (sprint.id !== sprintId) return sprint;
-						return { ...sprint, activities: newActivities };
-					}),
-				};
-			})
-		);
+		setProjects(prev => prev.map(p => p.id !== projectId ? p : { ...p, sprints: p.sprints.map(s => s.id !== sprintId ? s : { ...s, activities: newActivities }) }));
 	};
 
 	const addTaskToActivity = (projectId: string, sprintId: string, activityId: string, title: string) => {
-		setProjects(prev => prev.map(project => {
-			if (project.id !== projectId) return project;
-			return {
-				...project,
-				sprints: project.sprints.map(sprint => {
-					if (sprint.id !== sprintId) return sprint;
-					return {
-						...sprint,
-						activities: (sprint.activities || []).map(act => {
-							if (act.id !== activityId) return act;
-							return {
-								...act,
-								tasks: [...(act.tasks || []), { id: `task-${Date.now()}`, title, isCompleted: false, createdAt: Date.now() }]
-							};
-						})
-					};
-				})
-			};
-		}));
+		setProjects(prev => prev.map(p => p.id !== projectId ? p : { ...p, sprints: p.sprints.map(s => s.id !== sprintId ? s : { ...s, activities: (s.activities || []).map(a => a.id !== activityId ? a : { ...a, tasks: [...(a.tasks || []), { id: `task-${Date.now()}`, title, isCompleted: false, createdAt: Date.now() }] }) }) }));
 		notifyTaskAdded(title);
 	};
 
 	const renameTask = (projectId: string, sprintId: string, activityId: string, taskId: string, newTitle: string) => {
-		setProjects(prev => prev.map(project => {
-			if (project.id !== projectId) return project;
-			return {
-				...project,
-				sprints: project.sprints.map(sprint => {
-					if (sprint.id !== sprintId) return sprint;
-					return {
-						...sprint,
-						activities: (sprint.activities || []).map(act => {
-							if (act.id !== activityId) return act;
-							return {
-								...act,
-								tasks: (act.tasks || []).map(t => t.id === taskId ? { ...t, title: newTitle } : t)
-							};
-						})
-					};
-				})
-			};
-		}));
+		setProjects(prev => prev.map(p => p.id !== projectId ? p : { ...p, sprints: p.sprints.map(s => s.id !== sprintId ? s : { ...s, activities: (s.activities || []).map(a => a.id !== activityId ? a : { ...a, tasks: (a.tasks || []).map(t => t.id === taskId ? { ...t, title: newTitle } : t) }) }) }));
 	};
 
 	const toggleTaskCompletion = (projectId: string, sprintId: string, activityId: string, taskId: string) => {
 		let taskName = "";
 		let isNowCompleted = false;
-
-		setProjects(prev => prev.map(project => {
-			if (project.id !== projectId) return project;
-			return {
-				...project,
-				sprints: project.sprints.map(sprint => {
-					if (sprint.id !== sprintId) return sprint;
-					return {
-						...sprint,
-						activities: (sprint.activities || []).map(act => {
-							if (act.id !== activityId) return act;
-							return {
-								...act,
-								tasks: (act.tasks || []).map(t => {
-									if (t.id === taskId) {
-										taskName = t.title;
-										isNowCompleted = !t.isCompleted;
-										return { ...t, isCompleted: isNowCompleted };
-									}
-									return t;
-								})
-							};
-						})
-					};
-				})
-			};
-		}));
-
-		if (taskName) {
-			notifyTaskCompleted(taskName, isNowCompleted);
-		}
+		setProjects(prev => prev.map(p => p.id !== projectId ? p : { ...p, sprints: p.sprints.map(s => s.id !== sprintId ? s : { ...s, activities: (s.activities || []).map(a => a.id !== activityId ? a : { ...a, tasks: (a.tasks || []).map(t => { if (t.id === taskId) { taskName = t.title; isNowCompleted = !t.isCompleted; return { ...t, isCompleted: isNowCompleted }; } return t; }) }) }) }));
+		if (taskName) notifyTaskCompleted(taskName, isNowCompleted);
 	};
 
 	const deleteTask = (projectId: string, sprintId: string, activityId: string, taskId: string) => {
 		let deletedTaskName = "";
-		setProjects(prev => prev.map(project => {
-			if (project.id !== projectId) return project;
-			return {
-				...project,
-				sprints: project.sprints.map(sprint => {
-					if (sprint.id !== sprintId) return sprint;
-					return {
-						...sprint,
-						activities: (sprint.activities || []).map(act => {
-							if (act.id !== activityId) return act;
-							const task = act.tasks?.find(t => t.id === taskId);
-							if (task) deletedTaskName = task.title;
-							return {
-								...act,
-								tasks: (act.tasks || []).filter(t => t.id !== taskId)
-							};
-						})
-					};
-				})
-			};
-		}));
-
-		if (deletedTaskName) {
-			notifyTaskDeleted(deletedTaskName);
-		}
+		setProjects(prev => prev.map(p => p.id !== projectId ? p : { ...p, sprints: p.sprints.map(s => s.id !== sprintId ? s : { ...s, activities: (s.activities || []).map(a => { if (a.id !== activityId) return a; const task = a.tasks?.find(t => t.id === taskId); if (task) deletedTaskName = task.title; return { ...a, tasks: (a.tasks || []).filter(t => t.id !== taskId) }; }) }) }));
+		if (deletedTaskName) notifyTaskDeleted(deletedTaskName);
 	};
 
-	if (!isHydrated) {
-		return null;
-	}
+	if (!isHydrated) return null;
 
 	return (
 		<ProjectContext.Provider
 			value={{
-				projects,
-				selectedProjectId,
-				setSelectedProjectId,
-				addProject,
-				renameProject,
-				deleteProject,
-				addSprint,
-				renameSprint,
-				deleteSprint,
-				addActivity,
-				renameActivity,
-				deleteActivity,
-				updateSprintActivities,
-				addTaskToActivity,
-				renameTask,
-				toggleTaskCompletion,
-				deleteTask,
-				useSprintMetrics,
-				getActivityMetrics,
+				projects, selectedProjectId, setSelectedProjectId,
+				selectedSprintId, selectedActivityId, selectedActivity, openActivityDetails, closeActivityDetails, updateActivityDescription, updateActivityStatus,
+				addProject, renameProject, deleteProject, addSprint, renameSprint, deleteSprint, addActivity, renameActivity, deleteActivity, updateSprintActivities, addTaskToActivity, renameTask, toggleTaskCompletion, deleteTask, useSprintMetrics, getActivityMetrics,
 			}}
 		>
 			{children}
@@ -362,20 +181,15 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
 export function useProjectsManager() {
 	const context = useContext(ProjectContext);
-	if (context === undefined) {
-		throw new Error("useProjectsManager debe ser utilizado dentro de un ProjectProvider");
-	}
+	if (context === undefined) throw new Error("useProjectsManager debe ser utilizado dentro de un ProjectProvider");
 	return context;
 }
 
 export function useSprintMetrics(sprint: Sprint | null | undefined) {
 	if (!sprint || !sprint.activities) return { total: 0, done: 0, percentage: 0 };
-
 	const total = sprint.activities.length;
 	const done = sprint.activities.filter(act => act.status === 'done').length;
-
-	const percentage = total === 0 ? 0 : Math.round((done / total) * 100);
-	return { total, done, percentage };
+	return { total, done, percentage: total === 0 ? 0 : Math.round((done / total) * 100) };
 }
 
 export function getActivityMetrics(activity: Activity) {

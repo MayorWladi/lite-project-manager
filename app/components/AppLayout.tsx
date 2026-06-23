@@ -6,18 +6,71 @@ import Sidebar from "./Sidebar";
 import { Toaster } from "sileo";
 import "sileo/styles.css";
 import { useSettings } from "@/app/context/SettingsContext";
+import ActivityDetailsSidebar from "./ActivityDetailsSidebar";
+import { useProjectsManager } from "@/app/context/ProjectContext";
+import { TaskStatus } from "../types";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
+	const { theme } = useSettings();
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [isDesktopMenuOpen, setIsDesktopMenuOpen] = useState(true);
 
-	// Sacamos el tema actual de tu configuración
-	const { theme } = useSettings();
+	// Contexto Global
+	const {
+		selectedProjectId,
+		selectedSprintId,
+		selectedActivity,
+		closeActivityDetails,
+		updateActivityDescription,
+		updateActivityStatus,
+		addTaskToActivity,
+		toggleTaskCompletion,
+		deleteTask,
+		renameTask
+	} = useProjectsManager();
+
+	// Handlers dinámicos
+	const handleUpdateDescription = (id: string, newDesc: string) => {
+		if (selectedProjectId && selectedSprintId) {
+			updateActivityDescription(selectedProjectId, selectedSprintId, id, newDesc);
+		}
+	};
+
+	const handleToggleActivityStatus = (id: string, currentStatus: TaskStatus) => {
+		if (selectedProjectId && selectedSprintId) {
+			const newStatus: TaskStatus = currentStatus === 'done' ? 'todo' : 'done';
+			updateActivityStatus(selectedProjectId, selectedSprintId, id, newStatus);
+		}
+	};
+
+	const handleAddTask = (id: string, taskTitle: string) => {
+		if (selectedProjectId && selectedSprintId) {
+			addTaskToActivity(selectedProjectId, selectedSprintId, id, taskTitle);
+		}
+	};
+
+	const handleToggleTask = (id: string, taskId: string, isCompleted: boolean) => {
+		if (selectedProjectId && selectedSprintId) {
+			toggleTaskCompletion(selectedProjectId, selectedSprintId, id, taskId);
+		}
+	};
+
+	const handleDeleteTask = (id: string, taskId: string) => {
+		if (selectedProjectId && selectedSprintId) {
+			deleteTask(selectedProjectId, selectedSprintId, id, taskId);
+		}
+	};
+
+	const handleRenameTask = (id: string, taskId: string, newTitle: string) => {
+		if (selectedProjectId && selectedSprintId) {
+			renameTask(selectedProjectId, selectedSprintId, id, taskId, newTitle);
+		}
+	};
 
 	return (
 		<div className="flex flex-col md:flex-row h-screen w-full bg-background text-foreground overflow-hidden">
 			{/* Mobile Header */}
-			<div className="md:hidden flex items-center gap-3 p-4 border-b border-(--color-border) bg-background z-20 shrink-0">
+			<div className="md:hidden flex items-center gap-3 p-4 border-b border-(--color-border) bg-background z-20 shrink-0 shadow-sm">
 				<button
 					onClick={() => setIsMobileMenuOpen(true)}
 					className="p-2 -ml-2 text-(--color-muted) hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors"
@@ -36,6 +89,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 				onDesktopToggle={() => setIsDesktopMenuOpen(!isDesktopMenuOpen)}
 			/>
 
+			{/* Contenido Principal */}
 			<main className="flex-1 h-full overflow-hidden relative">
 				<div className={`h-full w-full transition-all duration-300 ${!isDesktopMenuOpen ? 'md:pl-16' : ''}`}>
 					{!isDesktopMenuOpen && (
@@ -52,7 +106,20 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 				</div>
 			</main>
 
-			{/* Tostadora única conectada a tu tema y colores */}
+			{/* Panel Lateral Derecho Conectado */}
+			<ActivityDetailsSidebar
+				isOpen={selectedActivity !== null}
+				onClose={closeActivityDetails}
+				activity={selectedActivity}
+				onUpdateDescription={handleUpdateDescription}
+				onToggleActivityStatus={handleToggleActivityStatus}
+				onAddTask={handleAddTask}
+				onToggleTask={handleToggleTask}
+				onDeleteTask={handleDeleteTask}
+				onRenameTask={handleRenameTask}
+			/>
+
+			{/* Tostadora */}
 			<Toaster
 				theme={theme}
 				options={{
