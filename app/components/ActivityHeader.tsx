@@ -81,7 +81,12 @@ export default function ActivityHeader({ name, description, isOverlay, onRenameS
       {!isOverlay && !isRenaming && (
         <DropdownMenu
           items={menuItems}
-          triggerClassName="text-(--color-muted) opacity-0 group-hover:opacity-100"
+          triggerClassName={`
+              opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-black/5
+              dark:hover:bg-white/10 transition-opacity
+              text-(--color-muted) hover:text-foreground
+              cursor-pointer
+            `}
         />
       )}
     </div>

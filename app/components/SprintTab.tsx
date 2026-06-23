@@ -68,8 +68,8 @@ export default function SprintTab({ sprint, isActive, onSelect, onRename, onDele
   return (
     <div
       className={`shrink-0 flex items-center rounded-md border text-xs md:text-sm font-medium transition-colors whitespace-nowrap ${isActive
-          ? "bg-foreground text-background border-foreground shadow-sm"
-          : "bg-background text-(--color-muted) border-(--color-border) hover:bg-black/5 dark:hover:bg-white/10 hover:text-foreground hover:border-(--color-muted)"
+        ? "bg-foreground text-background border-foreground shadow-sm"
+        : "bg-background text-(--color-muted) border-(--color-border) hover:bg-black/5 dark:hover:bg-white/10 hover:text-foreground hover:border-(--color-muted)"
         }`}
     >
       <button
@@ -90,7 +90,7 @@ export default function SprintTab({ sprint, isActive, onSelect, onRename, onDele
         <div className="pr-1.5 flex items-center">
           <DropdownMenu
             items={menuItems}
-            triggerClassName="opacity-70"
+            triggerClassName="opacity-70 hover:cursor-pointer"
           // ✅ Eliminamos menuClassName para usar el predeterminado
           />
         </div>
