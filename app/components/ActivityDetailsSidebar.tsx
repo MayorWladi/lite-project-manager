@@ -12,7 +12,7 @@ interface ActivityDetailsSidebarProps {
   onClose: () => void;
   activity: Activity | null;
   onUpdateDescription: (activityId: string, description: string) => void;
-  onToggleActivityStatus: (activityId: string, currentStatus: TaskStatus) => void;
+  // onToggleActivityStatus: (activityId: string, currentStatus: TaskStatus) => void;
   onAddTask: (activityId: string, taskTitle: string) => void;
   onToggleTask: (activityId: string, taskId: string, isCompleted: boolean) => void;
   onDeleteTask: (activityId: string, taskId: string) => void;
@@ -24,7 +24,7 @@ export default function ActivityDetailsSidebar({
   onClose,
   activity,
   onUpdateDescription,
-  onToggleActivityStatus,
+  // onToggleActivityStatus,
   onAddTask,
   onToggleTask,
   onDeleteTask,
@@ -56,8 +56,8 @@ export default function ActivityDetailsSidebar({
       {/* CONTENEDOR ANIMADO PRO: Transición de ancho y transformación */}
       <aside
         className={`fixed inset-y-0 right-0 z-50 bg-(--color-card-bg) flex flex-col transition-all duration-300 ease-in-out xl:static overflow-hidden shrink-0 shadow-[-20px_0_40px_rgba(0,0,0,0.05)] ${isOpen
-            ? "translate-x-0 w-[85%] md:w-[340px] border-l border-(--color-border)"
-            : "translate-x-full xl:translate-x-0 xl:w-0 border-none w-[85%] md:w-[340px]"
+          ? "translate-x-0 w-[85%] md:w-[340px] border-l border-(--color-border)"
+          : "translate-x-full xl:translate-x-0 xl:w-0 border-none w-[85%] md:w-[340px]"
           }`}
       >
         {/* Contenedor interno de ancho fijo para evitar que el contenido se aplaste durante la animación */}
@@ -66,12 +66,12 @@ export default function ActivityDetailsSidebar({
           {/* Encabezado */}
           <div className="h-16 flex justify-between items-center px-5 border-b border-(--color-border) shrink-0">
             <div className="flex items-center gap-3 truncate mr-2">
-              <input
+              {/* <input
                 type="checkbox"
                 checked={isActivityDone}
                 onChange={() => onToggleActivityStatus(activity.id, activity.status)}
                 className="w-4 h-4 rounded-full border-(--color-border) accent-foreground cursor-pointer"
-              />
+              /> */}
               <h3 className={`font-medium truncate tracking-tight ${isActivityDone ? 'text-(--color-muted) line-through' : 'text-foreground'}`}>
                 {activity.name}
               </h3>

@@ -112,7 +112,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 				onClose={closeActivityDetails}
 				activity={selectedActivity}
 				onUpdateDescription={handleUpdateDescription}
-				onToggleActivityStatus={handleToggleActivityStatus}
+				// onToggleActivityStatus={handleToggleActivityStatus}
 				onAddTask={handleAddTask}
 				onToggleTask={handleToggleTask}
 				onDeleteTask={handleDeleteTask}
