@@ -31,10 +31,60 @@ export default function KanbanBoardDesktop({
   const { t } = useLanguage();
   const [isAdding, setIsAdding] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [columnGrids, setColumnGrids] = useState<Record<string, number>>({});
 
   useEffect(() => {
+    const saved = localStorage.getItem('kanbanColumnGrids');
+    if (saved) {
+      try {
+        setColumnGrids(JSON.parse(saved));
+      } catch (e) {}
+    }
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!mounted || activeActivity) return;
+
+    const timeoutId = setTimeout(() => {
+      setColumnGrids(prev => {
+        let changed = false;
+        const next = { ...prev };
+        
+        columns.forEach(col => {
+          const count = localActivities.filter(a => a.status === col.id).length;
+          const current = next[col.id] || 1;
+          
+          if (count < 3 && current !== 1) {
+            next[col.id] = 1;
+            changed = true;
+          }
+        });
+        
+        if (changed) {
+          localStorage.setItem('kanbanColumnGrids', JSON.stringify(next));
+          return next;
+        }
+        return prev;
+      });
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [localActivities, activeActivity, mounted, columns]);
+
+  const toggleGridMode = (colId: string, count: number) => {
+    setColumnGrids(prev => {
+      let current = prev[colId] || 1;
+      if (count < 3) current = 1;
+      else if (count < 4 && current === 3) current = 2;
+
+      let next = current === 1 ? 2 : 1;
+
+      const updated = { ...prev, [colId]: next };
+      localStorage.setItem('kanbanColumnGrids', JSON.stringify(updated));
+      return updated;
+    });
+  };
 
   return (
     <DndContext sensors={sensors} collisionDetection={pointerWithin} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
@@ -62,12 +112,30 @@ export default function KanbanBoardDesktop({
             <div className="flex gap-4 mb-4 sticky top-0 bg-background z-10 py-2 border-b border-(--color-border)">
               {columns.map((col) => {
                 const colActivities = localActivities.filter(a => a.status === col.id);
+                let gridMode = columnGrids[col.id] || 1;
+
+                const widthClass = gridMode === 1 ? "w-[280px]" : "w-[560px]"; 
+
                 return (
-                  <div key={col.id} className="w-[280px] shrink-0 px-2 flex justify-between items-end pb-1">
+                  <div key={col.id} className={`${widthClass} shrink-0 px-2 flex justify-between items-end pb-1 transition-all duration-300`}>
                     <h3 className="font-bold text-(--color-muted) text-sm uppercase tracking-widest">{col.title}</h3>
-                    <span className="text-[10px] font-bold bg-black/5 dark:bg-white/10 text-(--color-muted) px-1.5 py-0.5 rounded border border-(--color-border)">
-                      {colActivities.length}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {colActivities.length >= 3 && (
+                        <button 
+                          onClick={() => toggleGridMode(col.id, colActivities.length)}
+                          className="p-1 rounded-md text-(--color-muted) hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                          title={gridMode === 1 ? "Cambiar a grid 2x2" : "Cambiar a lista"}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            {gridMode === 1 && <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />}
+                            {gridMode === 2 && <><rect x="3" y="3" width="7" height="18" rx="2" /><rect x="14" y="3" width="7" height="18" rx="2" /></>}
+                          </svg>
+                        </button>
+                      )}
+                      <span className="text-[10px] font-bold bg-black/5 dark:bg-white/10 text-(--color-muted) px-1.5 py-0.5 rounded border border-(--color-border)">
+                        {colActivities.length}
+                      </span>
+                    </div>
                   </div>
                 );
               })}
@@ -77,7 +145,10 @@ export default function KanbanBoardDesktop({
             <div className="flex gap-4 flex-1 min-h-0">
               {columns.map((col) => {
                 const activities = localActivities.filter((a) => a.status === col.id);
-                return <KanbanCell key={col.id} sprintId={sprint.id} statusId={col.id} activities={activities} />;
+                
+                let gridMode = columnGrids[col.id] || 1;
+
+                return <KanbanCell key={col.id} sprintId={sprint.id} statusId={col.id} activities={activities} gridMode={gridMode} />;
               })}
             </div>
           </div>
