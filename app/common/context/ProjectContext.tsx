@@ -3,6 +3,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from "react";
 import { Project, Sprint, TaskStatus, Activity } from "@/app/common/types";
+import { useLanguage } from "./LanguageContext";
 import { notifyTaskAdded, notifyTaskCompleted, notifyTaskDeleted } from "@/app/utils/helpers/notifications";
 
 interface ProjectContextType {
@@ -41,6 +42,7 @@ interface ProjectContextType {
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
 export function ProjectProvider({ children }: { children: ReactNode }) {
+  const { t } = useLanguage();
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -124,7 +126,35 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   }, [selectedProjectId, isHydrated]);
 
   const addProject = (name: string) => {
-    const newProject: Project = { id: Date.now().toString(), name, sprints: [], createdAt: Date.now() };
+    const timestamp = Date.now();
+    const onboardingSprint: Sprint = {
+      id: timestamp.toString(),
+      name: t("tpl_sprint_name") || "Sprint 1",
+      startDate: timestamp,
+      activities: [
+        {
+          id: (timestamp + 1).toString(),
+          name: t("tpl_activity_name") || "Welcome! Start Here 🚀",
+          description: t("tpl_activity_desc") || "Welcome to Lite Project Manager! Complete these tasks to learn how everything works.",
+          status: 'todo',
+          tasks: [
+            { id: (timestamp + 2).toString(), title: t("tpl_task1") || "Drag this card to the 'In Progress' column", isCompleted: false, createdAt: timestamp },
+            { id: (timestamp + 3).toString(), title: t("tpl_task2") || "Click on this card to view details", isCompleted: false, createdAt: timestamp },
+            { id: (timestamp + 4).toString(), title: t("tpl_task3") || "Check off these tasks", isCompleted: false, createdAt: timestamp },
+            { id: (timestamp + 5).toString(), title: t("tpl_task4") || "Delete this card when you're done", isCompleted: false, createdAt: timestamp }
+          ],
+          createdAt: timestamp
+        }
+      ]
+    };
+
+    const newProject: Project = { 
+      id: (timestamp + 6).toString(), 
+      name, 
+      sprints: [onboardingSprint], 
+      createdAt: timestamp 
+    };
+    
     setProjects((prev) => [...prev, newProject]);
     setSelectedProjectId(newProject.id);
   };

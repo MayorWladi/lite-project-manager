@@ -97,7 +97,16 @@ const DICTIONARY: Translations = {
 	tut_step4_desc: { en: "Click on any activity to open its side panel and break it down into tasks.", es: "Haz clic en cualquier actividad para abrir su panel y desglosarla en tareas." },
 	tut_next: { en: "Next", es: "Siguiente" },
 	tut_prev: { en: "Back", es: "Atrás" },
-	tut_finish: { en: "Got it!", es: "¡Entendido!" }
+	tut_finish: { en: "Got it!", es: "¡Entendido!" },
+
+	// Onboarding Template
+	tpl_sprint_name: { en: "Sprint 1", es: "Sprint 1" },
+	tpl_activity_name: { en: "Welcome! Start Here 🚀", es: "¡Bienvenido! Empieza Aquí 🚀" },
+	tpl_activity_desc: { en: "Welcome to Lite Project Manager! Complete these tasks to learn how everything works.", es: "¡Bienvenido a Lite Project Manager! Completa estas tareas para aprender cómo funciona todo." },
+	tpl_task1: { en: "Drag this card to the 'In Progress' column", es: "Arrastra esta tarjeta a la columna 'En Progreso'" },
+	tpl_task2: { en: "Click on this card to view details", es: "Haz clic en esta tarjeta para ver los detalles" },
+	tpl_task3: { en: "Check off these tasks", es: "Marca estas tareas como completadas" },
+	tpl_task4: { en: "Delete this card when you're done", es: "Elimina esta tarjeta cuando termines" }
 };
 
 interface LanguageContextType {
