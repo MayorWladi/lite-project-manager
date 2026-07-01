@@ -1,8 +1,8 @@
 // /app/context/ProjectContext.tsx
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { Project, Sprint, TaskStatus, Task, Activity } from "@/app/features/common/types";
+import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from "react";
+import { Project, Sprint, TaskStatus, Activity } from "@/app/features/common/types";
 import { notifyTaskAdded, notifyTaskCompleted, notifyTaskDeleted } from "@/app/features/common/helpers/notifications";
 
 interface ProjectContextType {
@@ -50,9 +50,9 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 	const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
 
 	// Actividad computada en tiempo real
-	const currentProject = projects.find(p => p.id === selectedProjectId);
-	const currentSprint = currentProject?.sprints.find(s => s.id === selectedSprintId);
-	const selectedActivity = currentSprint?.activities.find(a => a.id === selectedActivityId) || null;
+	const currentProject = useMemo(() => projects.find(p => p.id === selectedProjectId), [projects, selectedProjectId]);
+	const currentSprint = useMemo(() => currentProject?.sprints.find(s => s.id === selectedSprintId), [currentProject, selectedSprintId]);
+	const selectedActivity = useMemo(() => currentSprint?.activities.find(a => a.id === selectedActivityId) || null, [currentSprint, selectedActivityId]);
 
 	const openActivityDetails = (sprintId: string, activityId: string) => {
 		setSelectedSprintId(sprintId);
@@ -83,8 +83,14 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 	useEffect(() => {
 		const savedProjects = localStorage.getItem("kanban-projects");
 		const savedSelectedId = localStorage.getItem("kanban-selected-id");
-		if (savedProjects) { try { setProjects(JSON.parse(savedProjects)); } catch (e) { console.error(e); } }
-		if (savedSelectedId) setSelectedProjectId(savedSelectedId);
+		if (savedProjects) { try { 
+			// eslint-disable-next-line react-hooks/set-state-in-effect
+			setProjects(JSON.parse(savedProjects)); 
+		} catch (e) { console.error(e); } }
+		if (savedSelectedId) {
+			 
+			setSelectedProjectId(savedSelectedId);
+		}
 		setIsHydrated(true);
 	}, []);
 
@@ -161,7 +167,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 	const deleteTask = (projectId: string, sprintId: string, activityId: string, taskId: string) => {
 		let deletedTaskName = "";
 		setProjects(prev => prev.map(p => p.id !== projectId ? p : { ...p, sprints: p.sprints.map(s => s.id !== sprintId ? s : { ...s, activities: (s.activities || []).map(a => { if (a.id !== activityId) return a; const task = a.tasks?.find(t => t.id === taskId); if (task) deletedTaskName = task.title; return { ...a, tasks: (a.tasks || []).filter(t => t.id !== taskId) }; }) }) }));
-		if (deletedTaskName) notifyTaskDeleted(deletedTaskName);
+		if (deletedTaskName) notifyTaskDeleted();
 	};
 
 	if (!isHydrated) return null;
