@@ -90,10 +90,26 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       } catch (e) { console.error(e); }
     }
     if (savedSelectedId) {
-
       setSelectedProjectId(savedSelectedId);
     }
     setIsHydrated(true);
+
+    // Cross-tab synchronization
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'kanban-projects' && e.newValue) {
+        try {
+          setProjects(JSON.parse(e.newValue));
+        } catch (error) {
+          console.error('Error syncing projects:', error);
+        }
+      }
+      if (e.key === 'kanban-selected-id') {
+        setSelectedProjectId(e.newValue);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   useEffect(() => {
