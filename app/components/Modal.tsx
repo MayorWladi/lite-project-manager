@@ -19,14 +19,23 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
 	useEffect(() => {
 		if (isOpen) {
 			setIsMounted(true);
-			const timer = setTimeout(() => setIsVisible(true), 10);
-			return () => clearTimeout(timer);
 		} else if (isMounted) {
 			setIsVisible(false);
 			const timer = setTimeout(() => setIsMounted(false), ANIMATION_DURATION);
 			return () => clearTimeout(timer);
 		}
 	}, [isOpen, isMounted]);
+
+	useEffect(() => {
+		if (isMounted && isOpen) {
+			let frameId = requestAnimationFrame(() => {
+				frameId = requestAnimationFrame(() => {
+					setIsVisible(true);
+				});
+			});
+			return () => cancelAnimationFrame(frameId);
+		}
+	}, [isMounted, isOpen]);
 
 	// Cerrar con la tecla Escape
 	useEffect(() => {

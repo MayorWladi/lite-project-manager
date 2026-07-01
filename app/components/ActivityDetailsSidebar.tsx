@@ -31,33 +31,66 @@ export default function ActivityDetailsSidebar({
   onRenameTask
 }: ActivityDetailsSidebarProps) {
   const { t } = useLanguage();
+  const [isMounted, setIsMounted] = React.useState(isOpen);
+  const [isVisible, setIsVisible] = React.useState(false);
+  const [cachedActivity, setCachedActivity] = React.useState<Activity | null>(activity);
 
-  if (!activity) return null;
+  React.useEffect(() => {
+    if (activity) {
+      setCachedActivity(activity);
+    }
+  }, [activity]);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setIsMounted(true);
+    } else if (isMounted) {
+      setIsVisible(false);
+      const timer = setTimeout(() => setIsMounted(false), 300); // 300ms transition
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, isMounted]);
+
+  React.useEffect(() => {
+    if (isMounted && isOpen) {
+      // Force a reflow and wait for the next frame to ensure the initial state is painted
+      let frameId = requestAnimationFrame(() => {
+        frameId = requestAnimationFrame(() => {
+          setIsVisible(true);
+        });
+      });
+      return () => cancelAnimationFrame(frameId);
+    }
+  }, [isMounted, isOpen]);
+
+  const currentActivity = activity || cachedActivity;
+
+  if (!isMounted || !currentActivity) return null;
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
     return date.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
   };
 
-  const isActivityDone = activity.status === 'done';
-  const completedTasks = activity.tasks ? activity.tasks.filter(t => t.isCompleted).length : 0;
-  const totalTasks = activity.tasks ? activity.tasks.length : 0;
+  const isActivityDone = currentActivity.status === 'done';
+  const completedTasks = currentActivity.tasks ? currentActivity.tasks.filter(t => t.isCompleted).length : 0;
+  const totalTasks = currentActivity.tasks ? currentActivity.tasks.length : 0;
 
   return (
     <>
       {/* Fondo oscuro móvil */}
-      {isOpen && (
+      {isVisible && (
         <div
-          className="fixed inset-0 z-40 bg-black/20 dark:bg-black/40 backdrop-blur-sm xl:hidden transition-opacity"
+          className="fixed inset-0 z-40 bg-black/20 dark:bg-black/40 backdrop-blur-sm xl:hidden transition-opacity duration-300"
           onClick={onClose}
         />
       )}
 
       {/* CONTENEDOR ANIMADO PRO: Transición de ancho y transformación */}
       <aside
-        className={`fixed inset-y-0 right-0 z-50 bg-(--color-card-bg) flex flex-col transition-all duration-300 ease-in-out xl:static overflow-hidden shrink-0 shadow-[-20px_0_40px_rgba(0,0,0,0.05)] ${isOpen
-          ? "translate-x-0 w-[85%] md:w-[340px] border-l border-(--color-border)"
-          : "translate-x-full xl:translate-x-0 xl:w-0 border-none w-[85%] md:w-[340px]"
+        className={`fixed inset-y-0 right-0 z-50 bg-(--color-card-bg) flex flex-col transition-all duration-300 ease-in-out xl:static overflow-hidden shrink-0 shadow-[-20px_0_40px_rgba(0,0,0,0.05)] w-[85%] md:w-[340px] ${isVisible
+          ? "translate-x-0 border-l border-(--color-border) xl:mr-0"
+          : "translate-x-full border-none xl:mr-[-340px]"
           }`}
       >
         {/* Contenedor interno de ancho fijo para evitar que el contenido se aplaste durante la animación */}
@@ -73,7 +106,7 @@ export default function ActivityDetailsSidebar({
                 className="w-4 h-4 rounded-full border-(--color-border) accent-foreground cursor-pointer"
               /> */}
               <h3 className={`font-medium truncate tracking-tight ${isActivityDone ? 'text-(--color-muted) line-through' : 'text-foreground'}`}>
-                {activity.name}
+                {currentActivity.name}
               </h3>
             </div>
             <button
@@ -97,20 +130,20 @@ export default function ActivityDetailsSidebar({
               </div>
 
               <div className="flex flex-col gap-1.5 group/tasklist transition-opacity duration-300 px-1">
-                {activity.tasks && activity.tasks.map((task: Task) => (
+                {currentActivity.tasks && currentActivity.tasks.map((task: Task) => (
                   <ActivityTaskItem
                     key={task.id}
                     task={task}
-                    onToggle={(e) => { e.stopPropagation(); onToggleTask(activity.id, task.id, !task.isCompleted); }}
-                    onDelete={(e) => { e.stopPropagation(); onDeleteTask(activity.id, task.id); }}
-                    onRename={(newTitle) => onRenameTask(activity.id, task.id, newTitle)}
+                    onToggle={(e) => { e.stopPropagation(); onToggleTask(currentActivity.id, task.id, !task.isCompleted); }}
+                    onDelete={(e) => { e.stopPropagation(); onDeleteTask(currentActivity.id, task.id); }}
+                    onRename={(newTitle) => onRenameTask(currentActivity.id, task.id, newTitle)}
                   />
                 ))}
               </div>
 
               <div className="mt-1">
                 <AddTaskForm
-                  onAdd={(title) => onAddTask(activity.id, title)}
+                  onAdd={(title) => onAddTask(currentActivity.id, title)}
                   placeholderText={t("new_task_placeholder") || "Agregar paso..."}
                   buttonText={t("add_task") || "Agregar paso"}
                 />
@@ -123,7 +156,7 @@ export default function ActivityDetailsSidebar({
                 <svg width="16" height="16" fill="none" stroke="currentColor" className="text-(--color-muted)" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-                <span>Estado actual: <span className="font-semibold uppercase text-xs ml-1">{activity.status}</span></span>
+                <span>Estado actual: <span className="font-semibold uppercase text-xs ml-1">{currentActivity.status}</span></span>
               </button>
             </div>
 
@@ -135,8 +168,8 @@ export default function ActivityDetailsSidebar({
               <textarea
                 className="w-full bg-background border border-(--color-border) rounded-lg p-3 text-sm text-foreground placeholder-(--color-muted) outline-none focus:border-(--color-muted) transition-colors min-h-[140px] resize-none shadow-sm"
                 placeholder="Agregar nota..."
-                value={activity.description || ""}
-                onChange={(e) => onUpdateDescription(activity.id, e.target.value)}
+                value={currentActivity.description || ""}
+                onChange={(e) => onUpdateDescription(currentActivity.id, e.target.value)}
               />
             </div>
           </div>
@@ -144,7 +177,7 @@ export default function ActivityDetailsSidebar({
           {/* Footer */}
           <div className="p-4 border-t border-(--color-border) bg-background/50 text-center shrink-0">
             <span className="text-xs text-(--color-muted)">
-              Creada el {formatDate(activity.createdAt)}
+              Creada el {formatDate(currentActivity.createdAt)}
             </span>
           </div>
         </div>
