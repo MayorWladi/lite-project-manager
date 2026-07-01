@@ -86,7 +86,7 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
           setIsShaking(true);
           setTimeout(() => setIsShaking(false), 400);
           setShowStatusPicker(false);
-          notifyActivityError();
+          notifyActivityError(t);
           return;
         }
       }

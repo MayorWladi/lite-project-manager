@@ -149,7 +149,7 @@ export function useKanbanBoard(sprint: Sprint, t: (k: string) => string) {
 
     if (activeItem && targetStatus && (targetStatus === 'review' || targetStatus === 'done') && activeItem.status !== targetStatus) {
       if (activeItem.tasks && activeItem.tasks.some(t => !t.isCompleted)) {
-        notifyActivityError();
+        notifyActivityError(t);
         setLocalActivities(sprint.activities || []);
         return;
       }
@@ -171,7 +171,7 @@ export function useKanbanBoard(sprint: Sprint, t: (k: string) => string) {
       if (activity.tasks && activity.tasks.length > 0) {
         const hasUncompleted = activity.tasks.some(t => !t.isCompleted);
         if (hasUncompleted) {
-          notifyActivityError();
+          notifyActivityError(t);
           return;
         }
       }

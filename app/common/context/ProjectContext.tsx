@@ -197,8 +197,14 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   };
 
   const addTaskToActivity = (projectId: string, sprintId: string, activityId: string, title: string) => {
-    setProjects(prev => prev.map(p => p.id !== projectId ? p : { ...p, sprints: p.sprints.map(s => s.id !== sprintId ? s : { ...s, activities: (s.activities || []).map(a => a.id !== activityId ? a : { ...a, tasks: [...(a.tasks || []), { id: `task-${Date.now()}`, title, isCompleted: false, createdAt: Date.now() }] }) }) }));
-    notifyTaskAdded(title);
+    setProjects(prev => prev.map(p => p.id !== projectId ? p : {
+      ...p, sprints: p.sprints.map(s => s.id !== sprintId ? s : {
+        ...s, activities: s.activities.map(a => a.id === activityId ? {
+          ...a, tasks: [...a.tasks, { id: Date.now().toString(), title, isCompleted: false, createdAt: Date.now() }]
+        } : a)
+      })
+    }));
+    notifyTaskAdded(t, title);
   };
 
   const renameTask = (projectId: string, sprintId: string, activityId: string, taskId: string, newTitle: string) => {
@@ -208,14 +214,24 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   const toggleTaskCompletion = (projectId: string, sprintId: string, activityId: string, taskId: string) => {
     let taskName = "";
     let isNowCompleted = false;
-    setProjects(prev => prev.map(p => p.id !== projectId ? p : { ...p, sprints: p.sprints.map(s => s.id !== sprintId ? s : { ...s, activities: (s.activities || []).map(a => a.id !== activityId ? a : { ...a, tasks: (a.tasks || []).map(t => { if (t.id === taskId) { taskName = t.title; isNowCompleted = !t.isCompleted; return { ...t, isCompleted: isNowCompleted }; } return t; }) }) }) }));
-    if (taskName) notifyTaskCompleted(taskName, isNowCompleted);
+    setProjects(prev => prev.map(p => p.id !== projectId ? p : {
+      ...p, sprints: p.sprints.map(s => s.id !== sprintId ? s : {
+        ...s, activities: (s.activities || []).map(a => a.id !== activityId ? a : {
+          ...a, tasks: (a.tasks || []).map(t => { if (t.id === taskId) { taskName = t.title; isNowCompleted = !t.isCompleted; return { ...t, isCompleted: isNowCompleted }; } return t; })
+        })
+      })
+    }));
+    if (taskName) notifyTaskCompleted(t, taskName, isNowCompleted);
   };
 
   const deleteTask = (projectId: string, sprintId: string, activityId: string, taskId: string) => {
     let deletedTaskName = "";
-    setProjects(prev => prev.map(p => p.id !== projectId ? p : { ...p, sprints: p.sprints.map(s => s.id !== sprintId ? s : { ...s, activities: (s.activities || []).map(a => { if (a.id !== activityId) return a; const task = a.tasks?.find(t => t.id === taskId); if (task) deletedTaskName = task.title; return { ...a, tasks: (a.tasks || []).filter(t => t.id !== taskId) }; }) }) }));
-    if (deletedTaskName) notifyTaskDeleted();
+    setProjects(prev => prev.map(p => p.id !== projectId ? p : {
+      ...p, sprints: p.sprints.map(s => s.id !== sprintId ? s : {
+        ...s, activities: (s.activities || []).map(a => { if (a.id !== activityId) return a; const task = a.tasks?.find(t => t.id === taskId); if (task) deletedTaskName = task.title; return { ...a, tasks: (a.tasks || []).filter(t => t.id !== taskId) }; })
+      })
+    }));
+    if (deletedTaskName) notifyTaskDeleted(t);
   };
 
   if (!isHydrated) return null;

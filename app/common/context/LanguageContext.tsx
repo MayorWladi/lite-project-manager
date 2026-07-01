@@ -106,7 +106,19 @@ const DICTIONARY: Translations = {
 	tpl_task1: { en: "Drag this card to the 'In Progress' column", es: "Arrastra esta tarjeta a la columna 'En Progreso'" },
 	tpl_task2: { en: "Click on this card to view details", es: "Haz clic en esta tarjeta para ver los detalles" },
 	tpl_task3: { en: "Check off these tasks", es: "Marca estas tareas como completadas" },
-	tpl_task4: { en: "Delete this card when you're done", es: "Elimina esta tarjeta cuando termines" }
+	tpl_task4: { en: "Delete this card when you're done", es: "Elimina esta tarjeta cuando termines" },
+
+	// Notifications
+	notif_task_added: { en: "Task Added", es: "Tarea añadida" },
+	notif_task_added_desc: { en: "The task was added:", es: "Se ha añadido la tarea:" },
+	notif_task_done: { en: "Task Completed", es: "Tarea completada" },
+	notif_task_done_desc: { en: "has been marked as done", es: "ha sido marcada como completada" },
+	notif_task_undone: { en: "Task Unmarked", es: "Tarea desmarcada" },
+	notif_task_undone_desc: { en: "is now pending", es: "ahora está pendiente" },
+	notif_task_deleted: { en: "Task Deleted", es: "Tarea eliminada" },
+	notif_task_deleted_desc: { en: "The task was removed from the list", es: "La tarea ha sido eliminada de la lista" },
+	notif_error_title: { en: "Action Not Allowed", es: "Acción no permitida" },
+	notif_error_desc: { en: "You cannot review or finish an activity with incomplete tasks", es: "No puedes pasar a revisión o finalizar una actividad con tareas sin completar" }
 };
 
 interface LanguageContextType {

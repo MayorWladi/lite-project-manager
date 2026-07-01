@@ -18,22 +18,22 @@ export const notify = (title: string, description?: string, type: NotificationTy
 	});
 };
 
-export const notifyTaskAdded = (taskName: string) => {
-	notify('Tarea añadida', `Se ha añadido la tarea "${taskName}"`, 'success');
+export const notifyTaskAdded = (t: (key: string) => string, taskName: string) => {
+	notify(t('notif_task_added'), `${t('notif_task_added_desc')} "${taskName}"`, 'success');
 };
 
-export const notifyTaskCompleted = (taskName: string, isCompleted: boolean) => {
+export const notifyTaskCompleted = (t: (key: string) => string, taskName: string, isCompleted: boolean) => {
 	if (isCompleted) {
-		notify('Tarea completada', `"${taskName}" ha sido marcada como completada`, 'success');
+		notify(t('notif_task_done'), `"${taskName}" ${t('notif_task_done_desc')}`, 'success');
 	} else {
-		notify('Tarea desmarcada', `"${taskName}" ahora está pendiente`, 'info');
+		notify(t('notif_task_undone'), `"${taskName}" ${t('notif_task_undone_desc')}`, 'info');
 	}
 };
 
-export const notifyTaskDeleted = () => {
-	notify('Tarea eliminada', `La tarea ha sido eliminada de la lista`, 'warning');
+export const notifyTaskDeleted = (t: (key: string) => string) => {
+	notify(t('notif_task_deleted'), t('notif_task_deleted_desc'), 'warning');
 };
 
-export const notifyActivityError = () => {
-	notify('Acción no permitida', 'No puedes pasar a revisión o finalizar una actividad con tareas sin completar', 'error');
+export const notifyActivityError = (t: (key: string) => string) => {
+	notify(t('notif_error_title'), t('notif_error_desc'), 'error');
 };
