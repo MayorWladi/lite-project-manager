@@ -2,11 +2,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { useProjectsManager } from "@/app/features/common/context/ProjectContext";
-import { useLanguage } from "@/app/features/common/context/LanguageContext";
-import SettingsModal from "@/app/features/common/components/SettingsModal";
-import InfoModal from "@/app/features/common/components/InfoModal";
-import ProgressBar from "@/app/features/common/components/ProgressBar";
+import { useProjectsManager } from "@/app/common/context/ProjectContext";
+import { useLanguage } from "@/app/common/context/LanguageContext";
+import SettingsModal from "@/app/common/components/SettingsModal";
+import InfoModal from "@/app/common/components/InfoModal";
+import ProgressBar from "@/app/common/components/ProgressBar";
 import ProjectList from "@/app/features/sidebar/components/ProjectList"; // <-- INTEGRACIÓN PERFECTA
 
 interface SidebarProps {

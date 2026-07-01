@@ -2,10 +2,10 @@
 'use client'
 
 import { useState } from 'react'
-import type { Project } from "@/app/features/common/types"
-import DropdownMenu from "@/app/features/common/components/DropdownMenu"
-import { useProjectsManager } from "@/app/features/common/context/ProjectContext"
-import { useLanguage } from "@/app/features/common/context/LanguageContext"
+import type { Project } from "@/app/common/types"
+import DropdownMenu from "@/app/common/components/DropdownMenu"
+import { useProjectsManager } from "@/app/common/context/ProjectContext"
+import { useLanguage } from "@/app/common/context/LanguageContext"
 
 interface ProjectItemProps {
   project: Project

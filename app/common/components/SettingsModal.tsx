@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { useSettings, FontType } from "@/app/features/common/context/SettingsContext";
-import { useLanguage } from "@/app/features/common/context/LanguageContext";
-import Modal from "@/app/features/common/components/Modal"; // Ajusta esta ruta según donde guardes Modal.tsx
+import { useSettings, FontType } from "@/app/common/context/SettingsContext";
+import { useLanguage } from "@/app/common/context/LanguageContext";
+import Modal from "@/app/common/components/Modal"; // Ajusta esta ruta según donde guardes Modal.tsx
 
 interface SettingsModalProps {
 	isOpen: boolean;

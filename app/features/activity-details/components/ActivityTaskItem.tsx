@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, memo } from "react";
-import { Task } from "@/app/features/common/types";
+import { Task } from "@/app/common/types";
 
 // --- CONFIGURACIÓN PREDETERMINADA (se puede sobrescribir vía props) ---
 const DEFAULT_AUDIO_PATHS = [

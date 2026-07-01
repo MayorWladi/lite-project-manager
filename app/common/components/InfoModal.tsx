@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { useLanguage } from "@/app/features/common/context/LanguageContext";
-import Modal from "@/app/features/common/components/Modal";
-import { collaborators } from "@/app/features/common/data/collaborators";
+import { useLanguage } from "@/app/common/context/LanguageContext";
+import Modal from "@/app/common/components/Modal";
+import { collaborators } from "@/app/common/data/collaborators";
 
 interface InfoModalProps {
 	isOpen: boolean;

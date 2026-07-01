@@ -2,9 +2,9 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Sprint } from "@/app/features/common/types";
-import { useDoubleTapById } from "@/app/features/common/hooks/useDoubleTap";
-import DropdownMenu from "@/app/features/common/components/DropdownMenu";
+import { Sprint } from "@/app/common/types";
+import { useDoubleTapById } from "@/app/common/hooks/useDoubleTap";
+import DropdownMenu from "@/app/common/components/DropdownMenu";
 
 interface SprintTabProps {
   sprint: Sprint;

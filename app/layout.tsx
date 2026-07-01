@@ -1,6 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { ProjectProvider } from "@/app/features/common/context/ProjectContext";
+import { ProjectProvider } from "@/app/common/context/ProjectContext";
 
 export const metadata: Metadata = {
   title: 'Lite Project Manager',
@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 }
 
 import { Quicksand, Comfortaa, DM_Sans, JetBrains_Mono } from 'next/font/google';
-import { SettingsProvider } from "@/app/features/common/context/SettingsContext";
-import { LanguageProvider } from "@/app/features/common/context/LanguageContext";
+import { SettingsProvider } from "@/app/common/context/SettingsContext";
+import { LanguageProvider } from "@/app/common/context/LanguageContext";
 
 const quicksand = Quicksand({ subsets: ['latin'], variable: '--font-quicksand' });
 const comfortaa = Comfortaa({ subsets: ['latin'], variable: '--font-comfortaa' });

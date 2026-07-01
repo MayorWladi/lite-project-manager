@@ -2,8 +2,8 @@
 "use client";
 
 import React from "react";
-import { Activity, Task } from "@/app/features/common/types";
-import { useLanguage } from "@/app/features/common/context/LanguageContext";
+import { Activity, Task } from "@/app/common/types";
+import { useLanguage } from "@/app/common/context/LanguageContext";
 import ActivityTaskItem from "@/app/features/activity-details/components/ActivityTaskItem";
 import AddTaskForm from "@/app/features/activity-details/components/AddTaskForm";
 

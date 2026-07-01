@@ -1,7 +1,7 @@
 "use client";
 
-import { Sprint, TaskStatus } from "@/app/features/common/types";
-import { useLanguage } from "@/app/features/common/context/LanguageContext";
+import { Sprint, TaskStatus } from "@/app/common/types";
+import { useLanguage } from "@/app/common/context/LanguageContext";
 import { useKanbanBoard } from "@/app/features/board/hooks/useKanbanBoard";
 import KanbanBoardMobile from "@/app/features/board/components/KanbanBoardMobile";
 import KanbanBoardDesktop from "@/app/features/board/components/KanbanBoardDesktop";

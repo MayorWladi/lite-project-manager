@@ -1,7 +1,7 @@
 // /app/components/ProjectList.tsx
 'use client'
 
-import type { Project } from "@/app/features/common/types"
+import type { Project } from "@/app/common/types"
 import ProjectItem from "@/app/features/sidebar/components/ProjectItem"
 
 interface ProjectListProps {

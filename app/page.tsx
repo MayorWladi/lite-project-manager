@@ -2,11 +2,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import AppLayout from "@/app/features/common/components/AppLayout";
-import KanbanBoard from "@/app/features/board/components/KanbanBoard";
+import AppLayout from "@/app/common/components/AppLayout";
+import KanbanBoard from "@/app/features/board/KanbanBoard";
 import SprintSelector from "@/app/features/board/components/SprintSelector";
-import { useProjectsManager } from "@/app/features/common/context/ProjectContext";
-import { useLanguage } from "@/app/features/common/context/LanguageContext";
+import { useProjectsManager } from "@/app/common/context/ProjectContext";
+import { useLanguage } from "@/app/common/context/LanguageContext";
 
 export default function Home() {
   const { selectedProjectId, projects, addSprint } = useProjectsManager();

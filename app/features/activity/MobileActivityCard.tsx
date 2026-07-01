@@ -2,12 +2,12 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Activity, TaskStatus } from "@/app/features/common/types";
-import { useProjectsManager } from "@/app/features/common/context/ProjectContext";
-import { useLanguage } from "@/app/features/common/context/LanguageContext";
-import { notifyActivityError } from "@/app/features/common/helpers/notifications";
-import { useDoubleTap, useDoubleTapById } from "@/app/features/common/hooks/useDoubleTap";
-import DropdownMenu from "@/app/features/common/components/DropdownMenu";
+import { Activity, TaskStatus } from "@/app/common/types";
+import { useProjectsManager } from "@/app/common/context/ProjectContext";
+import { useLanguage } from "@/app/common/context/LanguageContext";
+import { notifyActivityError } from "@/app/common/helpers/notifications";
+import { useDoubleTap, useDoubleTapById } from "@/app/common/hooks/useDoubleTap";
+import DropdownMenu from "@/app/common/components/DropdownMenu";
 
 interface MobileActivityCardProps {
 	activity: Activity;

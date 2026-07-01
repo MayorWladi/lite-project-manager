@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useProjectsManager } from "@/app/features/common/context/ProjectContext";
-import { useLanguage } from "@/app/features/common/context/LanguageContext";
+import { useProjectsManager } from "@/app/common/context/ProjectContext";
+import { useLanguage } from "@/app/common/context/LanguageContext";
 
 interface AddActivityFormProps {
   sprintId: string;

@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import DropdownMenu from "@/app/features/common/components/DropdownMenu";
+import DropdownMenu from "@/app/common/components/DropdownMenu";
 
 interface ActivityHeaderProps {
   name: string;

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Sprint, TaskStatus, Activity } from "@/app/features/common/types";
-import { useLanguage } from "@/app/features/common/context/LanguageContext";
-import MobileActivityCard from "@/app/features/activity/components/MobileActivityCard";
+import { Sprint, TaskStatus, Activity } from "@/app/common/types";
+import { useLanguage } from "@/app/common/context/LanguageContext";
+import MobileActivityCard from "@/app/features/activity/MobileActivityCard";
 import AddActivityForm from "@/app/features/activity/components/AddActivityForm";
 
 interface KanbanBoardMobileProps {

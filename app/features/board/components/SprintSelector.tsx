@@ -2,10 +2,10 @@
 "use client";
 
 import { useCallback } from "react";
-import { Sprint } from "@/app/features/common/types";
-import { useSprintMetrics, useProjectsManager } from "@/app/features/common/context/ProjectContext";
-import { useLanguage } from "@/app/features/common/context/LanguageContext";
-import ProgressBar from "@/app/features/common/components/ProgressBar";
+import { Sprint } from "@/app/common/types";
+import { useSprintMetrics, useProjectsManager } from "@/app/common/context/ProjectContext";
+import { useLanguage } from "@/app/common/context/LanguageContext";
+import ProgressBar from "@/app/common/components/ProgressBar";
 import SprintTab from "@/app/features/board/components/SprintTab";
 import AddSprintForm from "@/app/features/board/components/AddSprintForm";
 

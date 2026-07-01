@@ -1,11 +1,11 @@
 // /app/components/ActivityCard.tsx
 "use client";
 
-import { Activity } from "@/app/features/common/types";
+import { Activity } from "@/app/common/types";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useProjectsManager } from "@/app/features/common/context/ProjectContext";
-import { useLanguage } from "@/app/features/common/context/LanguageContext";
+import { useProjectsManager } from "@/app/common/context/ProjectContext";
+import { useLanguage } from "@/app/common/context/LanguageContext";
 import { useCallback } from "react";
 import ActivityTaskItem from "@/app/features/activity-details/components/ActivityTaskItem";
 import ActivityHeader from "@/app/features/activity-details/components/ActivityHeader";

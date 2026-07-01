@@ -1,10 +1,10 @@
 // /app/components/KanbanCell.tsx
 "use client";
 
-import { Activity, TaskStatus } from "@/app/features/common/types";
+import { Activity, TaskStatus } from "@/app/common/types";
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, rectSortingStrategy } from "@dnd-kit/sortable";
-import ActivityCard from "@/app/features/activity/components/ActivityCard";
+import ActivityCard from "@/app/features/activity/ActivityCard";
 
 interface KanbanCellProps {
 	sprintId: string;

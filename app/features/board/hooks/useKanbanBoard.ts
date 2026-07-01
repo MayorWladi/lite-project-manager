@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { Sprint, TaskStatus, Activity } from "@/app/features/common/types";
+import { Sprint, TaskStatus, Activity } from "@/app/common/types";
 import { DragEndEvent, DragOverEvent, DragStartEvent, useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import { useProjectsManager } from "@/app/features/common/context/ProjectContext";
-import { notifyActivityError } from "@/app/features/common/helpers/notifications";
-import { getColumns } from "@/app/features/board/components/KanbanBoard";
+import { useProjectsManager } from "@/app/common/context/ProjectContext";
+import { notifyActivityError } from "@/app/common/helpers/notifications";
+import { getColumns } from "@/app/features/board/KanbanBoard";
 
 export function useKanbanBoard(sprint: Sprint, t: (k: string) => string) {
 	const { selectedProjectId, updateSprintActivities } = useProjectsManager();

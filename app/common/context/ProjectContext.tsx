@@ -2,8 +2,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from "react";
-import { Project, Sprint, TaskStatus, Activity } from "@/app/features/common/types";
-import { notifyTaskAdded, notifyTaskCompleted, notifyTaskDeleted } from "@/app/features/common/helpers/notifications";
+import { Project, Sprint, TaskStatus, Activity } from "@/app/common/types";
+import { notifyTaskAdded, notifyTaskCompleted, notifyTaskDeleted } from "@/app/common/helpers/notifications";
 
 interface ProjectContextType {
 	projects: Project[];

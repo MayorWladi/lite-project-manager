@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { Sprint, TaskStatus, Activity } from "@/app/features/common/types";
-import { useLanguage } from "@/app/features/common/context/LanguageContext";
+import { Sprint, TaskStatus, Activity } from "@/app/common/types";
+import { useLanguage } from "@/app/common/context/LanguageContext";
 import { DndContext, DragEndEvent, DragOverEvent, DragStartEvent, DragOverlay, pointerWithin, SensorDescriptor, SensorOptions } from "@dnd-kit/core";
 import { createPortal } from "react-dom";
 import KanbanCell from "@/app/features/board/components/KanbanCell";
-import ActivityCard from "@/app/features/activity/components/ActivityCard";
+import ActivityCard from "@/app/features/activity/ActivityCard";
 import AddActivityForm from "@/app/features/activity/components/AddActivityForm";
 
 interface KanbanBoardDesktopProps {

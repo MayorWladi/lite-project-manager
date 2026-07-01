@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useLanguage } from '@/app/features/common/context/LanguageContext'
+import { useLanguage } from '@/app/common/context/LanguageContext'
 
 interface ProjectFormProps {
   onAddProject: (name: string) => void
