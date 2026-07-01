@@ -84,7 +84,20 @@ const DICTIONARY: Translations = {
 	info_tasks: { en: "Click on an activity to add tasks (checklist).", es: "Haz clic en una actividad para añadir tareas (checklist)." },
 	info_rules: { en: "You cannot move an activity to 'Review' or 'Done' if it has incomplete tasks.", es: "No puedes mover una actividad a 'Revisión' o 'Terminado' si tiene tareas sin completar." },
 	type_name: { en: "Type the name...", es: "Escribe el nombre..." },
-	create: { en: "Create", es: "Crear" }
+	create: { en: "Create", es: "Crear" },
+
+	// Tutorial Translations
+	tut_step1_title: { en: "1. Create Projects", es: "1. Crea Proyectos" },
+	tut_step1_desc: { en: "Start by creating a project and adding sprints from the left sidebar.", es: "Comienza creando un proyecto y añadiendo sprints desde la barra lateral." },
+	tut_step2_title: { en: "2. The Kanban Board", es: "2. El Tablero Kanban" },
+	tut_step2_desc: { en: "Visualize your workflow. Add activities to the columns.", es: "Visualiza tu flujo de trabajo. Añade actividades a las columnas." },
+	tut_step3_title: { en: "3. Drag and Drop", es: "3. Arrastrar y Soltar" },
+	tut_step3_desc: { en: "Move activities easily between statuses as your work progresses.", es: "Mueve actividades fácilmente entre estados conforme avanzas." },
+	tut_step4_title: { en: "4. Checklists & Details", es: "4. Checklists y Detalles" },
+	tut_step4_desc: { en: "Click on any activity to open its side panel and break it down into tasks.", es: "Haz clic en cualquier actividad para abrir su panel y desglosarla en tareas." },
+	tut_next: { en: "Next", es: "Siguiente" },
+	tut_prev: { en: "Back", es: "Atrás" },
+	tut_finish: { en: "Got it!", es: "¡Entendido!" }
 };
 
 interface LanguageContextType {
