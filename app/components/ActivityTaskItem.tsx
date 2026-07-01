@@ -83,10 +83,17 @@ const ActivityTaskItem = memo(function ActivityTaskItem({
 
       {/* Título de la tarea (con edición inline) */}
       {isRenaming ? (
-        <input
-          type="text"
+        <textarea
           value={renameValue}
-          onChange={(e) => setRenameValue(e.target.value)}
+          onChange={(e) => {
+            setRenameValue(e.target.value);
+            e.target.style.height = 'auto';
+            e.target.style.height = `${e.target.scrollHeight}px`;
+          }}
+          onFocus={(e) => {
+            e.target.style.height = 'auto';
+            e.target.style.height = `${e.target.scrollHeight}px`;
+          }}
           onBlur={() => {
             if (renameValue.trim() && renameValue.trim() !== task.title) {
               onRename(renameValue.trim());
@@ -94,7 +101,8 @@ const ActivityTaskItem = memo(function ActivityTaskItem({
             setIsRenaming(false);
           }}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
               e.currentTarget.blur();
             }
             if (e.key === 'Escape') {
@@ -103,7 +111,8 @@ const ActivityTaskItem = memo(function ActivityTaskItem({
             }
           }}
           autoFocus
-          className="text-xs flex-1 bg-transparent border-b border-(--color-border) outline-none"
+          rows={1}
+          className="text-xs flex-1 bg-transparent border-b border-(--color-border) outline-none resize-none overflow-hidden py-0"
         />
       ) : (
         <span
@@ -113,7 +122,7 @@ const ActivityTaskItem = memo(function ActivityTaskItem({
             setIsRenaming(true);
             setRenameValue(task.title);
           }}
-          className={`text-xs flex-1 select-none cursor-default transition-all duration-300 ease-in-out
+          className={`text-xs flex-1 select-none cursor-default transition-all duration-300 ease-in-out break-words whitespace-pre-wrap
             ${task.isCompleted
               ? "text-(--color-muted) line-through decoration-current decoration-1 underline-offset-2"
               : "text-foreground"
