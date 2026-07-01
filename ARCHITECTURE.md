@@ -27,19 +27,23 @@ La estructura queda así:
 ```text
 app/
  ├─ page.tsx         <-- Consume los componentes de los features
+ ├─ common/          <-- (Capa Shared) Código global ligado a React
+ │   ├─ components/  (Button, Modal, AppLayout)
+ │   └─ context/     (ProjectContext)
+ │
+ ├─ utils/           <-- Código agnóstico (puro JS/TS) reutilizable en cualquier framework
+ │   ├─ helpers/     (notifications)
+ │   └─ storage/     (collaborators)
+ │
  ├─ features/
- │   ├─ common/          <-- Única carpeta para código global/compartido
- │   │   ├─ components/  (Button, Modal, AppLayout)
- │   │   └─ context/     (ProjectContext)
- │   │
  │   ├─ board/           <-- Dominio: Tablero Kanban
- │   │   ├─ components/  (KanbanBoard, Column, Card)
- │   │   ├─ hooks/       (useDragAndDrop)
- │   │   └─ controllers/ (boardController)
+ │   │   ├─ KanbanBoard.tsx  <-- API PÚBLICA (Único punto de entrada)
+ │   │   ├─ components/      (Componentes internos aislados como KanbanCell)
+ │   │   └─ hooks/           (useDragAndDrop)
  │   │
  │   └─ sidebar/         <-- Dominio: Panel Lateral
- │       ├─ components/  (Sidebar, ProjectList)
- │       └─ data/        (sidebarMenuItems)
+ │       ├─ Sidebar.tsx      <-- API PÚBLICA
+ │       └─ components/      (ProjectList, ProjectForm)
 ```
 
 ### Ventajas en Next.js:
@@ -49,9 +53,9 @@ app/
 
 ## 3. Reglas de Oro de esta Arquitectura
 
-- **Prohibido importar entre features hermanos:** El código dentro de `features/board/` NO DEBERÍA importar un hook de `features/sidebar/`. Si necesitan compartir algo, ese hook debe extraerse y moverse a `features/common/`.
-- **Common es sagrado:** Solo pon en `common/` cosas que se utilicen genuinamente en 2 o más features diferentes.
-- **Jerarquía Visual:** Trata de que tus "features" se mapeen a grandes bloques visuales de tu pantalla (ej. `header`, `sidebar`, `feed`, `activity-details`).
+- **Prohibido importar entre features hermanos:** El código dentro de `features/board/` NO DEBERÍA importar algo interno de `features/sidebar/`.
+- **Patrón de API Pública:** Cada feature expone **solamente** su componente principal en la raíz de su carpeta (ej. `features/board/KanbanBoard.tsx`). Nunca debes importar nada que esté dentro de una subcarpeta `components/` de un feature desde afuera.
+- **`common/` vs `utils/`:** `common/` es el ecosistema de componentes globales y hooks de **React** (ej. Modales, Temas). `utils/` es puramente funciones **JavaScript/TypeScript** sin dependencias de React (puedes copiarlos a otros proyectos no-React).
 
 ---
 
@@ -68,8 +72,10 @@ Si en el futuro inicias otro proyecto de Next.js, terminas con un espagueti de c
 > REGLAS DE LA MIGRACIÓN:
 > 1. Crea carpetas de 'features' basadas en dominios funcionales de mi app o bloques visuales grandes (ej. 'auth', 'dashboard', 'sidebar', 'checkout').
 > 2. Cada feature debe contener internamente sus propias subcarpetas dependiendo de lo que use (ej. `features/dashboard/components`, `features/dashboard/hooks`, `features/dashboard/controllers`).
-> 3. Crea una carpeta `features/common/` (o `shared/`) exclusivamente para botones, modales genéricos, contextos globales y hooks de utilidad que se utilicen en más de 2 features simultáneamente.
-> 4. Regla estricta: Ningún feature (ej. 'sidebar') puede importar cosas de otro feature hermano (ej. 'dashboard'). Todo código cruzado debe aislarse y enviarse a 'common/'.
+> 3. Saca todo el código agnóstico de React (helpers, funciones matemáticas, constantes, storage) a una carpeta `app/utils/` a nivel raíz.
+> 4. Crea una carpeta `app/common/` (o `shared/`) a nivel raíz exclusivamente para componentes visuales genéricos, modales, contextos globales y hooks de React que se utilicen en más de 2 features.
+> 5. Implementa el patrón "Public API": cada feature debe exponer su(s) componente(s) principal(es) directamente en la raíz de su carpeta (ej. `features/dashboard/Dashboard.tsx`). El resto de su código va en subcarpetas internas y NO puede ser importado desde afuera.
+> 6. Regla estricta: Ningún feature puede importar cosas internas de otro feature hermano. Todo código cruzado debe ir a 'common/'.
 > 5. Ten cuidado de no romper el enrutamiento de Next.js (los archivos page.tsx y layout.tsx principales deben quedarse donde están y solo actualizar sus imports).
 > 
 > Preséntame primero el árbol de carpetas exacto de cómo quedará el código. Una vez que te lo apruebe, por favor crea los scripts de terminal, de node, o los reemplazos necesarios para mover los archivos físicos y actualizar recursivamente todas las rutas de los 'imports' que se rompan en el proceso."
