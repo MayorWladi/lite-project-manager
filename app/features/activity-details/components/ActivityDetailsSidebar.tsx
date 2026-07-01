@@ -2,7 +2,7 @@
 "use client";
 
 import React from "react";
-import { Activity, Task, TaskStatus } from "@/app/features/common/types";
+import { Activity, Task } from "@/app/features/common/types";
 import { useLanguage } from "@/app/features/common/context/LanguageContext";
 import ActivityTaskItem from "@/app/features/activity-details/components/ActivityTaskItem";
 import AddTaskForm from "@/app/features/activity-details/components/AddTaskForm";
@@ -30,19 +30,21 @@ export default function ActivityDetailsSidebar({
   onDeleteTask,
   onRenameTask
 }: ActivityDetailsSidebarProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [isMounted, setIsMounted] = React.useState(isOpen);
   const [isVisible, setIsVisible] = React.useState(false);
   const [cachedActivity, setCachedActivity] = React.useState<Activity | null>(activity);
 
   React.useEffect(() => {
     if (activity) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCachedActivity(activity);
     }
   }, [activity]);
 
   React.useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsMounted(true);
     } else if (isMounted) {
       setIsVisible(false);
@@ -69,7 +71,7 @@ export default function ActivityDetailsSidebar({
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
-    return date.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+    return date.toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', { weekday: 'short', day: 'numeric', month: 'short' });
   };
 
   const isActivityDone = currentActivity.status === 'done';
@@ -125,7 +127,7 @@ export default function ActivityDetailsSidebar({
             {/* SECCIÓN DE TAREAS (Usando tus componentes) */}
             <div className="space-y-1.5 flex flex-col">
               <div className="flex items-center justify-between mb-1 select-none px-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-(--color-muted)">{t("checklist") || "Pasos"}</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-(--color-muted)">{t("checklist")}</span>
                 <span className="text-[10px] font-mono text-(--color-muted)">{completedTasks}/{totalTasks}</span>
               </div>
 
@@ -144,8 +146,8 @@ export default function ActivityDetailsSidebar({
               <div className="mt-1">
                 <AddTaskForm
                   onAdd={(title) => onAddTask(currentActivity.id, title)}
-                  placeholderText={t("new_task_placeholder") || "Agregar paso..."}
-                  buttonText={t("add_task") || "Agregar paso"}
+                  placeholderText={t("new_task_placeholder")}
+                  buttonText={t("add_task")}
                 />
               </div>
             </div>
@@ -156,18 +158,18 @@ export default function ActivityDetailsSidebar({
                 <svg width="16" height="16" fill="none" stroke="currentColor" className="text-(--color-muted)" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-                <span>Estado actual: <span className="font-semibold uppercase text-xs ml-1">{currentActivity.status}</span></span>
+                <span>{t("current_status")} <span className="font-semibold uppercase text-xs ml-1">{currentActivity.status}</span></span>
               </button>
             </div>
 
             {/* DESCRIPCIÓN */}
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] font-bold text-(--color-muted) uppercase tracking-wider px-1">
-                Descripción
+                {t("description")}
               </label>
               <textarea
                 className="w-full bg-background border border-(--color-border) rounded-lg p-3 text-sm text-foreground placeholder-(--color-muted) outline-none focus:border-(--color-muted) transition-colors min-h-[140px] resize-none shadow-sm"
-                placeholder="Agregar nota..."
+                placeholder={t("add_note")}
                 value={currentActivity.description || ""}
                 onChange={(e) => onUpdateDescription(currentActivity.id, e.target.value)}
               />
@@ -177,7 +179,7 @@ export default function ActivityDetailsSidebar({
           {/* Footer */}
           <div className="p-4 border-t border-(--color-border) bg-background/50 text-center shrink-0">
             <span className="text-xs text-(--color-muted)">
-              Creada el {formatDate(currentActivity.createdAt)}
+              {t("created_on")} {formatDate(currentActivity.createdAt)}
             </span>
           </div>
         </div>

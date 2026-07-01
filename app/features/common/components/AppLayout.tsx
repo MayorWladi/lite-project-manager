@@ -8,7 +8,6 @@ import "sileo/styles.css";
 import { useSettings } from "@/app/features/common/context/SettingsContext";
 import ActivityDetailsSidebar from "@/app/features/activity-details/components/ActivityDetailsSidebar";
 import { useProjectsManager } from "@/app/features/common/context/ProjectContext";
-import { TaskStatus } from "@/app/features/common/types/index";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
 	const { theme } = useSettings();
@@ -22,7 +21,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 		selectedActivity,
 		closeActivityDetails,
 		updateActivityDescription,
-		updateActivityStatus,
 		addTaskToActivity,
 		toggleTaskCompletion,
 		deleteTask,
@@ -36,20 +34,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 		}
 	};
 
-	const handleToggleActivityStatus = (id: string, currentStatus: TaskStatus) => {
-		if (selectedProjectId && selectedSprintId) {
-			const newStatus: TaskStatus = currentStatus === 'done' ? 'todo' : 'done';
-			updateActivityStatus(selectedProjectId, selectedSprintId, id, newStatus);
-		}
-	};
-
 	const handleAddTask = (id: string, taskTitle: string) => {
 		if (selectedProjectId && selectedSprintId) {
 			addTaskToActivity(selectedProjectId, selectedSprintId, id, taskTitle);
 		}
 	};
 
-	const handleToggleTask = (id: string, taskId: string, isCompleted: boolean) => {
+	const handleToggleTask = (id: string, taskId: string) => {
 		if (selectedProjectId && selectedSprintId) {
 			toggleTaskCompletion(selectedProjectId, selectedSprintId, id, taskId);
 		}

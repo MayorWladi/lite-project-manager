@@ -68,7 +68,23 @@ const DICTIONARY: Translations = {
 	delete_item: { en: "Delete", es: "Eliminar" },
 	cancel: { en: "Cancel", es: "Cancelar" },
 	save: { en: "Save", es: "Guardar" },
-	rename_placeholder: { en: "New name...", es: "Nuevo nombre..." }
+	rename_placeholder: { en: "New name...", es: "Nuevo nombre..." },
+
+	// Missing Translations
+	description: { en: "Description", es: "Descripción" },
+	add_note: { en: "Add note...", es: "Agregar nota..." },
+	new_project_placeholder: { en: "New project", es: "Nuevo proyecto" },
+	delete_project_title: { en: 'Delete "{{name}}"?', es: '¿Eliminar "{{name}}"?'},
+	grid_2x2: { en: "Switch to 2x2 grid", es: "Cambiar a grid 2x2" },
+	grid_list: { en: "Switch to list view", es: "Cambiar a lista" },
+	current_status: { en: "Current status:", es: "Estado actual:" },
+	created_on: { en: "Created on", es: "Creada el" },
+	info_create: { en: "Create projects and sprints from the sidebar.", es: "Crea proyectos y sprints desde la barra lateral." },
+	info_drag: { en: "Add activities and drag them between columns.", es: "Añade actividades y arrástralas entre columnas." },
+	info_tasks: { en: "Click on an activity to add tasks (checklist).", es: "Haz clic en una actividad para añadir tareas (checklist)." },
+	info_rules: { en: "You cannot move an activity to 'Review' or 'Done' if it has incomplete tasks.", es: "No puedes mover una actividad a 'Revisión' o 'Terminado' si tiene tareas sin completar." },
+	type_name: { en: "Type the name...", es: "Escribe el nombre..." },
+	create: { en: "Create", es: "Crear" }
 };
 
 interface LanguageContextType {
@@ -86,13 +102,16 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 	useEffect(() => {
 		const savedLang = localStorage.getItem("kanban-lang") as Language | null;
 		if (savedLang) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setLanguageState(savedLang);
 		} else {
 			// Auto detect browser language
 			const browserLang = navigator.language.split('-')[0];
 			if (browserLang === 'es') {
+				 
 				setLanguageState("es");
 			} else {
+				 
 				setLanguageState("en");
 			}
 		}
@@ -105,6 +124,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 	};
 
 	const t = (key: keyof typeof DICTIONARY): string => {
+		// NOTA (Anti-Hydration Mismatch):
+		// Durante SSR y el primer render del cliente, `mounted` es false y devolvemos siempre 'en'.
+		// Esto evita que React tire un error si el servidor renderiza en inglés pero el cliente local tiene español.
+		// El "costo" es un leve parpadeo (FOUC) de inglés a español en la primera carga para usuarios de habla hispana,
+		// lo cual es un compromiso aceptable para una PWA puramente estática sin middleware de cookies.
 		if (!mounted) return DICTIONARY[key]?.en || key as string; // SSR fallback
 		return DICTIONARY[key]?.[language] || key as string;
 	};

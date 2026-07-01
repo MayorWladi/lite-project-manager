@@ -68,10 +68,10 @@ export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
 					<div className="animate-fade-in text-sm text-(--color-muted) space-y-3 bg-black/5 dark:bg-white/5 p-4 rounded-xl border border-(--color-border)">
 						<p>{t("guide_desc")}</p>
 						<ul className="list-disc pl-4 space-y-1">
-							<li>{language === "en" ? "Create projects and sprints from the sidebar." : "Crea proyectos y sprints desde la barra lateral."}</li>
-							<li>{language === "en" ? "Add activities and drag them between columns." : "Añade actividades y arrástralas entre columnas."}</li>
-							<li>{language === "en" ? "Click on an activity to add tasks (checklist)." : "Haz clic en una actividad para añadir tareas (checklist)."}</li>
-							<li>{language === "en" ? "You cannot move an activity to 'Review' or 'Done' if it has incomplete tasks." : "No puedes mover una actividad a 'Revisión' o 'Terminado' si tiene tareas sin completar."}</li>
+							<li>{t("info_create")}</li>
+							<li>{t("info_drag")}</li>
+							<li>{t("info_tasks")}</li>
+							<li>{t("info_rules")}</li>
 						</ul>
 					</div>
 				)}

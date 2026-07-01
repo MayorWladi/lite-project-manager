@@ -27,7 +27,7 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
   React.useEffect(() => {
     const calculateStorage = () => {
       let total = 0;
-      for (let x in localStorage) {
+      for (const x in localStorage) {
         if (!localStorage.hasOwnProperty(x)) continue;
         total += ((localStorage[x].length + x.length) * 2);
       }

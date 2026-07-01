@@ -1,4 +1,3 @@
-import { Toaster } from 'sileo'
 import './globals.css'
 import type { Metadata } from 'next'
 import { ProjectProvider } from "@/app/features/common/context/ProjectContext";

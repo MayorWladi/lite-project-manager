@@ -18,6 +18,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
 	// Manejo de animaciones de entrada/salida
 	useEffect(() => {
 		if (isOpen) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setIsMounted(true);
 		} else if (isMounted) {
 			setIsVisible(false);

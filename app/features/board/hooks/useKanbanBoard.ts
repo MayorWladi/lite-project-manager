@@ -17,6 +17,7 @@ export function useKanbanBoard(sprint: Sprint, t: (k: string) => string) {
 	const [mobileActiveColumn, setMobileActiveColumn] = useState<TaskStatus>("todo");
 
 	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect
 		setLocalActivities(sprint.activities || []);
 	}, [sprint.activities]);
 

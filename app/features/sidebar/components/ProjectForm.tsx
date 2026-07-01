@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useLanguage } from '@/app/features/common/context/LanguageContext'
 
 interface ProjectFormProps {
   onAddProject: (name: string) => void
@@ -8,6 +9,7 @@ interface ProjectFormProps {
 
 export default function ProjectForm({ onAddProject }: ProjectFormProps) {
   const [name, setName] = useState('')
+  const { t } = useLanguage()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -20,13 +22,13 @@ export default function ProjectForm({ onAddProject }: ProjectFormProps) {
   return (
     <form onSubmit={handleSubmit} style={{ marginBottom: '3rem' }}>
       <label htmlFor="projectName" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 500, color: 'var(--color-muted)', marginBottom: '0.5rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-        Nuevo proyecto
+        {t("new_project")}
       </label>
       <div style={{ display: 'flex', gap: '1rem' }}>
         <input
           id="projectName"
           type="text"
-          placeholder="Escribe el nombre..."
+          placeholder={t("type_name")}
           value={name}
           onChange={(e) => setName(e.target.value)}
           style={{
@@ -65,7 +67,7 @@ export default function ProjectForm({ onAddProject }: ProjectFormProps) {
           onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.98)')}
           onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
         >
-          Crear
+          {t("create")}
         </button>
       </div>
     </form>

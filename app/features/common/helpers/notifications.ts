@@ -30,7 +30,7 @@ export const notifyTaskCompleted = (taskName: string, isCompleted: boolean) => {
 	}
 };
 
-export const notifyTaskDeleted = (taskName: string) => {
+export const notifyTaskDeleted = () => {
 	notify('Tarea eliminada', `La tarea ha sido eliminada de la lista`, 'warning');
 };
 

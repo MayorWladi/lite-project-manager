@@ -19,9 +19,11 @@ export default function Home() {
   useEffect(() => {
     if (selectedProject && selectedProject.sprints.length > 0) {
       if (!selectedSprintId || !selectedProject.sprints.some(s => s.id === selectedSprintId)) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedSprintId(selectedProject.sprints[0].id);
       }
     } else {
+       
       setSelectedSprintId(null);
     }
   }, [selectedProject, selectedSprintId]);

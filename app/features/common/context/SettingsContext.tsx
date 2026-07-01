@@ -24,9 +24,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 		const savedFont = localStorage.getItem("kanban-font") as FontType | null;
 
 		if (savedTheme) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setThemeState(savedTheme);
 		} else {
 			const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+			 
 			setThemeState(prefersDark ? "dark" : "light");
 		}
 

@@ -23,7 +23,8 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 	const [isAddingTask, setIsAddingTask] = useState(false);
 	const [showStatusPicker, setShowStatusPicker] = useState(false);
 	const [isAnimatingOut, setIsAnimatingOut] = useState<"left" | "right" | null>(null);
-	const [showMenu, setShowMenu] = useState(false);
+	// We no longer use showMenu but kept the state hook for structural consistency, 
+	// actually we can just remove it if it's unused.
 	const [isRenaming, setIsRenaming] = useState(false);
 	const [renameValue, setRenameValue] = useState("");
 	const [isShaking, setIsShaking] = useState(false);
@@ -121,7 +122,6 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 		if (selectedProjectId) {
 			deleteActivity(selectedProjectId, sprintId, activity.id);
 		}
-		setShowMenu(false);
 	};
 
 	return (

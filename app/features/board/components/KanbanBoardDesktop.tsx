@@ -37,9 +37,12 @@ export default function KanbanBoardDesktop({
     const saved = localStorage.getItem('kanbanColumnGrids');
     if (saved) {
       try {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setColumnGrids(JSON.parse(saved));
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (e) {}
     }
+     
     setMounted(true);
   }, []);
 
@@ -78,7 +81,7 @@ export default function KanbanBoardDesktop({
       if (count < 3) current = 1;
       else if (count < 4 && current === 3) current = 2;
 
-      let next = current === 1 ? 2 : 1;
+      const next = current === 1 ? 2 : 1;
 
       const updated = { ...prev, [colId]: next };
       localStorage.setItem('kanbanColumnGrids', JSON.stringify(updated));
@@ -112,7 +115,7 @@ export default function KanbanBoardDesktop({
             <div className="flex gap-4 mb-4 sticky top-0 bg-background z-10 py-2 border-b border-(--color-border)">
               {columns.map((col) => {
                 const colActivities = localActivities.filter(a => a.status === col.id);
-                let gridMode = columnGrids[col.id] || 1;
+                const gridMode = columnGrids[col.id] || 1;
 
                 const widthClass = gridMode === 1 ? "w-[280px]" : "w-[560px]"; 
 
@@ -124,7 +127,7 @@ export default function KanbanBoardDesktop({
                         <button 
                           onClick={() => toggleGridMode(col.id, colActivities.length)}
                           className="p-1 rounded-md text-(--color-muted) hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-                          title={gridMode === 1 ? "Cambiar a grid 2x2" : "Cambiar a lista"}
+                          title={gridMode === 1 ? t("grid_2x2") : t("grid_list")}
                         >
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             {gridMode === 1 && <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />}
@@ -146,7 +149,7 @@ export default function KanbanBoardDesktop({
               {columns.map((col) => {
                 const activities = localActivities.filter((a) => a.status === col.id);
                 
-                let gridMode = columnGrids[col.id] || 1;
+                const gridMode = columnGrids[col.id] || 1;
 
                 return <KanbanCell key={col.id} sprintId={sprint.id} statusId={col.id} activities={activities} gridMode={gridMode} />;
               })}
