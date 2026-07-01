@@ -46,6 +46,12 @@ const DICTIONARY: Translations = {
 	english: { en: "English", es: "Inglés" },
 	spanish: { en: "Spanish", es: "Español" },
 
+	information: { en: "Information", es: "Información" },
+	user_guide: { en: "User Guide", es: "Guía de Uso" },
+	collaborators: { en: "Collaborators", es: "Colaboradores" },
+	guide_desc: { en: "Learn how to use Lite Project Manager efficiently.", es: "Aprende a usar Lite Project Manager de forma eficiente." },
+	credits_desc: { en: "The people who made this possible.", es: "Las personas que hicieron esto posible." },
+
 	danger_zone: { en: "Danger Zone", es: "Zona de Peligro" },
 	delete_all_data: { en: "Delete All Data", es: "Borrar Todos los Datos" },
 	delete_warning: { en: "This will permanently delete all your projects, sprints, and tasks.", es: "Esto eliminará permanentemente todos tus proyectos, sprints y tareas." },
