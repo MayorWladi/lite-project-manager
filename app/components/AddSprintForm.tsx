@@ -42,7 +42,7 @@ export default function AddSprintForm({ onAdd, placeholderText, buttonText }: Ad
   return (
     <button
       onClick={() => setIsAdding(true)}
-      className="px-3 py-1.5 rounded-md text-xs md:text-sm font-medium text-(--color-muted) border border-dashed border-(--color-border) hover:border-(--color-muted) hover:text-foreground transition-colors flex items-center gap-1.5 whitespace-nowrap bg-background"
+      className="px-3 py-1.5 rounded-md text-xs md:text-sm font-medium text-(--color-muted) border border-dashed border-(--color-border) hover:border-(--color-muted) hover:text-foreground transition-all duration-300 ease-in-out flex items-center gap-1.5 whitespace-nowrap bg-background"
     >
       <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />

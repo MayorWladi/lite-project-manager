@@ -67,7 +67,7 @@ export default function SprintTab({ sprint, isActive, onSelect, onRename, onDele
 
   return (
     <div
-      className={`shrink-0 flex items-center rounded-md border text-xs md:text-sm font-medium transition-colors whitespace-nowrap ${isActive
+      className={`shrink-0 flex items-center rounded-md border text-xs md:text-sm font-medium transition-all duration-300 ease-in-out whitespace-nowrap ${isActive
         ? "bg-foreground text-background border-foreground shadow-sm"
         : "bg-background text-(--color-muted) border-(--color-border) hover:bg-black/5 dark:hover:bg-white/10 hover:text-foreground hover:border-(--color-muted)"
         }`}
@@ -81,20 +81,21 @@ export default function SprintTab({ sprint, isActive, onSelect, onRename, onDele
           setRenameValue(sprint.name);
         }}
         onTouchEnd={(e) => handleDoubleTap(e, sprint.id)}
-        className="pl-3 pr-2 py-1.5 text-left outline-none rounded-l-md cursor-pointer select-none"
+        className="pl-3 pr-2 py-1.5 text-left outline-none rounded-l-md cursor-pointer select-none truncate max-w-[120px] md:max-w-[200px]"
       >
         {sprint.name}
       </button>
 
-      {isActive && (
-        <div className="pr-1.5 flex items-center">
-          <DropdownMenu
-            items={menuItems}
-            triggerClassName="opacity-70 hover:cursor-pointer"
-          // ✅ Eliminamos menuClassName para usar el predeterminado
-          />
-        </div>
-      )}
+      <div 
+        className={`flex items-center overflow-hidden transition-all duration-300 ease-in-out ${
+          isActive ? 'w-6 opacity-100 pr-1.5' : 'w-0 opacity-0 pr-0'
+        }`}
+      >
+        <DropdownMenu
+          items={menuItems}
+          triggerClassName="opacity-70 hover:cursor-pointer"
+        />
+      </div>
     </div>
   );
 }

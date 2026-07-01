@@ -122,7 +122,7 @@ const ActivityTaskItem = memo(function ActivityTaskItem({
             setIsRenaming(true);
             setRenameValue(task.title);
           }}
-          className={`text-xs flex-1 select-none cursor-default transition-all duration-300 ease-in-out break-words whitespace-pre-wrap
+          className={`text-xs flex-1 min-w-0 select-none cursor-default transition-all duration-300 ease-in-out wrap-break-word whitespace-pre-wrap
             ${task.isCompleted
               ? "text-(--color-muted) line-through decoration-current decoration-1 underline-offset-2"
               : "text-foreground"

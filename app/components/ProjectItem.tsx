@@ -35,7 +35,13 @@ export default function ProjectItem({
   };
 
   return (
-    <div className={`group w-full text-left px-3 py-1.5 rounded-lg transition-all duration-200 flex items-center justify-between cursor-pointer ${isSelected
+    <div 
+      onClick={() => {
+        if (!isRenaming) {
+          onSelectProject(project.id);
+        }
+      }}
+      className={`group w-full text-left px-3 py-1.5 rounded-lg transition-all duration-200 flex items-center justify-between cursor-pointer ${isSelected
       ? "bg-black/5 dark:bg-white/10 text-foreground font-medium"
       : "text-(--color-muted) hover:bg-black/3 dark:hover:bg-white/5 hover:text-foreground"
       }`}>
@@ -49,6 +55,7 @@ export default function ProjectItem({
             onChange={(e) => setRenameValue(e.target.value)}
             onBlur={handleRenameSubmit}
             onKeyDown={(e) => { if (e.key === 'Escape') setIsRenaming(false); }}
+            onClick={(e) => e.stopPropagation()}
             className="w-full px-1.5 py-0.5 bg-transparent border border-(--color-border) rounded text-sm outline-none focus:border-(--color-muted) text-foreground"
           />
         </form>
@@ -56,7 +63,6 @@ export default function ProjectItem({
         <>
           <div
             className="flex-1 truncate text-sm select-none"
-            onClick={() => onSelectProject(project.id)}
             onDoubleClick={(e) => { e.stopPropagation(); setIsRenaming(true); }}
           >
             {project.name}
