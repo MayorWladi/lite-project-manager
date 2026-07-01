@@ -53,7 +53,7 @@ export default function Home() {
 
           <div className="flex-1 overflow-hidden">
             {activeSprint ? (
-              <KanbanBoard sprint={activeSprint} />
+              <KanbanBoard key={activeSprint.id} sprint={activeSprint} />
             ) : (
               <div className="h-full border-2 border-dashed border-(--color-border) rounded-xl flex flex-col items-center justify-center gap-2">
                 <p className="text-(--color-muted) text-sm">{t("no_sprints_yet")}</p>
