@@ -22,6 +22,8 @@ We avoid pure whites (`#FFFFFF`) and pitch blacks (`#000000`) to reduce eye stra
 - **Espresso:** A cozy, rich dark brown (`#231C18`) reminiscent of wood and coffee.
 
 > **Rule:** Do not hardcode HEX colors in Tailwind classes (e.g., `bg-[#FF0000]`). Always use the semantic variables (e.g., `bg-background`, `text-foreground`, `bg-(--color-card-bg)`).
+>
+> **Accessibility Rule:** Always ensure that `--color-muted` (used for secondary text like checklists) has sufficient contrast against `--color-card-bg`. Light themes require darker muted tones, while Dark themes require lighter muted tones.
 
 ### 1.1 Dynamic Theme Engine (How to Add a New Theme)
 
