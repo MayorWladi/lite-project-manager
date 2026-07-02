@@ -14,7 +14,7 @@ interface InfoModalProps {
 export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
   const { language, t } = useLanguage();
   const { theme } = useSettings();
-  
+
   // Tabs management
   const [activeTab, setActiveTab] = useState<"guide" | "collaborators">("guide");
   const [displayedTab, setDisplayedTab] = useState<"guide" | "collaborators">("guide");
@@ -23,13 +23,13 @@ export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
   // Animation states: 'idle' | 'exiting' | 'entering'
   const [animState, setAnimState] = useState<'idle' | 'exiting' | 'entering'>('idle');
   const [direction, setDirection] = useState<'left' | 'right'>('right');
-  
+
   const ANIMATION_DELAY = 150; // 150ms
   const TRANSITION_DURATION = 150; // 150ms
 
   const handleTabChange = (newTab: "guide" | "collaborators") => {
     if (newTab === activeTab || animState !== 'idle') return;
-    
+
     setDirection(newTab === "guide" ? 'left' : 'right');
     setActiveTab(newTab);
     setAnimState('exiting');
@@ -188,8 +188,8 @@ export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
                         {collaborator.name.charAt(0)}
                       </div>
                       <div className="min-w-0">
-                        <div className="text-sm font-medium text-foreground break-words">{collaborator.name}</div>
-                        <div className="text-xs text-(--color-muted) break-words">{collaborator.role[language as 'en' | 'es']}</div>
+                        <div className="text-sm font-medium text-foreground wrap-break-word">{collaborator.name}</div>
+                        <div className="text-xs text-(--color-muted) wrap-break-word">{collaborator.role[language as 'en' | 'es']}</div>
                       </div>
                     </div>
                     {collaborator.socials && collaborator.socials.length > 0 && (
