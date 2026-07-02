@@ -91,26 +91,42 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 						{t("import_desc")}
 					</p>
 
-					<div className="space-y-3">
-						<label className={`block p-4 border rounded-xl cursor-pointer transition-colors ${importMode === 'merge' ? 'border-foreground bg-black/5 dark:bg-white/5' : 'border-(--color-border) hover:border-(--color-muted)'}`}>
-							<div className="flex items-center gap-3">
-								<input type="radio" name="importMode" checked={importMode === 'merge'} onChange={() => setImportMode('merge')} className="accent-foreground w-4 h-4" />
-								<div>
-									<div className="font-semibold text-foreground text-sm">{t("mode_merge")}</div>
-									<div className="text-xs text-(--color-muted) mt-0.5">{t("mode_merge_desc")}</div>
-								</div>
+					<div className="flex flex-col gap-2">
+						<button
+							onClick={() => setImportMode('merge')}
+							className={`w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-center justify-between group ${importMode === 'merge'
+								? "border-foreground bg-black/2 dark:bg-white/2 shadow-[0_2px_8px_rgba(0,0,0,0.02)]"
+								: "border-transparent border-(--color-border) hover:bg-black/3 dark:hover:bg-white/5"
+								}`}
+						>
+							<div>
+								<div className={`font-semibold text-sm ${importMode === 'merge' ? 'text-foreground' : ''}`}>{t("mode_merge")}</div>
+								<div className="text-xs text-(--color-muted) mt-0.5">{t("mode_merge_desc")}</div>
 							</div>
-						</label>
+							{importMode === 'merge' && (
+								<svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="text-foreground shrink-0 animate-in fade-in zoom-in duration-200">
+									<polyline points="20 6 9 17 4 12" />
+								</svg>
+							)}
+						</button>
 
-						<label className={`block p-4 border rounded-xl cursor-pointer transition-colors ${importMode === 'overwrite' ? 'border-red-500/50 bg-red-500/5 dark:bg-red-500/10' : 'border-(--color-border) hover:border-(--color-muted)'}`}>
-							<div className="flex items-center gap-3">
-								<input type="radio" name="importMode" checked={importMode === 'overwrite'} onChange={() => setImportMode('overwrite')} className="accent-red-500 w-4 h-4" />
-								<div>
-									<div className={`font-semibold text-sm ${importMode === 'overwrite' ? 'text-red-600 dark:text-red-400' : 'text-foreground'}`}>{t("mode_overwrite")}</div>
-									<div className="text-xs text-(--color-muted) mt-0.5">{t("mode_overwrite_desc")}</div>
-								</div>
+						<button
+							onClick={() => setImportMode('overwrite')}
+							className={`w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-center justify-between group ${importMode === 'overwrite'
+								? "border-red-500 bg-red-500/5 dark:bg-red-500/10 shadow-[0_2px_8px_rgba(239,68,68,0.1)]"
+								: "border-transparent border-(--color-border) hover:bg-red-500/5"
+								}`}
+						>
+							<div>
+								<div className={`font-semibold text-sm ${importMode === 'overwrite' ? 'text-red-600 dark:text-red-400' : 'text-foreground'}`}>{t("mode_overwrite")}</div>
+								<div className="text-xs text-(--color-muted) mt-0.5">{t("mode_overwrite_desc")}</div>
 							</div>
-						</label>
+							{importMode === 'overwrite' && (
+								<svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="text-red-600 dark:text-red-400 shrink-0 animate-in fade-in zoom-in duration-200">
+									<polyline points="20 6 9 17 4 12" />
+								</svg>
+							)}
+						</button>
 					</div>
 
 					{importMode === 'overwrite' && (

@@ -188,8 +188,8 @@ export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
                         {collaborator.name.charAt(0)}
                       </div>
                       <div className="min-w-0">
-                        <div className="text-sm font-medium text-foreground wrap-break-word">{collaborator.name}</div>
-                        <div className="text-xs text-(--color-muted) wrap-break-word">{collaborator.role[language as 'en' | 'es']}</div>
+                        <div className="text-sm font-medium text-foreground break-words">{collaborator.name}</div>
+                        <div className="text-xs text-(--color-muted) break-words">{collaborator.role[language as 'en' | 'es']}</div>
                       </div>
                     </div>
                     {collaborator.socials && collaborator.socials.length > 0 && (
