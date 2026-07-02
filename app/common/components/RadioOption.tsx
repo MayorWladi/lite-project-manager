@@ -40,10 +40,10 @@ export function RadioCard({ title, description, isActive, onClick, variant = "de
     const isDanger = variant === "danger";
 
     const defaultActive = "border-foreground bg-black/2 dark:bg-white/2 shadow-[0_2px_8px_rgba(0,0,0,0.02)]";
-    const defaultInactive = "border-transparent border-(--color-border) hover:bg-black/3 dark:hover:bg-white/5";
+    const defaultInactive = "border-(--color-border) hover:bg-black/3 dark:hover:bg-white/5";
 
     const dangerActive = "border-red-500 bg-red-500/5 dark:bg-red-500/10 shadow-[0_2px_8px_rgba(239,68,68,0.1)]";
-    const dangerInactive = "border-transparent border-(--color-border) hover:bg-red-500/5";
+    const dangerInactive = "border-(--color-border) hover:bg-red-500/5";
 
     return (
         <button

@@ -118,7 +118,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 					</div>
 
 					{importMode === 'overwrite' && (
-						<div className="pt-2 animate-tab-enter">
+						<div className="pt-2 animate-in fade-in slide-in-from-top-2 duration-200">
 							<label className="block text-xs font-bold text-(--color-muted) uppercase tracking-wider mb-2">
 								{t("type_to_confirm")}
 							</label>
