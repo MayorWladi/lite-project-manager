@@ -104,3 +104,12 @@ export function ActionCard({ title, description, icon, onClick }: ActionCardProp
         </button>
     );
 }
+
+export function SettingsSection({ title, children }: { title: string; children: ReactNode }) {
+	return (
+		<section>
+			<h3 className="text-xs font-bold uppercase tracking-wider text-(--color-muted) mb-3">{title}</h3>
+			{children}
+		</section>
+	);
+}
