@@ -28,11 +28,11 @@
 }
 
 :root.theme-matcha {
-  --background: #E0E5D3;
-  --foreground: #2A3822;
-  --color-border: #C4CBAE;
-  --color-muted: #6B7A58;
-  --color-card-bg: #EAEFE0;
+  --background: #E6EAE3;
+  --foreground: #2B3629;
+  --color-border: #C8D1C4;
+  --color-muted: #70806C;
+  --color-card-bg: #EEF1EC;
 }
 
 :root.theme-midnight {
