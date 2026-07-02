@@ -19,7 +19,7 @@ export default function ProjectList({
 }: ProjectListProps) {
   return (
     // Usamos flex-col con un gap pequeño para una lista compacta en el sidebar
-    <div className="flex flex-col gap-1 mt-2 overflow-y-auto">
+    <div className="flex flex-col gap-1 mt-2 overflow-y-auto overflow-x-hidden">
       {projects.map((project) => (
         <ProjectItem
           key={project.id}
