@@ -1,8 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { THEMES, ThemeType } from "@/app/common/constants/themes";
 
-export type ThemeType = "light" | "dark";
 export type FontType = "quicksand" | "comfortaa" | "dm-sans" | "mono";
 
 interface SettingsContextType {
@@ -43,11 +43,19 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 		if (!mounted) return;
 
 		const root = document.documentElement;
-		if (theme === "dark") {
+		// Quitar cualquier clase previa relacionada con temas
+		const currentThemeClasses = Array.from(root.classList).filter(cls => cls.startsWith('theme-'));
+		root.classList.remove(...currentThemeClasses, "dark");
+		
+		// Agregar la nueva clase del tema
+		root.classList.add(`theme-${theme}`);
+		
+		// Agregar la clase 'dark' si el tema es de naturaleza oscura (para variantes dark:)
+		const themeConfig = THEMES.find(t => t.id === theme);
+		if (themeConfig?.isDark) {
 			root.classList.add("dark");
-		} else {
-			root.classList.remove("dark");
 		}
+		
 		localStorage.setItem("kanban-theme", theme);
 	}, [theme, mounted]);
 

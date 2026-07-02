@@ -10,6 +10,7 @@ import ActivityDetailsSidebar from "@/app/features/activity-details/ActivityDeta
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { useConfirmation } from "@/app/common/context/ConfirmationContext";
 import { useLanguage } from "@/app/common/context/LanguageContext";
+import { THEMES } from "@/app/common/constants/themes";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { theme } = useSettings();
@@ -123,7 +124,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
       {/* Tostadora */}
       <Toaster
-        theme={theme}
+        theme={THEMES.find(t => t.id === theme)?.isDark ? "dark" : "light"}
         options={{
           fill: 'var(--color-card-bg)',
           roundness: 8,

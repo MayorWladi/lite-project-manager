@@ -2,7 +2,8 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 
-:root {
+:root,
+.theme-light {
   --background: #F4F0EB;
   --foreground: #3A3632;
   --color-border: #E0DCD3;
@@ -17,12 +18,29 @@
   --font-mono: 'Geist Mono', 'SF Mono', 'JetBrains Mono', monospace;
 }
 
-:root.dark {
+:root.dark,
+.theme-dark {
   --background: #1C1A19;
   --foreground: #E5E0D8;
   --color-border: #2D2A28;
   --color-muted: #7A7571;
   --color-card-bg: #262423;
+}
+
+.theme-matcha {
+  --background: #F3F6F2;
+  --foreground: #2A3B2A;
+  --color-border: #D6DFD4;
+  --color-muted: #6E876E;
+  --color-card-bg: #FFFFFF;
+}
+
+.theme-midnight {
+  --background: #0B0E14;
+  --foreground: #E2E8F0;
+  --color-border: #1E293B;
+  --color-muted: #64748B;
+  --color-card-bg: #141A24;
 }
 
 .font-quicksand {
