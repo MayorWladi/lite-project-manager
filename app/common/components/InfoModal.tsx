@@ -1,11 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/app/common/context/LanguageContext";
 import { useSettings } from "@/app/common/context/SettingsContext";
 import Modal from "@/app/common/components/Modal";
 import { collaborators } from "@/app/utils/storage/collaborators";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface InfoModalProps {
   isOpen: boolean;
@@ -15,10 +14,41 @@ interface InfoModalProps {
 export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
   const { language, t } = useLanguage();
   const { theme } = useSettings();
-  const [activeTab, setActiveTab] = React.useState<"guide" | "collaborators">("guide");
-  const [currentStep, setCurrentStep] = React.useState(0);
   
-  const ANIMATION_DELAY = 0.15; // 150ms de espera antes de que entre el nuevo contenido
+  // Tabs management
+  const [activeTab, setActiveTab] = useState<"guide" | "collaborators">("guide");
+  const [displayedTab, setDisplayedTab] = useState<"guide" | "collaborators">("guide");
+  const [currentStep, setCurrentStep] = useState(0);
+
+  // Animation states: 'idle' | 'exiting' | 'entering'
+  const [animState, setAnimState] = useState<'idle' | 'exiting' | 'entering'>('idle');
+  const [direction, setDirection] = useState<'left' | 'right'>('right');
+  
+  const ANIMATION_DELAY = 150; // 150ms
+  const TRANSITION_DURATION = 150; // 150ms
+
+  const handleTabChange = (newTab: "guide" | "collaborators") => {
+    if (newTab === activeTab || animState !== 'idle') return;
+    
+    setDirection(newTab === "guide" ? 'left' : 'right');
+    setActiveTab(newTab);
+    setAnimState('exiting');
+  };
+
+  useEffect(() => {
+    if (animState === 'exiting') {
+      const exitTimer = setTimeout(() => {
+        setDisplayedTab(activeTab);
+        setAnimState('entering');
+      }, TRANSITION_DURATION);
+      return () => clearTimeout(exitTimer);
+    } else if (animState === 'entering') {
+      const enterTimer = setTimeout(() => {
+        setAnimState('idle');
+      }, ANIMATION_DELAY); // Esperamos a que el Modal cambie su altura antes de mostrar
+      return () => clearTimeout(enterTimer);
+    }
+  }, [animState, activeTab]);
 
   const tutorialSteps = [
     { title: t("tut_step1_title"), desc: t("tut_step1_desc"), image: `/tutorial/${theme}_step1.png` },
@@ -60,18 +90,29 @@ export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
     }
   }
 
+  // Clases CSS dinámicas para la animación manual
+  let contentClass = "transition-all duration-150 ";
+  if (animState === 'idle') {
+    contentClass += "opacity-100 translate-x-0 ease-out";
+  } else if (animState === 'exiting') {
+    contentClass += `opacity-0 ease-in ${direction === 'left' ? '-translate-x-5' : 'translate-x-5'}`;
+  } else if (animState === 'entering') {
+    // Al entrar (antes del delay), lo preparamos desplazado pero sin transición (duration-0 o simplemente no seteamos opacity-100)
+    contentClass = `opacity-0 ${direction === 'left' ? '-translate-x-5' : 'translate-x-5'}`;
+  }
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={t("information")}>
       {/* Pestañas */}
       <div className="flex border-b border-(--color-border) mb-6">
         <button
-          onClick={() => setActiveTab("guide")}
+          onClick={() => handleTabChange("guide")}
           className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 ${activeTab === "guide" ? "border-foreground text-foreground" : "border-transparent text-(--color-muted) hover:text-foreground"}`}
         >
           {t("user_guide")}
         </button>
         <button
-          onClick={() => setActiveTab("collaborators")}
+          onClick={() => handleTabChange("collaborators")}
           className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 ${activeTab === "collaborators" ? "border-foreground text-foreground" : "border-transparent text-(--color-muted) hover:text-foreground"}`}
         >
           {t("collaborators")}
@@ -79,109 +120,93 @@ export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
       </div>
 
       <div className="relative w-full">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, x: activeTab === "guide" ? -20 : 20 }}
-            animate={{ 
-              opacity: 1, 
-              x: 0,
-              transition: { delay: ANIMATION_DELAY, duration: 0.2, ease: "easeOut" }
-            }}
-            exit={{ 
-              opacity: 0, 
-              x: activeTab === "guide" ? -20 : 20,
-              transition: { duration: 0.15, ease: "easeIn" }
-            }}
-            className="w-full flex flex-col"
-          >
-            {/* Contenido: Guía de Uso (Carrusel de Tutorial) */}
-            {activeTab === "guide" && (
-              <div className="flex flex-col items-center">
-                {/* Contenedor de Imagen */}
-                <div className="w-full aspect-video bg-black/5 dark:bg-white/5 rounded-xl border border-(--color-border) overflow-hidden flex items-center justify-center relative">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={tutorialSteps[currentStep].image}
-                    alt={tutorialSteps[currentStep].title}
-                    className="w-full h-full object-cover transition-opacity duration-300"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" fill="%23e5e7eb"><rect width="100%25" height="100%25" fill="%231a1a1a" /><text x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="18px" fill="%23666666">Screenshot missing: ${tutorialSteps[currentStep].image}</text><text x="50%25" y="60%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14px" fill="%23555555">(Please add it to the public/tutorial folder)</text></svg>`;
-                    }}
-                  />
-                </div>
+        <div className={`w-full flex flex-col ${contentClass}`}>
+          {/* Contenido: Guía de Uso (Carrusel de Tutorial) */}
+          {displayedTab === "guide" && (
+            <div className="flex flex-col items-center">
+              {/* Contenedor de Imagen */}
+              <div className="w-full aspect-video bg-black/5 dark:bg-white/5 rounded-xl border border-(--color-border) overflow-hidden flex items-center justify-center relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={tutorialSteps[currentStep].image}
+                  alt={tutorialSteps[currentStep].title}
+                  className="w-full h-full object-cover transition-opacity duration-300"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" fill="%23e5e7eb"><rect width="100%25" height="100%25" fill="%231a1a1a" /><text x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="18px" fill="%23666666">Screenshot missing: ${tutorialSteps[currentStep].image}</text><text x="50%25" y="60%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14px" fill="%23555555">(Please add it to the public/tutorial folder)</text></svg>`;
+                  }}
+                />
+              </div>
 
-                {/* Textos y Controles */}
-                <div className="w-full mt-5 flex flex-col gap-2">
-                  <h3 className="font-bold text-foreground text-lg">{tutorialSteps[currentStep].title}</h3>
-                  <p className="text-sm text-(--color-muted) min-h-[40px] leading-relaxed">{tutorialSteps[currentStep].desc}</p>
+              {/* Textos y Controles */}
+              <div className="w-full mt-5 flex flex-col gap-2">
+                <h3 className="font-bold text-foreground text-lg">{tutorialSteps[currentStep].title}</h3>
+                <p className="text-sm text-(--color-muted) min-h-[40px] leading-relaxed">{tutorialSteps[currentStep].desc}</p>
 
-                  {/* Controles de Navegación */}
-                  <div className="flex items-center justify-between mt-4">
-                    <button
-                      onClick={prevStep}
-                      disabled={currentStep === 0}
-                      className="px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-0 disabled:pointer-events-none hover:bg-black/5 dark:hover:bg-white/5 text-foreground"
-                    >
-                      {t("tut_prev")}
-                    </button>
+                {/* Controles de Navegación */}
+                <div className="flex items-center justify-between mt-4">
+                  <button
+                    onClick={prevStep}
+                    disabled={currentStep === 0}
+                    className="px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-0 disabled:pointer-events-none hover:bg-black/5 dark:hover:bg-white/5 text-foreground"
+                  >
+                    {t("tut_prev")}
+                  </button>
 
-                    <div className="flex gap-2">
-                      {tutorialSteps.map((_, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => setCurrentStep(idx)}
-                          aria-label={`Go to step ${idx + 1}`}
-                          className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentStep ? 'bg-foreground w-4' : 'bg-foreground/20 hover:bg-foreground/50'}`}
-                        />
-                      ))}
-                    </div>
-
-                    <button
-                      onClick={currentStep === tutorialSteps.length - 1 ? onClose : nextStep}
-                      className="px-4 py-2 rounded-lg text-sm font-medium bg-foreground text-background hover:opacity-90 transition-opacity shadow-sm"
-                    >
-                      {currentStep === tutorialSteps.length - 1 ? t("tut_finish") : t("tut_next")}
-                    </button>
+                  <div className="flex gap-2">
+                    {tutorialSteps.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setCurrentStep(idx)}
+                        aria-label={`Go to step ${idx + 1}`}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentStep ? 'bg-foreground w-4' : 'bg-foreground/20 hover:bg-foreground/50'}`}
+                      />
+                    ))}
                   </div>
-                </div>
-              </div>
-            )}
 
-            {/* Contenido: Colaboradores */}
-            {activeTab === "collaborators" && (
-              <div>
-                <div className="text-sm text-(--color-muted) mb-4">
-                  <p>{t("credits_desc")}</p>
-                </div>
-                <div className="flex flex-col gap-3">
-                  {collaborators.map(collaborator => (
-                    <div key={collaborator.id} className="flex items-center justify-between p-3 rounded-xl border border-(--color-border) hover:bg-black/3 dark:hover:bg-white/5 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-foreground text-background flex items-center justify-center font-bold text-sm">
-                          {collaborator.name.charAt(0)}
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-foreground">{collaborator.name}</div>
-                          <div className="text-xs text-(--color-muted)">{collaborator.role[language as 'en' | 'es']}</div>
-                        </div>
-                      </div>
-                      {collaborator.socials && collaborator.socials.length > 0 && (
-                        <div className="flex gap-2 text-(--color-muted)">
-                          {collaborator.socials.map((social, index) => (
-                            <a key={index} href={social.url} target="_blank" rel="noopener noreferrer" className="p-1 hover:text-foreground transition-colors">
-                              {renderSocialIcon(social.url)}
-                            </a>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                  <button
+                    onClick={currentStep === tutorialSteps.length - 1 ? onClose : nextStep}
+                    className="px-4 py-2 rounded-lg text-sm font-medium bg-foreground text-background hover:opacity-90 transition-opacity shadow-sm"
+                  >
+                    {currentStep === tutorialSteps.length - 1 ? t("tut_finish") : t("tut_next")}
+                  </button>
                 </div>
               </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
+            </div>
+          )}
+
+          {/* Contenido: Colaboradores */}
+          {displayedTab === "collaborators" && (
+            <div>
+              <div className="text-sm text-(--color-muted) mb-4">
+                <p>{t("credits_desc")}</p>
+              </div>
+              <div className="flex flex-col gap-3">
+                {collaborators.map(collaborator => (
+                  <div key={collaborator.id} className="flex items-center justify-between p-3 rounded-xl border border-(--color-border) hover:bg-black/3 dark:hover:bg-white/5 transition-colors gap-4">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 rounded-full bg-foreground text-background flex items-center justify-center font-bold text-sm shrink-0">
+                        {collaborator.name.charAt(0)}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-sm font-medium text-foreground break-words">{collaborator.name}</div>
+                        <div className="text-xs text-(--color-muted) break-words">{collaborator.role[language as 'en' | 'es']}</div>
+                      </div>
+                    </div>
+                    {collaborator.socials && collaborator.socials.length > 0 && (
+                      <div className="flex gap-2 text-(--color-muted) shrink-0">
+                        {collaborator.socials.map((social, index) => (
+                          <a key={index} href={social.url} target="_blank" rel="noopener noreferrer" className="p-1 hover:text-foreground transition-colors">
+                            {renderSocialIcon(social.url)}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </Modal>
   );
