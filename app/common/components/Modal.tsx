@@ -16,6 +16,7 @@ function useModalTransition(isOpen: boolean, delayTime: number) {
 	// Efecto para montar/desmontar
 	useEffect(() => {
 		if (isOpen) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setShouldRender(true);
 		} else {
 			setIsVisible(false);
