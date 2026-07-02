@@ -108,6 +108,25 @@ const DICTIONARY: Translations = {
 	tpl_task3: { en: "Check off these tasks", es: "Marca estas tareas como completadas" },
 	tpl_task4: { en: "Delete this card when you're done", es: "Elimina esta tarjeta cuando termines" },
 
+	// Data Management Translations
+	data_management: { en: "Data Management", es: "Gestión de Datos" },
+	export_backup: { en: "Export Backup", es: "Exportar Respaldo" },
+	export_desc: { en: "Download all your projects and tasks as a JSON file.", es: "Descarga todos tus proyectos y tareas como un archivo JSON." },
+	import_backup: { en: "Import Backup", es: "Importar Respaldo" },
+	import_desc: { en: "Restore your projects from a JSON file.", es: "Restaura tus proyectos desde un archivo JSON." },
+	import_mode: { en: "Import Mode", es: "Modo de Importación" },
+	mode_merge: { en: "Merge (Safest)", es: "Sumar (Más seguro)" },
+	mode_merge_desc: { en: "Adds imported projects without deleting current ones.", es: "Añade los proyectos importados sin borrar los actuales." },
+	mode_overwrite: { en: "Overwrite (Destructive)", es: "Sobreescribir (Destructivo)" },
+	mode_overwrite_desc: { en: "Deletes all current data and replaces it with the backup.", es: "Borra todos los datos actuales y los reemplaza con el respaldo." },
+	type_to_confirm: { en: "Type CONFIRM to proceed", es: "Escribe CONFIRMAR para continuar" },
+	confirm_word: { en: "CONFIRM", es: "CONFIRMAR" },
+	import_action: { en: "Import Data", es: "Importar Datos" },
+	notif_import_success: { en: "Import Successful", es: "Importación Exitosa" },
+	notif_import_success_desc: { en: "Your projects have been restored.", es: "Tus proyectos han sido restaurados." },
+	notif_import_error: { en: "Import Failed", es: "Error al importar" },
+	notif_import_error_desc: { en: "The file format is invalid.", es: "El formato del archivo no es válido." },
+
 	// Notifications
 	notif_task_added: { en: "Task Added", es: "Tarea añadida" },
 	notif_task_added_desc: { en: "The task was added:", es: "Se ha añadido la tarea:" },

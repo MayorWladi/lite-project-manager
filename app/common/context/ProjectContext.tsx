@@ -37,6 +37,7 @@ interface ProjectContextType {
   deleteTask: (projectId: string, sprintId: string, activityId: string, taskId: string) => void;
   useSprintMetrics: (sprint: Sprint | null | undefined) => { total: number; done: number; percentage: number };
   getActivityMetrics: (activity: Activity) => { total: number; done: number };
+  importData: (data: Project[], mode: 'merge' | 'overwrite') => void;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -234,6 +235,31 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     if (deletedTaskName) notifyTaskDeleted(t);
   };
 
+  const importData = (data: Project[], mode: 'merge' | 'overwrite') => {
+    if (mode === 'overwrite') {
+      setProjects(data);
+      setSelectedProjectId(null);
+    } else {
+      const mergedProjects = data.map(p => ({
+        ...p,
+        id: `proj-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        sprints: p.sprints.map(s => ({
+          ...s,
+          id: `s-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          activities: (s.activities || []).map(a => ({
+            ...a,
+            id: `act-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            tasks: (a.tasks || []).map(t => ({
+              ...t,
+              id: `task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+            }))
+          }))
+        }))
+      }));
+      setProjects(prev => [...prev, ...mergedProjects]);
+    }
+  };
+
   if (!isHydrated) return null;
 
   return (
@@ -241,7 +267,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       value={{
         projects, selectedProjectId, setSelectedProjectId,
         selectedSprintId, selectedActivityId, selectedActivity, openActivityDetails, closeActivityDetails, updateActivityDescription, updateActivityStatus,
-        addProject, renameProject, deleteProject, addSprint, renameSprint, deleteSprint, addActivity, renameActivity, deleteActivity, updateSprintActivities, addTaskToActivity, renameTask, toggleTaskCompletion, deleteTask, useSprintMetrics, getActivityMetrics,
+        addProject, renameProject, deleteProject, addSprint, renameSprint, deleteSprint, addActivity, renameActivity, deleteActivity, updateSprintActivities, addTaskToActivity, renameTask, toggleTaskCompletion, deleteTask, useSprintMetrics, getActivityMetrics, importData,
       }}
     >
       {children}
