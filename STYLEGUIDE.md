@@ -18,6 +18,38 @@ We avoid pure whites (`#FFFFFF`) and pitch blacks (`#000000`) to reduce eye stra
 
 > **Rule:** Do not hardcode HEX colors in Tailwind classes (e.g., `bg-[#FF0000]`). Always use the semantic variables (e.g., `bg-background`, `text-foreground`, `bg-(--color-card-bg)`).
 
+### 1.1 Dynamic Theme Engine (How to Add a New Theme)
+
+The application uses a Dynamic Theme Engine capable of swapping global aesthetics at runtime without performance penalties.
+
+**Step 1: Define the Theme Config**
+Open `app/common/constants/themes.tsx` and append your new theme object to the `THEMES` array:
+```tsx
+  {
+    id: "ocean", // Unique identifier
+    name: { en: "Ocean", es: "Océano" },
+    isDark: true, // true if it requires white text on hover states, false otherwise
+    icon: (
+      <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        {/* Your vector icon here */}
+      </svg>
+    ),
+  }
+```
+
+**Step 2: Inject the CSS Variables**
+Open `app/globals.css` and map your chosen colors to the same CSS variables used globally. To ensure it overrides the default `dark` or `light` modes properly, prefix your class with `:root.` like this:
+```css
+:root.theme-ocean {
+  --background: #0B141A;
+  --foreground: #D4E4F0;
+  --color-border: #1B2936;
+  --color-muted: #5C7A99;
+  --color-card-bg: #111C24;
+}
+```
+That's it! The settings modal will automatically read the new array, render a button for the theme, and inject the class into the DOM.
+
 ## 2. Animations (Native CSS Only)
 
 We value absolute performance and minimal bundle size. 
