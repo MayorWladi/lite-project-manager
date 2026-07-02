@@ -28,19 +28,19 @@
 }
 
 :root.theme-matcha {
-  --background: #E4E9DC;
-  --foreground: #1E2B1E;
-  --color-border: #C2CFC0;
-  --color-muted: #5C735C;
-  --color-card-bg: #F2F5EF;
+  --background: #E0E5D3;
+  --foreground: #2A3822;
+  --color-border: #C4CBAE;
+  --color-muted: #6B7A58;
+  --color-card-bg: #EAEFE0;
 }
 
 :root.theme-midnight {
-  --background: #0F1123;
-  --foreground: #D9DDF0;
-  --color-border: #252A4A;
-  --color-muted: #6C739E;
-  --color-card-bg: #161930;
+  --background: #111424;
+  --foreground: #CBD5E1;
+  --color-border: #2A3052;
+  --color-muted: #6C7A9C;
+  --color-card-bg: #1A1E36;
 }
 
 .font-quicksand {
