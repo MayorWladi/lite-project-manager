@@ -6,6 +6,7 @@ import { useLanguage } from "@/app/common/context/LanguageContext";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { Project } from "@/app/common/types";
 import Modal from "@/app/common/components/Modal";
+import { RadioPill, RadioCard } from "@/app/common/components/RadioOption";
 import { notify } from "@/app/utils/helpers/notifications";
 
 interface SettingsModalProps {
@@ -92,41 +93,19 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 					</p>
 
 					<div className="flex flex-col gap-2">
-						<button
+						<RadioCard
+							title={t("mode_merge")}
+							description={t("mode_merge_desc")}
+							isActive={importMode === 'merge'}
 							onClick={() => setImportMode('merge')}
-							className={`w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-center justify-between group ${importMode === 'merge'
-								? "border-foreground bg-black/2 dark:bg-white/2 shadow-[0_2px_8px_rgba(0,0,0,0.02)]"
-								: "border-transparent border-(--color-border) hover:bg-black/3 dark:hover:bg-white/5"
-								}`}
-						>
-							<div>
-								<div className={`font-semibold text-sm ${importMode === 'merge' ? 'text-foreground' : ''}`}>{t("mode_merge")}</div>
-								<div className="text-xs text-(--color-muted) mt-0.5">{t("mode_merge_desc")}</div>
-							</div>
-							{importMode === 'merge' && (
-								<svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="text-foreground shrink-0 animate-in fade-in zoom-in duration-200">
-									<polyline points="20 6 9 17 4 12" />
-								</svg>
-							)}
-						</button>
-
-						<button
+						/>
+						<RadioCard
+							title={t("mode_overwrite")}
+							description={t("mode_overwrite_desc")}
+							isActive={importMode === 'overwrite'}
 							onClick={() => setImportMode('overwrite')}
-							className={`w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-center justify-between group ${importMode === 'overwrite'
-								? "border-red-500 bg-red-500/5 dark:bg-red-500/10 shadow-[0_2px_8px_rgba(239,68,68,0.1)]"
-								: "border-transparent border-(--color-border) hover:bg-red-500/5"
-								}`}
-						>
-							<div>
-								<div className={`font-semibold text-sm ${importMode === 'overwrite' ? 'text-red-600 dark:text-red-400' : 'text-foreground'}`}>{t("mode_overwrite")}</div>
-								<div className="text-xs text-(--color-muted) mt-0.5">{t("mode_overwrite_desc")}</div>
-							</div>
-							{importMode === 'overwrite' && (
-								<svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="text-red-600 dark:text-red-400 shrink-0 animate-in fade-in zoom-in duration-200">
-									<polyline points="20 6 9 17 4 12" />
-								</svg>
-							)}
-						</button>
+							variant="danger"
+						/>
 					</div>
 
 					{importMode === 'overwrite' && (
@@ -167,24 +146,16 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 					<section>
 						<h3 className="text-xs font-bold uppercase tracking-wider text-(--color-muted) mb-3">{t("language")}</h3>
 						<div className="flex gap-3">
-							<button
+							<RadioPill
+								label={t("english")}
+								isActive={language === "en"}
 								onClick={() => setLanguage("en")}
-								className={`flex-1 py-2.5 px-4 rounded-xl border flex items-center justify-center gap-2 transition-all duration-200 ${language === "en"
-									? "border-foreground bg-black/5 dark:bg-white/5 shadow-inner"
-									: "border-(--color-border) hover:border-(--color-muted) text-(--color-muted)"
-									}`}
-							>
-								<span className={`text-sm ${language === "en" ? "text-foreground font-medium" : ""}`}>{t("english")}</span>
-							</button>
-							<button
+							/>
+							<RadioPill
+								label={t("spanish")}
+								isActive={language === "es"}
 								onClick={() => setLanguage("es")}
-								className={`flex-1 py-2.5 px-4 rounded-xl border flex items-center justify-center gap-2 transition-all duration-200 ${language === "es"
-									? "border-foreground bg-black/5 dark:bg-white/5 shadow-inner"
-									: "border-(--color-border) hover:border-(--color-muted) text-(--color-muted)"
-									}`}
-							>
-								<span className={`text-sm ${language === "es" ? "text-foreground font-medium" : ""}`}>{t("spanish")}</span>
-							</button>
+							/>
 						</div>
 					</section>
 
@@ -192,31 +163,29 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 					<section>
 						<h3 className="text-xs font-bold uppercase tracking-wider text-(--color-muted) mb-3">{t("appearance")}</h3>
 						<div className="flex gap-3">
-							<button
+							<RadioPill
+								label={t("light")}
+								isActive={theme === "light"}
 								onClick={() => setTheme("light")}
-								className={`flex-1 py-3 px-4 rounded-xl border flex flex-col items-center gap-2 transition-all duration-200 ${theme === "light"
-									? "border-foreground bg-black/5 dark:bg-white/5 shadow-inner"
-									: "border-(--color-border) hover:border-(--color-muted) text-(--color-muted)"
-									}`}
-							>
-								<svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-									<circle cx="12" cy="12" r="5" />
-									<path strokeLinecap="round" strokeLinejoin="round" d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-								</svg>
-								<span className={`text-sm ${theme === "light" ? "text-foreground font-medium" : ""}`}>{t("light")}</span>
-							</button>
-							<button
+								layout="col"
+								icon={
+									<svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+										<circle cx="12" cy="12" r="5" />
+										<path strokeLinecap="round" strokeLinejoin="round" d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+									</svg>
+								}
+							/>
+							<RadioPill
+								label={t("dark")}
+								isActive={theme === "dark"}
 								onClick={() => setTheme("dark")}
-								className={`flex-1 py-3 px-4 rounded-xl border flex flex-col items-center gap-2 transition-all duration-200 ${theme === "dark"
-									? "border-foreground bg-black/5 dark:bg-white/5 shadow-inner"
-									: "border-(--color-border) hover:border-(--color-muted) text-(--color-muted)"
-									}`}
-							>
-								<svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-									<path strokeLinecap="round" strokeLinejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-								</svg>
-								<span className={`text-sm ${theme === "dark" ? "text-foreground font-medium" : ""}`}>{t("dark")}</span>
-							</button>
+								layout="col"
+								icon={
+									<svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+									</svg>
+								}
+							/>
 						</div>
 					</section>
 
@@ -225,28 +194,14 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 						<h3 className="text-xs font-bold uppercase tracking-wider text-(--color-muted) mb-3">{t("font")}</h3>
 						<div className="flex flex-col gap-2">
 							{FONTS.map(f => (
-								<button
-									key={f.id}
-									onClick={() => setFont(f.id)}
-									className={`w-full text-left p-3 rounded-xl border transition-all duration-200 flex items-center justify-between group ${font === f.id
-										? "border-foreground bg-black/2 dark:bg-white/2 shadow-[0_2px_8px_rgba(0,0,0,0.02)]"
-										: "border-transparent hover:bg-black/3 dark:hover:bg-white/5"
-										}`}
-								>
-									<div>
-										<div className={`text-base text-foreground ${f.class}`}>
-											{f.name}
-										</div>
-										<div className="text-xs text-(--color-muted) mt-0.5">
-											{f.description[language]}
-										</div>
-									</div>
-									{font === f.id && (
-										<svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="text-foreground">
-											<polyline points="20 6 9 17 4 12" />
-										</svg>
-									)}
-								</button>
+								<div key={f.id} className={f.class}>
+									<RadioCard
+										title={f.name}
+										description={f.description[language as 'en' | 'es']}
+										isActive={font === f.id}
+										onClick={() => setFont(f.id)}
+									/>
+								</div>
 							))}
 						</div>
 					</section>
