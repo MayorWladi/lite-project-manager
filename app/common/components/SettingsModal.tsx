@@ -6,8 +6,17 @@ import { useLanguage } from "@/app/common/context/LanguageContext";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { Project } from "@/app/common/types";
 import Modal from "@/app/common/components/Modal";
-import { RadioPill, RadioCard } from "@/app/common/components/RadioOption";
+import { RadioPill, RadioCard, ActionCard } from "@/app/common/components/RadioOption";
 import { notify } from "@/app/utils/helpers/notifications";
+
+function SettingsSection({ title, children }: { title: string; children: React.ReactNode }) {
+	return (
+		<section>
+			<h3 className="text-xs font-bold uppercase tracking-wider text-(--color-muted) mb-3">{title}</h3>
+			{children}
+		</section>
+	);
+}
 
 interface SettingsModalProps {
 	isOpen: boolean;
@@ -143,8 +152,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 			) : (
 				<div className="space-y-8">
 					{/* Idioma */}
-					<section>
-						<h3 className="text-xs font-bold uppercase tracking-wider text-(--color-muted) mb-3">{t("language")}</h3>
+					<SettingsSection title={t("language")}>
 						<div className="flex gap-3">
 							<RadioPill
 								label={t("english")}
@@ -157,11 +165,10 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 								onClick={() => setLanguage("es")}
 							/>
 						</div>
-					</section>
+					</SettingsSection>
 
 					{/* Tema */}
-					<section>
-						<h3 className="text-xs font-bold uppercase tracking-wider text-(--color-muted) mb-3">{t("appearance")}</h3>
+					<SettingsSection title={t("appearance")}>
 						<div className="flex gap-3">
 							<RadioPill
 								label={t("light")}
@@ -187,11 +194,10 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 								}
 							/>
 						</div>
-					</section>
+					</SettingsSection>
 
 					{/* Tipografía */}
-					<section>
-						<h3 className="text-xs font-bold uppercase tracking-wider text-(--color-muted) mb-3">{t("font")}</h3>
+					<SettingsSection title={t("font")}>
 						<div className="flex flex-col gap-2">
 							{FONTS.map(f => (
 								<div key={f.id} className={f.class}>
@@ -204,44 +210,38 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 								</div>
 							))}
 						</div>
-					</section>
+					</SettingsSection>
 
 					{/* Datos */}
-					<section>
-						<h3 className="text-xs font-bold uppercase tracking-wider text-(--color-muted) mb-3">{t("data_management")}</h3>
+					<SettingsSection title={t("data_management")}>
 						<div className="flex gap-3">
-							<button
+							<ActionCard
+								title={t("export_backup")}
+								description={t("export_desc")}
 								onClick={handleExport}
-								className="flex-1 py-3 px-4 rounded-xl border border-(--color-border) hover:border-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-all flex flex-col items-center gap-2 group"
-							>
-								<svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="text-(--color-muted) group-hover:text-foreground transition-colors">
-									<path strokeLinecap="round" strokeLinejoin="round" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-									<polyline strokeLinecap="round" strokeLinejoin="round" points="7 10 12 15 17 10" />
-									<line strokeLinecap="round" strokeLinejoin="round" x1="12" x2="12" y1="15" y2="3" />
-								</svg>
-								<div className="text-center">
-									<span className="block text-sm font-medium text-foreground">{t("export_backup")}</span>
-									<span className="block text-[10px] text-(--color-muted) mt-1">{t("export_desc")}</span>
-								</div>
-							</button>
-							
-							<button
+								icon={
+									<svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+										<polyline strokeLinecap="round" strokeLinejoin="round" points="7 10 12 15 17 10" />
+										<line strokeLinecap="round" strokeLinejoin="round" x1="12" x2="12" y1="15" y2="3" />
+									</svg>
+								}
+							/>
+							<ActionCard
+								title={t("import_backup")}
+								description={t("import_desc")}
 								onClick={() => fileInputRef.current?.click()}
-								className="flex-1 py-3 px-4 rounded-xl border border-(--color-border) hover:border-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-all flex flex-col items-center gap-2 group"
-							>
-								<svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="text-(--color-muted) group-hover:text-foreground transition-colors">
-									<path strokeLinecap="round" strokeLinejoin="round" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-									<polyline strokeLinecap="round" strokeLinejoin="round" points="17 8 12 3 7 8" />
-									<line strokeLinecap="round" strokeLinejoin="round" x1="12" x2="12" y1="3" y2="15" />
-								</svg>
-								<div className="text-center">
-									<span className="block text-sm font-medium text-foreground">{t("import_backup")}</span>
-									<span className="block text-[10px] text-(--color-muted) mt-1">{t("import_desc")}</span>
-								</div>
-							</button>
+								icon={
+									<svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+										<polyline strokeLinecap="round" strokeLinejoin="round" points="17 8 12 3 7 8" />
+										<line strokeLinecap="round" strokeLinejoin="round" x1="12" x2="12" y1="3" y2="15" />
+									</svg>
+								}
+							/>
 							<input type="file" accept=".json" className="hidden" ref={fileInputRef} onChange={handleFileSelect} />
 						</div>
-					</section>
+					</SettingsSection>
 				</div>
 			)}
 		</Modal>

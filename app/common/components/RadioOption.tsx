@@ -80,3 +80,27 @@ export function RadioCard({ title, description, isActive, onClick, variant = "de
         </button>
     );
 }
+
+interface ActionCardProps {
+    title: string;
+    description: string;
+    icon: ReactNode;
+    onClick: () => void;
+}
+
+export function ActionCard({ title, description, icon, onClick }: ActionCardProps) {
+    return (
+        <button
+            onClick={onClick}
+            className="flex-1 py-3 px-4 rounded-xl border border-(--color-border) hover:border-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-all flex flex-col items-center gap-2 group"
+        >
+            <div className="text-(--color-muted) group-hover:text-foreground transition-colors">
+                {icon}
+            </div>
+            <div className="text-center">
+                <span className="block text-sm font-medium text-foreground">{title}</span>
+                <span className="block text-[10px] text-(--color-muted) mt-1">{description}</span>
+            </div>
+        </button>
+    );
+}
