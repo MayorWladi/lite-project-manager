@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useLanguage } from "@/app/common/context/LanguageContext";
+import { useSettings } from "@/app/common/context/SettingsContext";
 import Modal from "@/app/common/components/Modal";
 import { collaborators } from "@/app/utils/storage/collaborators";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,14 +14,17 @@ interface InfoModalProps {
 
 export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
   const { language, t } = useLanguage();
+  const { theme } = useSettings();
   const [activeTab, setActiveTab] = React.useState<"guide" | "collaborators">("guide");
   const [currentStep, setCurrentStep] = React.useState(0);
+  
+  const ANIMATION_DELAY = 0.15; // 150ms de espera antes de que entre el nuevo contenido
 
   const tutorialSteps = [
-    { title: t("tut_step1_title"), desc: t("tut_step1_desc"), image: "/tutorial/step1.png" },
-    { title: t("tut_step2_title"), desc: t("tut_step2_desc"), image: "/tutorial/step2.png" },
-    { title: t("tut_step3_title"), desc: t("tut_step3_desc"), image: "/tutorial/step3.png" },
-    { title: t("tut_step4_title"), desc: t("tut_step4_desc"), image: "/tutorial/step4.png" },
+    { title: t("tut_step1_title"), desc: t("tut_step1_desc"), image: `/tutorial/${theme}_step1.png` },
+    { title: t("tut_step2_title"), desc: t("tut_step2_desc"), image: `/tutorial/${theme}_step2.png` },
+    { title: t("tut_step3_title"), desc: t("tut_step3_desc"), image: `/tutorial/${theme}_step3.png` },
+    { title: t("tut_step4_title"), desc: t("tut_step4_desc"), image: `/tutorial/${theme}_step4.png` },
   ];
 
   const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, tutorialSteps.length - 1));
@@ -79,9 +83,16 @@ export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, x: activeTab === "guide" ? -20 : 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: activeTab === "guide" ? -20 : 20 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
+            animate={{ 
+              opacity: 1, 
+              x: 0,
+              transition: { delay: ANIMATION_DELAY, duration: 0.2, ease: "easeOut" }
+            }}
+            exit={{ 
+              opacity: 0, 
+              x: activeTab === "guide" ? -20 : 20,
+              transition: { duration: 0.15, ease: "easeIn" }
+            }}
             className="w-full flex flex-col"
           >
             {/* Contenido: Guía de Uso (Carrusel de Tutorial) */}
