@@ -27,7 +27,7 @@
   --color-card-bg: #262423;
 }
 
-.theme-matcha {
+:root.theme-matcha {
   --background: #E4E9DC;
   --foreground: #1E2B1E;
   --color-border: #C2CFC0;
@@ -35,7 +35,7 @@
   --color-card-bg: #F2F5EF;
 }
 
-.theme-midnight {
+:root.theme-midnight {
   --background: #0F1123;
   --foreground: #D9DDF0;
   --color-border: #252A4A;
