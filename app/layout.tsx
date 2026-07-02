@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 import { Quicksand, Comfortaa, DM_Sans, JetBrains_Mono } from 'next/font/google';
 import { SettingsProvider } from "@/app/common/context/SettingsContext";
 import { LanguageProvider } from "@/app/common/context/LanguageContext";
+import { ConfirmationProvider } from "@/app/common/context/ConfirmationContext";
 
 const quicksand = Quicksand({ subsets: ['latin'], variable: '--font-quicksand' });
 const comfortaa = Comfortaa({ subsets: ['latin'], variable: '--font-comfortaa' });
@@ -23,7 +24,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <LanguageProvider>
           <SettingsProvider>
             <ProjectProvider>
-              {children}
+              <ConfirmationProvider>
+                {children}
+              </ConfirmationProvider>
             </ProjectProvider>
           </SettingsProvider>
         </LanguageProvider>

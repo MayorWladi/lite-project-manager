@@ -137,7 +137,15 @@ const DICTIONARY: Translations = {
 	notif_task_deleted: { en: "Task Deleted", es: "Tarea eliminada" },
 	notif_task_deleted_desc: { en: "The task was removed from the list", es: "La tarea ha sido eliminada de la lista" },
 	notif_error_title: { en: "Action Not Allowed", es: "Acción no permitida" },
-	notif_error_desc: { en: "You cannot review or finish an activity with incomplete tasks", es: "No puedes pasar a revisión o finalizar una actividad con tareas sin completar" }
+	notif_error_desc: { en: "You cannot review or finish an activity with incomplete tasks", es: "No puedes pasar a revisión o finalizar una actividad con tareas sin completar" },
+
+	// Confirmations
+	confirm_delete_project_desc: { en: "Are you sure you want to delete this project? All sprints and tasks will be lost. This action cannot be undone.", es: "¿Estás seguro de eliminar este proyecto? Todos los sprints y tareas se perderán. Esta acción no se puede deshacer." },
+	confirm_delete_sprint_desc: { en: "Are you sure you want to delete this sprint? All activities and tasks will be lost. This action cannot be undone.", es: "¿Estás seguro de eliminar este sprint? Todas las actividades y tareas se perderán. Esta acción no se puede deshacer." },
+	confirm_delete_activity_desc: { en: "Are you sure you want to delete this activity? All tasks inside it will be lost.", es: "¿Estás seguro de eliminar esta actividad? Todas sus tareas se perderán." },
+	confirm_delete_task_desc: { en: "Are you sure you want to delete this task?", es: "¿Estás seguro de eliminar esta tarea?" },
+	type_exact_name_to_confirm: { en: "Type the exact name to confirm:", es: "Escribe el nombre exacto para confirmar:" },
+	delete_action: { en: "Delete", es: "Eliminar" }
 };
 
 interface LanguageContextType {
