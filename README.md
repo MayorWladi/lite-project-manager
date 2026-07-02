@@ -25,6 +25,13 @@ The visual identity of this manager is heavily inspired by **Lo-Fi** aesthetics�
 - **Bilingual Support:** Full interface translation available in English and Spanish.
 - **Persistent Settings:** Real-time Dark/Light mode toggling and font adjustments that save directly to your local preferences.
 
+## 🏗️ Architecture & Core Engines
+Under the hood, Lite Project Manager is powered by robust architectural decisions designed to keep the codebase clean, performant, and highly scalable:
+- **Feature-Sliced Design (FSD):** The application adheres to modular component design. Complex UI orchestrators are broken down into granular, single-responsibility micro-components, ensuring maximum reusability and maintainability.
+- **Global Confirmation Engine:** A centralized `ConfirmationContext` protects destructive actions (like deleting projects or sprints). It uses dynamic security levels, requiring exact-name matching for high-risk deletions, ensuring data safety without cluttering the UI with repeated modal states.
+- **Native Animation Synchronization:** Bypassing heavy animation libraries, the app utilizes native CSS transitions paired with synchronized `requestAnimationFrame` hooks to perfectly orchestrate complex DOM entry/exit animations without race conditions.
+- **Data Portability Engine:** A robust JSON-based backup system allows users to seamlessly download their entire workspace or import data using "Merge" (safe) or "Overwrite" (destructive) strategies with strict structural validation.
+
 ## 🛠 Tech Stack
 - **Framework:** Next.js 16 (App Router)
 - **Styling:** Tailwind CSS v4 (Using custom CSS variables and `@custom-variant dark` strategies)
