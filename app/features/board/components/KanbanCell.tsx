@@ -24,15 +24,17 @@ export default function KanbanCell({ sprintId, statusId, activities, gridMode = 
 	return (
 		<div
 			ref={setNodeRef}
-			className={`${widthClass} shrink-0 h-full min-h-0 rounded-xl border p-2 transition-all duration-300 overflow-y-auto ${layoutClass}
+			className={`${widthClass} shrink-0 h-full min-h-0 rounded-xl border p-2 transition-all duration-300 overflow-y-auto
         ${isOver ? 'border-solid border-(--color-muted) bg-black/4 dark:bg-white/5 shadow-inner' : 'border-dashed border-(--color-border) bg-black/2 dark:bg-white/2'}
       `}
 		>
-			<SortableContext items={activities.map(a => a.id)} strategy={gridMode > 1 ? rectSortingStrategy : verticalListSortingStrategy}>
-				{activities.map((act) => (
-					<ActivityCard key={act.id} activity={act} sprintId={sprintId} />
-				))}
-			</SortableContext>
+			<div className={layoutClass}>
+				<SortableContext items={activities.map(a => a.id)} strategy={gridMode > 1 ? rectSortingStrategy : verticalListSortingStrategy}>
+					{activities.map((act) => (
+						<ActivityCard key={act.id} activity={act} sprintId={sprintId} />
+					))}
+				</SortableContext>
+			</div>
 		</div>
 	);
 }
