@@ -36,11 +36,11 @@
 }
 
 :root.theme-midnight {
-  --background: #0B0C10;
-  --foreground: #D1D5DB;
-  --color-border: #1F222E;
-  --color-muted: #5F6377;
-  --color-card-bg: #12141A;
+  --background: #111424;
+  --foreground: #CBD5E1;
+  --color-border: #2A3052;
+  --color-muted: #6C7A9C;
+  --color-card-bg: #1A1E36;
 }
 
 .font-quicksand {
