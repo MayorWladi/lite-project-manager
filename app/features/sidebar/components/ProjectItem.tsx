@@ -43,7 +43,7 @@ export default function ProjectItem({
       }}
       className={`group w-full text-left px-3 py-1.5 rounded-lg transition-all duration-200 flex items-center justify-between cursor-pointer ${isSelected
       ? "bg-black/5 dark:bg-white/10 text-foreground font-medium"
-      : "text-(--color-muted) hover:bg-black/3 dark:hover:bg-white/5 hover:text-foreground"
+      : "text-(--color-muted) hover:bg-black/3 dark:hover:bg-white/5 hover:text-foreground hover:translate-x-0.5"
       }`}>
 
       {isRenaming ? (
