@@ -26,6 +26,14 @@
   --color-card-bg: #EBF0E4;
 }
 
+:root.theme-honey {
+  --background: #F4EEDF;
+  --foreground: #4A3C15;
+  --color-border: #E8DEB6;
+  --color-muted: #8F7A4A;
+  --color-card-bg: #FCF9F2;
+}
+
 :root.dark,
 .theme-dark {
   --background: #1C1A19;
@@ -33,6 +41,14 @@
   --color-border: #2D2A28;
   --color-muted: #7A7571;
   --color-card-bg: #262423;
+}
+
+:root.theme-espresso {
+  --background: #231C18;
+  --foreground: #E3D3C1;
+  --color-border: #42352B;
+  --color-muted: #826E5D;
+  --color-card-bg: #2C231E;
 }
 
 :root.theme-midnight {

@@ -8,13 +8,18 @@ We avoid pure whites (`#FFFFFF`) and pitch blacks (`#000000`) to reduce eye stra
 
 - **Light Mode (Paper/Analog):**
   - Background: `#F4F0EB` (Creamy paper texture)
-  - Cards: `#FFFFFF` (Soft contrast against the background)
+  - Cards: `#FCFBF9` (Soft off-white contrast against the background)
   - Text: `#1C1A19` (Soft dark brown/gray)
 
 - **Dark Mode (Coffee/Night):**
   - Background: `#1C1A19` (Warm dark espresso)
   - Cards: `#2A2726` (Slightly lighter to create depth)
   - Text: `#F4F0EB` (Soft cream text for readability)
+
+- **Matcha:** A pale, desaturated sage green (`#E2E7D9`) for a calming, herbal feel.
+- **Midnight:** Deep ocean blue/indigo (`#111424`) for a moody, late-night aesthetic.
+- **Honey:** Warm, golden-hour yellow/cream (`#F4EEDF`) with soft mustard accents.
+- **Espresso:** A cozy, rich dark brown (`#231C18`) reminiscent of wood and coffee.
 
 > **Rule:** Do not hardcode HEX colors in Tailwind classes (e.g., `bg-[#FF0000]`). Always use the semantic variables (e.g., `bg-background`, `text-foreground`, `bg-(--color-card-bg)`).
 

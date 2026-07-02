@@ -72,7 +72,7 @@ export default function GeneralSettings({ onStartImport }: GeneralSettingsProps)
 
 			{/* Tema */}
 			<SettingsSection title={t("appearance")}>
-				<div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+				<div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
 					{THEMES.map((th) => (
 						<RadioPill
 							key={th.id}
