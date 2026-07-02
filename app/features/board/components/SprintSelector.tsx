@@ -5,6 +5,7 @@ import { useCallback } from "react";
 import { Sprint } from "@/app/common/types";
 import { useSprintMetrics, useProjectsManager } from "@/app/common/context/ProjectContext";
 import { useLanguage } from "@/app/common/context/LanguageContext";
+import { useConfirmation } from "@/app/common/context/ConfirmationContext";
 import ProgressBar from "@/app/common/components/ProgressBar";
 import SprintTab from "@/app/features/board/components/SprintTab";
 import AddSprintForm from "@/app/features/board/components/AddSprintForm";
@@ -19,6 +20,7 @@ interface SprintSelectorProps {
 export default function SprintSelector({ sprints, activeSprint, onSelectSprint, onAddSprint }: SprintSelectorProps) {
 	const { t } = useLanguage();
 	const { selectedProjectId, renameSprint, deleteSprint } = useProjectsManager();
+	const { confirmAction } = useConfirmation();
 	const metrics = useSprintMetrics(activeSprint);
 
 	const handleRenameSprint = useCallback((sprintId: string, newName: string) => {
@@ -27,16 +29,28 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 		}
 	}, [selectedProjectId, renameSprint]);
 
-	const handleDeleteSprint = useCallback((sprintId: string) => {
+	const handleDeleteSprint = useCallback(async (sprintId: string) => {
 		if (selectedProjectId) {
-			deleteSprint(selectedProjectId, sprintId);
-			// Seleccionar automáticamente otro sprint si el activo fue eliminado
-			const remaining = sprints.filter(s => s.id !== sprintId);
-			if (remaining.length > 0 && activeSprint?.id === sprintId) {
-				onSelectSprint(remaining[0].id);
+			const sprintToDelete = sprints.find(s => s.id === sprintId);
+			if (!sprintToDelete) return;
+
+			const confirmed = await confirmAction({
+				title: t("delete_item"),
+				description: t("confirm_delete_sprint_desc"),
+				level: "high",
+				confirmWord: sprintToDelete.name
+			});
+
+			if (confirmed) {
+				deleteSprint(selectedProjectId, sprintId);
+				// Seleccionar automáticamente otro sprint si el activo fue eliminado
+				const remaining = sprints.filter(s => s.id !== sprintId);
+				if (remaining.length > 0 && activeSprint?.id === sprintId) {
+					onSelectSprint(remaining[0].id);
+				}
 			}
 		}
-	}, [selectedProjectId, deleteSprint, sprints, activeSprint, onSelectSprint]);
+	}, [selectedProjectId, deleteSprint, sprints, activeSprint, onSelectSprint, confirmAction, t]);
 
 	return (
 		<div className="flex items-center border-b border-(--color-border) pb-2 md:pb-3 mb-3 md:mb-6 relative">

@@ -8,6 +8,7 @@ import { useLanguage } from "@/app/common/context/LanguageContext";
 import { notifyActivityError } from "@/app/utils/helpers/notifications";
 import { useDoubleTap, useDoubleTapById } from "@/app/common/hooks/useDoubleTap";
 import DropdownMenu from "@/app/common/components/DropdownMenu";
+import { useConfirmation } from "@/app/common/context/ConfirmationContext";
 
 interface MobileActivityCardProps {
   activity: Activity;
@@ -19,6 +20,7 @@ interface MobileActivityCardProps {
 export default function MobileActivityCard({ activity, sprintId, columns, onStatusChange }: MobileActivityCardProps) {
   const { selectedProjectId, toggleTaskCompletion, addTaskToActivity, deleteTask, renameActivity, deleteActivity, renameTask } = useProjectsManager();
   const { t } = useLanguage();
+  const { confirmAction } = useConfirmation();
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [isAddingTask, setIsAddingTask] = useState(false);
   const [showStatusPicker, setShowStatusPicker] = useState(false);
@@ -57,11 +59,16 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
     }
   };
 
-  const handleDelete = (taskId: string) => {
+  const handleDelete = useCallback(async (taskId: string) => {
     if (selectedProjectId) {
-      deleteTask(selectedProjectId, sprintId, activity.id, taskId);
+      const confirmed = await confirmAction({
+        title: t("delete_item"),
+        description: t("confirm_delete_task_desc"),
+        level: "normal"
+      });
+      if (confirmed) deleteTask(selectedProjectId, sprintId, activity.id, taskId);
     }
-  };
+  }, [selectedProjectId, sprintId, activity.id, deleteTask, confirmAction, t]);
 
   const handleAddTask = (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,11 +125,16 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
     setRenamingTaskId(null);
   };
 
-  const handleDeleteActivity = () => {
+  const handleDeleteActivity = useCallback(async () => {
     if (selectedProjectId) {
-      deleteActivity(selectedProjectId, sprintId, activity.id);
+      const confirmed = await confirmAction({
+        title: t("delete_item"),
+        description: t("confirm_delete_activity_desc"),
+        level: "normal"
+      });
+      if (confirmed) deleteActivity(selectedProjectId, sprintId, activity.id);
     }
-  };
+  }, [selectedProjectId, sprintId, activity.id, deleteActivity, confirmAction, t]);
 
   return (
     <div className={`bg-(--color-card-bg) border border-(--color-border) rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 animate-fade-in ${isShaking ? 'animate-shake border-red-500/50' : ''} ${isAnimatingOut === "right" ? "translate-x-[120%] opacity-0" : isAnimatingOut === "left" ? "translate-x-[-120%] opacity-0" : "translate-x-0 opacity-100"

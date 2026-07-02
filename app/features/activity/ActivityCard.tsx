@@ -6,6 +6,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { useLanguage } from "@/app/common/context/LanguageContext";
+import { useConfirmation } from "@/app/common/context/ConfirmationContext";
 import { useCallback } from "react";
 import ActivityTaskItem from "@/app/features/activity-details/components/ActivityTaskItem";
 import ActivityHeader from "@/app/features/activity-details/components/ActivityHeader";
@@ -24,6 +25,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 	} = useProjectsManager();
 
 	const { t } = useLanguage();
+	const { confirmAction } = useConfirmation();
 
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: activity.id,
@@ -41,9 +43,16 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 		if (selectedProjectId) renameActivity(selectedProjectId, sprintId, activity.id, newName);
 	}, [selectedProjectId, sprintId, activity.id, renameActivity]);
 
-	const handleDeleteActivity = useCallback(() => {
-		if (selectedProjectId) deleteActivity(selectedProjectId, sprintId, activity.id);
-	}, [selectedProjectId, sprintId, activity.id, deleteActivity]);
+	const handleDeleteActivity = useCallback(async () => {
+		if (selectedProjectId) {
+			const confirmed = await confirmAction({
+				title: t("delete_item"),
+				description: t("confirm_delete_activity_desc"),
+				level: "normal"
+			});
+			if (confirmed) deleteActivity(selectedProjectId, sprintId, activity.id);
+		}
+	}, [selectedProjectId, sprintId, activity.id, deleteActivity, confirmAction, t]);
 
 	const handleAddTask = useCallback((title: string) => {
 		if (selectedProjectId) addTaskToActivity(selectedProjectId, sprintId, activity.id, title);
@@ -53,9 +62,16 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 		if (selectedProjectId) toggleTaskCompletion(selectedProjectId, sprintId, activity.id, taskId);
 	}, [selectedProjectId, sprintId, activity.id, toggleTaskCompletion]);
 
-	const handleDeleteTask = useCallback((taskId: string) => {
-		if (selectedProjectId) deleteTask(selectedProjectId, sprintId, activity.id, taskId);
-	}, [selectedProjectId, sprintId, activity.id, deleteTask]);
+	const handleDeleteTask = useCallback(async (taskId: string) => {
+		if (selectedProjectId) {
+			const confirmed = await confirmAction({
+				title: t("delete_item"),
+				description: t("confirm_delete_task_desc"),
+				level: "normal"
+			});
+			if (confirmed) deleteTask(selectedProjectId, sprintId, activity.id, taskId);
+		}
+	}, [selectedProjectId, sprintId, activity.id, deleteTask, confirmAction, t]);
 
 	const handleRenameTask = useCallback((taskId: string, newTitle: string) => {
 		if (selectedProjectId) renameTask(selectedProjectId, sprintId, activity.id, taskId, newTitle);

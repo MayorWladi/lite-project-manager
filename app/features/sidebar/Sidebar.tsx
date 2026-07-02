@@ -7,7 +7,8 @@ import { useLanguage } from "@/app/common/context/LanguageContext";
 import SettingsModal from "@/app/common/components/SettingsModal";
 import InfoModal from "@/app/common/components/InfoModal";
 import ProgressBar from "@/app/common/components/ProgressBar";
-import ProjectList from "@/app/features/sidebar/components/ProjectList"; // <-- INTEGRACIÓN PERFECTA
+import ProjectList from "@/app/features/sidebar/components/ProjectList";
+import { useConfirmation } from "@/app/common/context/ConfirmationContext";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [storageUsage, setStorageUsage] = useState(0);
+  const { confirmAction } = useConfirmation();
 
   React.useEffect(() => {
     const calculateStorage = () => {
@@ -85,7 +87,17 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
                 projects={projects}
                 selectedProjectId={selectedProjectId}
                 onSelectProject={setSelectedProjectId}
-                onDeleteProject={(id) => deleteProject(id)}
+                onDeleteProject={async (id, name) => {
+                  const confirmed = await confirmAction({
+                    title: t("delete_item"),
+                    description: t("confirm_delete_project_desc"),
+                    level: "high",
+                    confirmWord: name
+                  });
+                  if (confirmed) {
+                    deleteProject(id);
+                  }
+                }}
               />
             )}
           </div>

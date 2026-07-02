@@ -8,11 +8,15 @@ import "sileo/styles.css";
 import { useSettings } from "@/app/common/context/SettingsContext";
 import ActivityDetailsSidebar from "@/app/features/activity-details/ActivityDetailsSidebar";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
+import { useConfirmation } from "@/app/common/context/ConfirmationContext";
+import { useLanguage } from "@/app/common/context/LanguageContext";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { theme } = useSettings();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktopMenuOpen, setIsDesktopMenuOpen] = useState(true);
+  const { confirmAction } = useConfirmation();
+  const { t } = useLanguage();
 
   // Contexto Global
   const {
@@ -46,9 +50,16 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     }
   };
 
-  const handleDeleteTask = (id: string, taskId: string) => {
+  const handleDeleteTask = async (id: string, taskId: string) => {
     if (selectedProjectId && selectedSprintId) {
-      deleteTask(selectedProjectId, selectedSprintId, id, taskId);
+      const confirmed = await confirmAction({
+        title: t("delete_item"),
+        description: t("confirm_delete_task_desc"),
+        level: "normal"
+      });
+      if (confirmed) {
+        deleteTask(selectedProjectId, selectedSprintId, id, taskId);
+      }
     }
   };
 
