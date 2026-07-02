@@ -1,10 +1,10 @@
-# Arquitectura Basada en Features (Feature-Sliced Design) en Next.js
+# Feature-Sliced Design (FSD) in Next.js
 
-Esta guía documenta la filosofía de arquitectura recomendada e implementada en este proyecto, basada en el aislamiento por dominios funcionales o vistas. Es el estándar moderno altamente recomendado para aplicaciones medianas y grandes, especialmente en el ecosistema de **Next.js (App Router)**.
+This guide documents the architectural philosophy recommended and implemented in this project, based on isolation by functional domains or views. It is the modern standard highly recommended for medium to large applications, especially in the **Next.js (App Router)** ecosystem.
 
-## 1. El Problema de la Arquitectura Clásica
+## 1. The Problem with Classical Architecture
 
-Típicamente, al aprender Next.js, los proyectos se organizan por **Tipos de Archivos**:
+Typically, when learning Next.js, projects are organized by **File Types**:
 ```text
 app/
  ├─ page.tsx
@@ -13,69 +13,69 @@ app/
  ├─ controllers/ (userController, boardController)
  ├─ context/ (AuthContext, BoardContext)
 ```
-**El problema:** Si necesitas modificar o eliminar una sola funcionalidad (ej. "El Tablero"), tienes que buscar como un detective en 4 carpetas diferentes repartidas por todo el proyecto. Al eliminar algo, es fácil dejar código basura (hooks huérfanos) o romper otras dependencias sin querer.
+**The problem:** If you need to modify or remove a single feature (e.g., "The Board"), you have to play detective across 4 different folders scattered throughout the project. When removing something, it's easy to leave behind dead code (orphaned hooks) or accidentally break other dependencies.
 
-## 2. La Solución: Aislamiento por Funcionalidad (Feature) en Next.js
+## 2. The Solution: Feature Isolation in Next.js
 
-En esta arquitectura, agrupamos los archivos por **Dominio de Negocio** o **Vista**. Todo lo que pertenece a una característica específica vive junto en un solo ecosistema cerrado.
+In this architecture, we group files by **Business Domain** or **View**. Everything belonging to a specific feature lives together in a single, closed ecosystem.
 
-En **Next.js App Router**, la carpeta `app/` se utiliza para crear rutas web. Si creas una carpeta llamada `app/board`, Next.js intentará crear la ruta `tusitio.com/board`. 
-Para evitar esto y almacenar nuestra arquitectura de forma segura, podemos usar **Rutas Agrupadas** como `(features)` (los paréntesis le dicen a Next.js que ignore la carpeta para el enrutamiento), o simplemente llamarla `features/` si no contiene ningún archivo `page.tsx`.
+In **Next.js App Router**, the `app/` folder is used to create web routes. If you create a folder named `app/board`, Next.js will attempt to create the route `yoursite.com/board`. 
+To avoid this and store our architecture safely, we can use **Route Groups** like `(features)` (the parentheses tell Next.js to ignore the folder for routing), or simply name it `features/` if it doesn't contain any `page.tsx` file.
 
-La estructura queda así:
+The structure looks like this:
 
 ```text
 app/
- ├─ page.tsx         <-- Consume los componentes de los features
- ├─ common/          <-- (Capa Shared) Código global ligado a React
+ ├─ page.tsx         <-- Consumes components from features
+ ├─ common/          <-- (Shared Layer) Global code tied to React
  │   ├─ components/  (Button, Modal, AppLayout)
  │   └─ context/     (ProjectContext)
  │
- ├─ utils/           <-- Código agnóstico (puro JS/TS) reutilizable en cualquier framework
+ ├─ utils/           <-- Agnostic code (pure JS/TS) reusable in any framework
  │   ├─ helpers/     (notifications)
  │   └─ storage/     (collaborators)
  │
  ├─ features/
- │   ├─ board/           <-- Dominio: Tablero Kanban
- │   │   ├─ KanbanBoard.tsx  <-- API PÚBLICA (Único punto de entrada)
- │   │   ├─ components/      (Componentes internos aislados como KanbanCell)
+ │   ├─ board/           <-- Domain: Kanban Board
+ │   │   ├─ KanbanBoard.tsx  <-- PUBLIC API (Single entry point)
+ │   │   ├─ components/      (Isolated internal components like KanbanCell)
  │   │   └─ hooks/           (useDragAndDrop)
  │   │
- │   └─ sidebar/         <-- Dominio: Panel Lateral
- │       ├─ Sidebar.tsx      <-- API PÚBLICA
+ │   └─ sidebar/         <-- Domain: Sidebar
+ │       ├─ Sidebar.tsx      <-- PUBLIC API
  │       └─ components/      (ProjectList, ProjectForm)
 ```
 
-### Ventajas en Next.js:
-1. **Alta Cohesión:** Todo lo relacionado al tablero está en la carpeta `board`.
-2. **Componentes de Servidor vs Cliente:** Al tener los features aislados, es mucho más fácil saber qué partes completas de la app necesitan `"use client"` y cuáles pueden seguir siendo de servidor.
-3. **Escalabilidad y Eliminación Segura:** Si decides que la app ya no tendrá "Sidebar", simplemente borras la carpeta `features/sidebar/` entera.
+### Advantages in Next.js:
+1. **High Cohesion:** Everything related to the board is in the `board` folder.
+2. **Server vs Client Components:** Having features isolated makes it much easier to know which entire parts of the app need `"use client"` and which can remain as server components.
+3. **Scalability and Safe Deletion:** If you decide the app no longer needs a "Sidebar", you simply delete the entire `features/sidebar/` folder.
 
-## 3. Reglas de Oro de esta Arquitectura
+## 3. Golden Rules of this Architecture
 
-- **Prohibido importar entre features hermanos:** El código dentro de `features/board/` NO DEBERÍA importar algo interno de `features/sidebar/`.
-- **Patrón de API Pública:** Cada feature expone **solamente** su componente principal en la raíz de su carpeta (ej. `features/board/KanbanBoard.tsx`). Nunca debes importar nada que esté dentro de una subcarpeta `components/` de un feature desde afuera.
-- **`common/` vs `utils/`:** `common/` es el ecosistema de componentes globales y hooks de **React** (ej. Modales, Temas). `utils/` es puramente funciones **JavaScript/TypeScript** sin dependencias de React (puedes copiarlos a otros proyectos no-React).
+- **No importing between sibling features:** Code inside `features/board/` SHOULD NOT import internal code from `features/sidebar/`.
+- **Public API Pattern:** Each feature exposes **only** its main component at the root of its folder (e.g., `features/board/KanbanBoard.tsx`). You should never import anything from inside a `components/` subfolder of a feature from the outside.
+- **`common/` vs `utils/`:** `common/` is the ecosystem for global components and **React** hooks (e.g., Modals, Themes). `utils/` is purely **JavaScript/TypeScript** functions with no React dependencies (you can copy them to other non-React projects).
 
 ---
 
-## 4. Prompt para IAs: Reestructuración Automática
+## 4. AI Prompt: Automatic Restructuring
 
-Si en el futuro inicias otro proyecto de Next.js, terminas con un espagueti de código y quieres que una Inteligencia Artificial ordene el desastre usando esta arquitectura, cópiale el siguiente prompt exacto:
+If you start another Next.js project in the future, end up with spaghetti code, and want an Artificial Intelligence to organize the mess using this architecture, copy the exact prompt below:
 
-> **PROMPT PARA ESTRUCTURAR PROYECTOS NEXT.JS:**
+> **PROMPT FOR STRUCTURING NEXT.JS PROJECTS:**
 > 
-> "Actúa como un Arquitecto de Software Senior especializado en React y Next.js (App Router). Actualmente, mi proyecto está estructurado de forma plana por tipos de archivos (components, hooks, utils, types, etc.) regados en el directorio raíz o dentro de app/ y quiero migrarlo a una Arquitectura Basada en Features (Feature-Sliced Design).
+> "Act as a Senior Software Architect specializing in React and Next.js (App Router). Currently, my project is structured flatly by file types (components, hooks, utils, types, etc.) scattered in the root directory or inside app/, and I want to migrate it to a Feature-Sliced Design (FSD) architecture.
 > 
-> Necesito que analices todos los archivos de mi proyecto y propongas un plan detallado para moverlos a una nueva carpeta llamada `app/features/` (o `src/features/` si uso src).
+> I need you to analyze all the files in my project and propose a detailed plan to move them to a new folder called `app/features/` (or `src/features/` if I use src).
 > 
-> REGLAS DE LA MIGRACIÓN:
-> 1. Crea carpetas de 'features' basadas en dominios funcionales de mi app o bloques visuales grandes (ej. 'auth', 'dashboard', 'sidebar', 'checkout').
-> 2. Cada feature debe contener internamente sus propias subcarpetas dependiendo de lo que use (ej. `features/dashboard/components`, `features/dashboard/hooks`, `features/dashboard/controllers`).
-> 3. Saca todo el código agnóstico de React (helpers, funciones matemáticas, constantes, storage) a una carpeta `app/utils/` a nivel raíz.
-> 4. Crea una carpeta `app/common/` (o `shared/`) a nivel raíz exclusivamente para componentes visuales genéricos, modales, contextos globales y hooks de React que se utilicen en más de 2 features.
-> 5. Implementa el patrón "Public API": cada feature debe exponer su(s) componente(s) principal(es) directamente en la raíz de su carpeta (ej. `features/dashboard/Dashboard.tsx`). El resto de su código va en subcarpetas internas y NO puede ser importado desde afuera.
-> 6. Regla estricta: Ningún feature puede importar cosas internas de otro feature hermano. Todo código cruzado debe ir a 'common/'.
-> 5. Ten cuidado de no romper el enrutamiento de Next.js (los archivos page.tsx y layout.tsx principales deben quedarse donde están y solo actualizar sus imports).
+> MIGRATION RULES:
+> 1. Create 'features' folders based on functional domains of my app or large visual blocks (e.g., 'auth', 'dashboard', 'sidebar', 'checkout').
+> 2. Each feature must internally contain its own subfolders depending on what it uses (e.g., `features/dashboard/components`, `features/dashboard/hooks`, `features/dashboard/controllers`).
+> 3. Extract all React-agnostic code (helpers, math functions, constants, storage) into a root-level `app/utils/` folder.
+> 4. Create a root-level `app/common/` (or `shared/`) folder exclusively for generic visual components, modals, global contexts, and React hooks used across more than 2 features.
+> 5. Implement the "Public API" pattern: each feature must expose its main component(s) directly at the root of its folder (e.g., `features/dashboard/Dashboard.tsx`). The rest of its code goes into internal subfolders and CANNOT be imported from the outside.
+> 6. Strict rule: No feature can import internal code from a sibling feature. All cross-cutting code must go to 'common/'.
+> 7. Be careful not to break Next.js routing (the main page.tsx and layout.tsx files should stay where they are and only update their imports).
 > 
-> Preséntame primero el árbol de carpetas exacto de cómo quedará el código. Una vez que te lo apruebe, por favor crea los scripts de terminal, de node, o los reemplazos necesarios para mover los archivos físicos y actualizar recursivamente todas las rutas de los 'imports' que se rompan en el proceso."
+> Present to me first the exact folder tree of how the code will look. Once I approve it, please create the terminal scripts, Node scripts, or necessary replacements to move the physical files and recursively update all 'import' paths that break in the process."
