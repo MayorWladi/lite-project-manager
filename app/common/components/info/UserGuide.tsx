@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useLanguage } from "@/app/common/context/LanguageContext";
 import { useSettings } from "@/app/common/context/SettingsContext";
+import { THEMES } from "@/app/common/constants/themes";
 
 interface UserGuideProps {
 	onClose: () => void;
@@ -13,11 +14,24 @@ export default function UserGuide({ onClose }: UserGuideProps) {
 	const { theme } = useSettings();
 	const [currentStep, setCurrentStep] = useState(0);
 
+	const isDark = THEMES.find(t => t.id === theme)?.isDark;
+	const themeType = isDark ? "dark" : "light";
+
+	/* 
+	// TODO: Código original comentado para que puedas acoplarlo después si lo necesitas
 	const tutorialSteps = [
 		{ title: t("tut_step1_title"), desc: t("tut_step1_desc"), image: `/tutorial/${theme}_step1.png` },
 		{ title: t("tut_step2_title"), desc: t("tut_step2_desc"), image: `/tutorial/${theme}_step2.png` },
 		{ title: t("tut_step3_title"), desc: t("tut_step3_desc"), image: `/tutorial/${theme}_step3.png` },
 		{ title: t("tut_step4_title"), desc: t("tut_step4_desc"), image: `/tutorial/${theme}_step4.png` },
+	];
+	*/
+
+	const tutorialSteps = [
+		{ title: t("tut_step1_title"), desc: t("tut_step1_desc"), image: `/tutorial/${themeType}_step1.png` },
+		{ title: t("tut_step2_title"), desc: t("tut_step2_desc"), image: `/tutorial/${themeType}_step2.png` },
+		{ title: t("tut_step3_title"), desc: t("tut_step3_desc"), image: `/tutorial/${themeType}_step3.png` },
+		{ title: t("tut_step4_title"), desc: t("tut_step4_desc"), image: `/tutorial/${themeType}_step4.png` },
 	];
 
 	const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, tutorialSteps.length - 1));
