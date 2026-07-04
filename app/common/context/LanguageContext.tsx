@@ -1,7 +1,8 @@
 // /app/context/LanguageContext.tsx
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
+import { safeGetItem, safeSetItem } from "@/app/utils/storage/core";
 
 type Language = "en" | "es";
 
@@ -56,6 +57,14 @@ const DICTIONARY: Translations = {
 	delete_all_data: { en: "Delete All Data", es: "Borrar Todos los Datos" },
 	delete_warning: { en: "This will permanently delete all your projects, sprints, and tasks.", es: "Esto eliminará permanentemente todos tus proyectos, sprints y tareas." },
 	
+	error_title: { en: "Oops! Something went wrong", es: "¡Ups! Algo salió mal" },
+	error_desc: { en: "An unexpected error occurred while rendering the application. Don't worry, your data is safe locally.", es: "Ha ocurrido un error inesperado al renderizar la aplicación. No te preocupes, tus datos están a salvo localmente." },
+	retry: { en: "Retry", es: "Reintentar" },
+	reload_page: { en: "Reload page", es: "Recargar página" },
+
+	not_found_desc: { en: "We couldn't find the page you're looking for. The URL might be incorrect or the project may no longer exist.", es: "No pudimos encontrar la página que estás buscando. Es posible que la URL sea incorrecta o el proyecto ya no exista." },
+	back_to_board: { en: "Back to Main Board", es: "Volver al Tablero Principal" },
+
 	col_todo: { en: "To Do", es: "Por Hacer" },
 	col_working: { en: "In Progress", es: "En Progreso" },
 	col_review: { en: "Review", es: "Revisión" },
@@ -161,7 +170,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 	const [mounted, setMounted] = useState(false);
 
 	useEffect(() => {
-		const savedLang = localStorage.getItem("kanban-lang") as Language | null;
+		const savedLang = safeGetItem("kanban-lang") as Language | null;
 		if (savedLang) {
 			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setLanguageState(savedLang);
@@ -179,23 +188,22 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 		setMounted(true);
 	}, []);
 
-	const setLanguage = (lang: Language) => {
+	const setLanguage = useCallback((lang: Language) => {
 		setLanguageState(lang);
-		localStorage.setItem("kanban-lang", lang);
-	};
+		safeSetItem("kanban-lang", lang);
+	}, []);
 
-	const t = (key: keyof typeof DICTIONARY): string => {
-		// NOTA (Anti-Hydration Mismatch):
-		// Durante SSR y el primer render del cliente, `mounted` es false y devolvemos siempre 'en'.
-		// Esto evita que React tire un error si el servidor renderiza en inglés pero el cliente local tiene español.
-		// El "costo" es un leve parpadeo (FOUC) de inglés a español en la primera carga para usuarios de habla hispana,
-		// lo cual es un compromiso aceptable para una PWA puramente estática sin middleware de cookies.
-		if (!mounted) return DICTIONARY[key]?.en || key as string; // SSR fallback
+	const t = useCallback((key: keyof typeof DICTIONARY): string => {
+		if (!mounted) return DICTIONARY[key]?.en || key as string; 
 		return DICTIONARY[key]?.[language] || key as string;
-	};
+	}, [mounted, language]);
+
+	const contextValue = useMemo(() => ({
+		language, setLanguage, t
+	}), [language, setLanguage, t]);
 
 	return (
-		<LanguageContext.Provider value={{ language, setLanguage, t }}>
+		<LanguageContext.Provider value={contextValue}>
 			{children}
 		</LanguageContext.Provider>
 	);
