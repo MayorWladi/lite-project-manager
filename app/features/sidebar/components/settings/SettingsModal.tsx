@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { useLanguage } from "@/app/common/context/LanguageContext";
 import { Project } from "@/app/common/types";
 import Modal from "@/app/common/components/Modal";
-import GeneralSettings from "@/app/common/components/settings/GeneralSettings";
-import ImportSettings from "@/app/common/components/settings/ImportSettings";
+import GeneralSettings from "./GeneralSettings";
+import ImportSettings from "./ImportSettings";
 
 interface SettingsModalProps {
 	isOpen: boolean;

@@ -3,6 +3,10 @@
 
 import { useState, useCallback } from "react";
 import { Activity, TaskStatus } from "@/app/common/types";
+import { Input } from "@/app/common/components/Input";
+import { Button } from "@/app/common/components/Button";
+import { ChecklistProgress } from "@/app/common/components/ChecklistProgress";
+import { PlusIcon, TrashIcon, CheckIcon } from "@/app/common/components/Icons";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { useLanguage } from "@/app/common/context/LanguageContext";
 import { notifyActivityError } from "@/app/utils/helpers/notifications";
@@ -25,8 +29,6 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
   const [isAddingTask, setIsAddingTask] = useState(false);
   const [showStatusPicker, setShowStatusPicker] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState<"left" | "right" | null>(null);
-  // We no longer use showMenu but kept the state hook for structural consistency, 
-  // actually we can just remove it if it's unused.
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState("");
   const [isShaking, setIsShaking] = useState(false);
@@ -143,14 +145,20 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
       <div className="flex-1 min-w-0 flex items-center gap-1.5">
         {isRenaming ? (
           <form onSubmit={(e) => { e.preventDefault(); handleRenameSubmit(); }} className="flex-1">
-            <input
+            <Input
               autoFocus
               type="text"
               value={renameValue}
               onChange={(e) => setRenameValue(e.target.value)}
               onBlur={handleRenameSubmit}
-              onKeyDown={(e) => { if (e.key === 'Escape') setIsRenaming(false); }}
-              className="w-full px-2 py-1 bg-transparent border border-(--color-border) rounded-md text-sm outline-none focus:border-(--color-muted) text-foreground"
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  setIsRenaming(false);
+                  setRenameValue(activity.name);
+                }
+              }}
+              variant="ghost"
+              className="w-full text-base font-semibold p-0"
             />
           </form>
         ) : (
@@ -173,6 +181,9 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
         <div className="relative shrink-0">
           <button
             onClick={() => setShowStatusPicker(!showStatusPicker)}
+            aria-haspopup="listbox"
+            aria-expanded={showStatusPicker}
+            aria-label={`${t("options")} - ${t("status")}`}
             className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border border-(--color-border) bg-black/3 dark:bg-white/5 text-(--color-muted) active:scale-95 transition-transform flex items-center gap-1"
           >
             {currentCol?.title || activity.status}
@@ -206,6 +217,7 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
         <DropdownMenu
           triggerClassName="p-1 rounded text-(--color-muted) active:text-foreground"
           menuClassName="left-0 top-full mt-0.5 z-50 bg-(--color-card-bg) border border-(--color-border) rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-1 min-w-[120px] max-w-[calc(100vw-50%)]"
+          ariaLabel={`${t("options")} - ${activity.name}`}
           items={[
             {
               label: t("rename"),
@@ -223,39 +235,29 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
       {/* Checklist */}
       {tasks.length > 0 && (
         <div className="flex flex-col gap-1.5">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-(--color-muted)">{t("checklist")}</span>
-            <span className="text-[10px] font-mono text-(--color-muted)">{completedTasks}/{tasks.length}</span>
-          </div>
+          <ChecklistProgress completed={completedTasks} total={tasks.length} />
 
           {tasks.map(task => (
             <div key={task.id} className={`flex items-start gap-2.5 transition-opacity duration-300 ${task.isCompleted ? 'opacity-60' : 'opacity-100'}`}>
-              <button
-                type="button"
+              <Button
+                variant="icon"
                 onClick={() => handleToggle(task.id)}
-                className="mt-0.5 shrink-0 text-(--color-muted) active:scale-90 transition-transform"
+                className="shrink-0 p-1"
               >
-                {task.isCompleted ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                  </svg>
-                ) : (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                  </svg>
-                )}
-              </button>
+                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${task.isCompleted ? 'bg-foreground border-foreground text-background' : 'border-(--color-muted)'}`}>
+                  {task.isCompleted && <CheckIcon />}
+                </div>
+              </Button>
               {renamingTaskId === task.id ? (
                 <form onSubmit={(e) => { e.preventDefault(); handleRenameTaskSubmit(task.id); }} className="flex-1">
-                  <input
+                  <Input
                     autoFocus
                     type="text"
                     value={renameTaskValue}
                     onChange={(e) => setRenameTaskValue(e.target.value)}
                     onBlur={() => handleRenameTaskSubmit(task.id)}
                     onKeyDown={(e) => { if (e.key === 'Escape') setRenamingTaskId(null); }}
-                    className="w-full text-sm px-1.5 py-0.5 bg-transparent border border-(--color-border) rounded outline-none focus:border-(--color-muted) text-foreground"
+                    className="w-full text-sm px-1.5 py-0.5"
                   />
                 </form>
               ) : (
@@ -267,12 +269,14 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
                   {task.title}
                 </span>
               )}
-              <button
+              <Button
+                variant="icon"
                 onClick={() => handleDelete(task.id)}
-                className="text-(--color-muted) active:text-[#9F2F2D] p-1"
+                aria-label={t("delete_item")}
+                className="hover:text-red-500"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
-              </button>
+                <TrashIcon />
+              </Button>
             </div>
           ))}
         </div>
@@ -281,25 +285,32 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
       {/* Add Task */}
       {isAddingTask ? (
         <form onSubmit={handleAddTask} className="mt-1 w-full">
-          <input
+          <Input
             autoFocus
             type="text"
             value={newTaskTitle}
             onChange={e => setNewTaskTitle(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAddTask(e as unknown as React.FormEvent);
+              }
+              if (e.key === 'Escape') setIsAddingTask(false);
+            }}
             onBlur={() => setIsAddingTask(false)}
             placeholder={t("new_task_placeholder")}
-            className="w-full text-sm px-3 py-2 bg-transparent border border-(--color-border) rounded-lg text-foreground outline-none focus:border-(--color-muted)"
+            className="w-full text-sm px-2 py-1.5"
           />
         </form>
       ) : (
-        <button
-          type="button"
+        <Button
+          variant="icon"
           onClick={() => setIsAddingTask(true)}
-          className="mt-1 flex items-center gap-1.5 text-xs text-(--color-muted) active:text-foreground transition-colors py-1.5 px-2 -ml-1 rounded-lg active:bg-black/5 dark:active:bg-white/5 w-full justify-start"
+          className="w-full text-left py-1 text-(--color-muted) hover:text-foreground text-sm font-medium flex items-center gap-1.5"
         >
-          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+          <PlusIcon width="10" height="10" strokeWidth="2.5" />
           {t("add_task")}
-        </button>
+        </Button>
       )}
     </div>
   );

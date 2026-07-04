@@ -6,6 +6,9 @@ import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { RadioCard } from "@/app/common/components/RadioOption";
 import { notify } from "@/app/utils/helpers/notifications";
 import { Project } from "@/app/common/types";
+import { Button } from "@/app/common/components/Button";
+import { Label } from "@/app/common/components/Label";
+import { Input } from "@/app/common/components/Input";
 
 interface ImportSettingsProps {
 	pendingImportData: Project[];
@@ -49,39 +52,35 @@ export default function ImportSettings({ pendingImportData, onCancel, onSuccess 
 
 			{importMode === "overwrite" && (
 				<div className="pt-2 animate-in fade-in slide-in-from-top-2 duration-200">
-					<label className="block text-xs font-bold text-(--color-muted) uppercase tracking-wider mb-2">
-						{t("type_to_confirm")}
-					</label>
-					<input
+					<Label className="mb-2">
+						{t("type_word")} &quot;IMPORT&quot; {t("to_confirm")}
+					</Label>
+					<Input
 						type="text"
 						value={confirmText}
 						onChange={(e) => setConfirmText(e.target.value)}
 						placeholder={t("confirm_word")}
-						className="w-full bg-transparent border border-(--color-border) rounded-lg p-3 text-sm focus:outline-none focus:border-red-500 transition-colors uppercase"
+						className="w-full p-3 uppercase focus:border-red-500"
 					/>
 				</div>
 			)}
 
-			<div className="flex gap-3 pt-4 border-t border-(--color-border)">
-				<button
+			<div className="flex gap-3 pt-6 border-t border-(--color-border)">
+				<Button
+					variant="ghost"
 					onClick={onCancel}
-					className="flex-1 py-2.5 px-4 rounded-xl border border-(--color-border) text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+					className="flex-1"
 				>
 					{t("cancel")}
-				</button>
-				<button
+				</Button>
+				<Button
+					variant={importMode === "overwrite" ? "danger" : "primary"}
 					onClick={confirmImport}
 					disabled={importMode === "overwrite" && confirmText !== t("confirm_word")}
-					className={`flex-1 py-2.5 px-4 rounded-xl text-sm font-medium transition-all ${
-						importMode === "overwrite"
-							? confirmText === t("confirm_word")
-								? "bg-red-600 text-white shadow-md hover:bg-red-700"
-								: "bg-red-600/30 text-white/50 cursor-not-allowed"
-							: "bg-foreground text-background shadow-md hover:opacity-90"
-					}`}
+					className="flex-1"
 				>
 					{t("import_action")}
-				</button>
+				</Button>
 			</div>
 		</div>
 	);

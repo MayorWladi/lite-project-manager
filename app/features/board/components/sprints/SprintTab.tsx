@@ -5,6 +5,8 @@ import { useState, useCallback } from "react";
 import { Sprint } from "@/app/common/types";
 import { useDoubleTapById } from "@/app/common/hooks/useDoubleTap";
 import DropdownMenu from "@/app/common/components/DropdownMenu";
+import { Button } from "@/app/common/components/Button";
+import { Input } from "@/app/common/components/Input";
 
 interface SprintTabProps {
   sprint: Sprint;
@@ -37,14 +39,14 @@ export default function SprintTab({ sprint, isActive, onSelect, onRename, onDele
   if (isRenaming) {
     return (
       <form onSubmit={(e) => { e.preventDefault(); handleRenameSubmit(); }} className="shrink-0 flex items-center">
-        <input
+        <Input
           autoFocus
           type="text"
           value={renameValue}
           onChange={(e) => setRenameValue(e.target.value)}
           onBlur={handleRenameSubmit}
           onKeyDown={(e) => { if (e.key === 'Escape') setIsRenaming(false); }}
-          className="px-3 py-1.5 bg-transparent border border-(--color-border) rounded-md text-sm outline-none focus:border-(--color-muted) text-foreground w-36"
+          className="px-3 py-1.5 text-sm w-36"
         />
       </form>
     );
@@ -72,7 +74,8 @@ export default function SprintTab({ sprint, isActive, onSelect, onRename, onDele
         : "bg-background text-(--color-muted) border-(--color-border) hover:bg-black/5 dark:hover:bg-white/10 hover:text-foreground hover:border-(--color-muted)"
         }`}
     >
-      <button
+      <Button
+        variant="custom"
         type="button"
         onClick={onSelect}
         onDoubleClick={(e) => {
@@ -84,7 +87,7 @@ export default function SprintTab({ sprint, isActive, onSelect, onRename, onDele
         className="pl-3 pr-2 py-1.5 text-left outline-none rounded-l-md cursor-pointer select-none truncate max-w-[120px] md:max-w-[200px]"
       >
         {sprint.name}
-      </button>
+      </Button>
 
       <div 
         className={`flex items-center overflow-hidden transition-all duration-300 ease-in-out ${

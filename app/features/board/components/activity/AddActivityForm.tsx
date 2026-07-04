@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { useLanguage } from "@/app/common/context/LanguageContext";
+import { Input } from "@/app/common/components/Input";
+import { Button } from "@/app/common/components/Button";
 
 interface AddActivityFormProps {
   sprintId: string;
@@ -25,31 +27,32 @@ export default function AddActivityForm({ sprintId, isMobile, onClose }: AddActi
   if (isMobile) {
     return (
       <form onSubmit={handleAddActivity} className="flex gap-2 bg-(--color-card-bg) p-2 rounded-xl shadow-xl border border-(--color-border) animate-pop-count origin-bottom-right">
-        <input
+        <Input
           type="text"
           autoFocus
           placeholder={t("new_activity_placeholder")}
           value={newActivityName}
           onChange={(e) => setNewActivityName(e.target.value)}
-          className="w-48 px-3 py-2 bg-transparent border-none rounded-lg text-sm outline-none focus:ring-0 text-foreground"
+          className="w-48 px-3 py-2 text-sm"
+          variant="ghost"
           onBlur={() => { if (!newActivityName.trim()) onClose(); }}
         />
-        <button type="submit" className="px-3 py-2 bg-foreground text-background rounded-lg text-sm font-medium shrink-0">
+        <Button variant="primary" type="submit" className="shrink-0">
           {t("add")}
-        </button>
+        </Button>
       </form>
     );
   }
 
   return (
     <form onSubmit={handleAddActivity} className="flex items-center gap-2">
-      <input
+      <Input
         type="text"
         autoFocus
         placeholder={t("new_activity_placeholder")}
         value={newActivityName}
         onChange={(e) => setNewActivityName(e.target.value)}
-        className="w-[280px] px-3 py-2 bg-transparent border border-(--color-border) rounded-md text-sm outline-none transition-colors focus:border-(--color-muted) text-foreground shadow-sm"
+        className="w-[280px] px-3 py-2 text-sm shadow-sm"
         onBlur={() => { if (!newActivityName.trim()) onClose(); }}
       />
     </form>

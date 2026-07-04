@@ -7,8 +7,8 @@ import { useSprintMetrics, useProjectsManager } from "@/app/common/context/Proje
 import { useLanguage } from "@/app/common/context/LanguageContext";
 import { useConfirmation } from "@/app/common/context/ConfirmationContext";
 import ProgressBar from "@/app/common/components/ProgressBar";
-import SprintTab from "@/app/features/board/components/SprintTab";
-import AddSprintForm from "@/app/features/board/components/AddSprintForm";
+import SprintTab from "@/app/features/board/components/sprints/SprintTab";
+import AddSprintForm from "@/app/features/board/components/sprints/AddSprintForm";
 
 interface SprintSelectorProps {
 	sprints: Sprint[];

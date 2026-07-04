@@ -4,6 +4,7 @@
 import { useState } from 'react'
 import type { Project } from "@/app/common/types"
 import DropdownMenu from "@/app/common/components/DropdownMenu"
+import { Input } from "@/app/common/components/Input"
 import { useProjectsManager } from "@/app/common/context/ProjectContext"
 import { useLanguage } from "@/app/common/context/LanguageContext"
 
@@ -48,7 +49,7 @@ export default function ProjectItem({
 
       {isRenaming ? (
         <form onSubmit={(e) => { e.preventDefault(); handleRenameSubmit(); }} className="flex-1">
-          <input
+          <Input
             autoFocus
             type="text"
             value={renameValue}
@@ -56,7 +57,7 @@ export default function ProjectItem({
             onBlur={handleRenameSubmit}
             onKeyDown={(e) => { if (e.key === 'Escape') setIsRenaming(false); }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full px-1.5 py-0.5 bg-transparent border border-(--color-border) rounded text-sm outline-none focus:border-(--color-muted) text-foreground"
+            className="w-full px-1.5 py-0.5 text-sm"
           />
         </form>
       ) : (

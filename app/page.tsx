@@ -2,15 +2,41 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import AppLayout from "@/app/common/components/AppLayout";
-import KanbanBoard from "@/app/features/board/KanbanBoard";
-import SprintSelector from "@/app/features/board/components/SprintSelector";
+import dynamic from "next/dynamic";
+import AppLayout from "@/app/layouts/AppLayout";
+import SprintSelector from "@/app/features/board/SprintSelector";
+
+const KanbanBoard = dynamic(() => import("@/app/features/board/KanbanBoard"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-full w-full flex items-center justify-center p-4">
+      <div className="w-full h-full border-2 border-dashed border-(--color-border) bg-black/2 dark:bg-white/2 rounded-xl flex items-center justify-center animate-pulse">
+        <p className="text-(--color-muted) font-medium tracking-tight">Cargando tablero...</p>
+      </div>
+    </div>
+  )
+});
+import ActivityDetailsSidebar from "@/app/features/board/ActivityDetailsSidebar";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { useLanguage } from "@/app/common/context/LanguageContext";
+import { useConfirmation } from "@/app/common/context/ConfirmationContext";
 
 export default function Home() {
-  const { selectedProjectId, projects, addSprint } = useProjectsManager();
+  const {
+    selectedProjectId,
+    projects,
+    addSprint,
+    selectedActivity,
+    closeActivityDetails,
+    updateActivityDescription,
+    addTaskToActivity,
+    toggleTaskCompletion,
+    deleteTask,
+    renameTask
+  } = useProjectsManager();
+  
   const { t } = useLanguage();
+  const { confirmAction } = useConfirmation();
   const [selectedSprintId, setSelectedSprintId] = useState<string | null>(null);
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
@@ -36,11 +62,50 @@ export default function Home() {
 
   const activeSprint = selectedProject?.sprints.find(s => s.id === selectedSprintId);
 
+  // Handlers para ActivityDetailsSidebar
+  const handleUpdateDescription = (id: string, newDesc: string) => {
+    if (selectedProjectId && selectedSprintId) {
+      updateActivityDescription(selectedProjectId, selectedSprintId, id, newDesc);
+    }
+  };
+
+  const handleAddTask = (id: string, taskTitle: string) => {
+    if (selectedProjectId && selectedSprintId) {
+      addTaskToActivity(selectedProjectId, selectedSprintId, id, taskTitle);
+    }
+  };
+
+  const handleToggleTask = (id: string, taskId: string) => {
+    if (selectedProjectId && selectedSprintId) {
+      toggleTaskCompletion(selectedProjectId, selectedSprintId, id, taskId);
+    }
+  };
+
+  const handleDeleteTask = async (id: string, taskId: string) => {
+    if (selectedProjectId && selectedSprintId) {
+      const confirmed = await confirmAction({
+        title: t("delete_item"),
+        description: t("confirm_delete_task_desc"),
+        level: "normal"
+      });
+      if (confirmed) {
+        deleteTask(selectedProjectId, selectedSprintId, id, taskId);
+      }
+    }
+  };
+
+  const handleRenameTask = (id: string, taskId: string, newTitle: string) => {
+    if (selectedProjectId && selectedSprintId) {
+      renameTask(selectedProjectId, selectedSprintId, id, taskId, newTitle);
+    }
+  };
+
   return (
     <AppLayout>
       {selectedProjectId && selectedProject ? (
-        <div className="h-full flex flex-col p-4 md:p-8 animate-scroll-entry">
-          <header className="flex flex-col gap-4">
+        <div className="h-full w-full flex flex-row overflow-hidden relative">
+          <div className="flex-1 flex flex-col p-4 md:p-8 animate-scroll-entry overflow-hidden">
+            <header className="flex flex-col gap-4 shrink-0">
             <h1 className="text-2xl md:text-4xl font-semibold tracking-tight text-foreground">
               {selectedProject.name}
             </h1>
@@ -64,6 +129,18 @@ export default function Home() {
             )}
           </div>
         </div>
+
+        <ActivityDetailsSidebar
+          isOpen={selectedActivity !== null}
+          onClose={closeActivityDetails}
+          activity={selectedActivity}
+          onUpdateDescription={handleUpdateDescription}
+          onAddTask={handleAddTask}
+          onToggleTask={handleToggleTask}
+          onDeleteTask={handleDeleteTask}
+          onRenameTask={handleRenameTask}
+        />
+      </div>
       ) : (
         <div className="h-full flex items-center justify-center">
           <p className="text-(--color-muted) text-sm italic select-none">

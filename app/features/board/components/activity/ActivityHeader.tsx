@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import DropdownMenu from "@/app/common/components/DropdownMenu";
+import { Input } from "@/app/common/components/Input";
 
 interface ActivityHeaderProps {
   name: string;
@@ -46,7 +47,7 @@ export default function ActivityHeader({ name, description, isOverlay, onRenameS
       <div className="flex-1 min-w-0">
         {isRenaming ? (
           <form onSubmit={(e) => { e.preventDefault(); handleRenameSubmit(); }}>
-            <input
+            <Input
               autoFocus
               type="text"
               value={renameValue}
@@ -58,19 +59,20 @@ export default function ActivityHeader({ name, description, isOverlay, onRenameS
                   setRenameValue(name);
                 }
               }}
-              className="w-full px-1.5 py-0.5 bg-transparent border border-(--color-border) rounded text-sm outline-none focus:border-(--color-muted) text-foreground -ml-1.5"
+              variant="ghost"
+              className="w-full p-0 text-sm"
             />
           </form>
         ) : (
           <>
             <h4
               onDoubleClick={(e) => { e.stopPropagation(); setIsRenaming(true); setRenameValue(name); }}
-              className="font-semibold text-sm text-foreground leading-tight transition-colors select-none truncate cursor-default"
+              className="font-semibold text-foreground text-sm leading-tight tracking-tight mt-0.5 wrap-break-word group-hover:text-foreground transition-colors"
             >
               {name}
             </h4>
-            {description && (
-              <p className="text-xs text-(--color-muted) mt-1.5 leading-relaxed select-none">
+            {description && !isRenaming && (
+              <p className="text-xs text-(--color-muted) line-clamp-2 leading-relaxed mt-1 hidden md:block group-hover:text-foreground/80 transition-colors">
                 {description}
               </p>
             )}
@@ -78,15 +80,11 @@ export default function ActivityHeader({ name, description, isOverlay, onRenameS
         )}
       </div>
 
-      {!isOverlay && !isRenaming && (
+      {!isOverlay && (
         <DropdownMenu
           items={menuItems}
-          triggerClassName={`
-              opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-black/5
-              dark:hover:bg-white/10 transition-opacity
-              text-(--color-muted) hover:text-foreground
-              cursor-pointer
-            `}
+          triggerClassName="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+          ariaLabel={`${t("options")} - ${name}`}
         />
       )}
     </div>

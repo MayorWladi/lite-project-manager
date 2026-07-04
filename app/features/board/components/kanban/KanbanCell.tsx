@@ -4,7 +4,7 @@
 import { Activity, TaskStatus } from "@/app/common/types";
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, rectSortingStrategy } from "@dnd-kit/sortable";
-import ActivityCard from "@/app/features/activity/ActivityCard";
+import ActivityCard from "@/app/features/board/components/activity/ActivityCard";
 
 interface KanbanCellProps {
 	sprintId: string;

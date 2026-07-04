@@ -2,6 +2,9 @@
 "use client";
 
 import { useState } from "react";
+import { Input } from "@/app/common/components/Input";
+import { Button } from "@/app/common/components/Button";
+import { PlusIcon } from "@/app/common/components/Icons";
 
 interface AddTaskFormProps {
   onAdd: (title: string) => void;
@@ -26,7 +29,7 @@ export default function AddTaskForm({ onAdd, placeholderText, buttonText }: AddT
   if (isAddingTask) {
     return (
       <form onSubmit={handleAddTask} className="mt-1 w-full">
-        <input
+        <Input
           autoFocus
           type="text"
           value={newTaskTitle}
@@ -37,20 +40,21 @@ export default function AddTaskForm({ onAdd, placeholderText, buttonText }: AddT
           }}
           onBlur={() => setIsAddingTask(false)}
           placeholder={placeholderText}
-          className="w-full text-xs px-2 py-1.5 bg-transparent border border-(--color-border) rounded text-foreground outline-none focus:border-(--color-muted)"
+          className="w-full text-xs px-2 py-1.5"
         />
       </form>
     );
   }
 
   return (
-    <button
+    <Button
+      variant="custom"
       type="button"
       onClick={(e) => { e.stopPropagation(); setIsAddingTask(true); }}
       className="mt-1 flex items-center gap-1.5 text-xs text-(--color-muted) hover:text-foreground transition-colors py-1 px-1 -ml-1 rounded hover:bg-black/5 dark:hover:bg-white/5 w-full justify-start"
     >
-      <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+      <PlusIcon width="12" height="12" strokeWidth="2" />
       {buttonText}
-    </button>
+    </Button>
   );
 }

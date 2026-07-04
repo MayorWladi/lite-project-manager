@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
+import { safeGetItem, safeSetItem } from "@/app/utils/storage/core";
 import { Sprint, TaskStatus, Activity } from "@/app/common/types";
 import { useLanguage } from "@/app/common/context/LanguageContext";
 import { DndContext, DragEndEvent, DragOverEvent, DragStartEvent, DragOverlay, pointerWithin, SensorDescriptor, SensorOptions } from "@dnd-kit/core";
 import { createPortal } from "react-dom";
-import KanbanCell from "@/app/features/board/components/KanbanCell";
-import ActivityCard from "@/app/features/activity/ActivityCard";
-import AddActivityForm from "@/app/features/activity/components/AddActivityForm";
+import { Button } from "@/app/common/components/Button";
+import { Badge } from "@/app/common/components/Badge";
+import { PlusIcon, Grid1x1Icon, Grid2x2Icon } from "@/app/common/components/Icons";
+import KanbanCell from "./KanbanCell";
+import ActivityCard from "@/app/features/board/components/activity/ActivityCard";
+import AddActivityForm from "@/app/features/board/components/activity/AddActivityForm";
 
 interface KanbanBoardDesktopProps {
   sprint: Sprint;
@@ -34,7 +38,7 @@ export default function KanbanBoardDesktop({
   const [columnGrids, setColumnGrids] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    const saved = localStorage.getItem('kanbanColumnGrids');
+    const saved = safeGetItem('kanbanColumnGrids');
     if (saved) {
       try {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -65,7 +69,7 @@ export default function KanbanBoardDesktop({
         });
         
         if (changed) {
-          localStorage.setItem('kanbanColumnGrids', JSON.stringify(next));
+          safeSetItem('kanbanColumnGrids', JSON.stringify(next));
           return next;
         }
         return prev;
@@ -84,7 +88,7 @@ export default function KanbanBoardDesktop({
       const next = current === 1 ? 2 : 1;
 
       const updated = { ...prev, [colId]: next };
-      localStorage.setItem('kanbanColumnGrids', JSON.stringify(updated));
+      safeSetItem('kanbanColumnGrids', JSON.stringify(updated));
       return updated;
     });
   };
@@ -97,15 +101,14 @@ export default function KanbanBoardDesktop({
           {isAdding ? (
             <AddActivityForm sprintId={sprint.id} onClose={() => setIsAdding(false)} />
           ) : (
-            <button
+            <Button
+              variant="custom"
               onClick={() => setIsAdding(true)}
               className="px-4 py-2.5 rounded-lg border border-(--color-border) text-(--color-muted) hover:text-foreground hover:border-(--color-muted) bg-background hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-sm font-medium flex items-center gap-2 shadow-sm"
             >
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
+              <PlusIcon width="16" height="16" />
               {t("add_activity")}
-            </button>
+            </Button>
           )}
         </div>
 
@@ -124,20 +127,17 @@ export default function KanbanBoardDesktop({
                     <h3 className="font-bold text-(--color-muted) text-sm uppercase tracking-widest">{col.title}</h3>
                     <div className="flex items-center gap-2">
                       {colActivities.length >= 3 && (
-                        <button 
+                        <Button 
+                          variant="icon"
                           onClick={() => toggleGridMode(col.id, colActivities.length)}
-                          className="p-1 rounded-md text-(--color-muted) hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
                           title={gridMode === 1 ? t("grid_2x2") : t("grid_list")}
+                          className="hover:bg-black/5 dark:hover:bg-white/5 rounded-md"
                         >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            {gridMode === 1 && <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />}
-                            {gridMode === 2 && <><rect x="3" y="3" width="7" height="18" rx="2" /><rect x="14" y="3" width="7" height="18" rx="2" /></>}
-                          </svg>
-                        </button>
+                          {gridMode === 1 && <Grid1x1Icon />}
+                          {gridMode === 2 && <Grid2x2Icon />}
+                        </Button>
                       )}
-                      <span className="text-[10px] font-bold bg-black/5 dark:bg-white/10 text-(--color-muted) px-1.5 py-0.5 rounded border border-(--color-border)">
-                        {colActivities.length}
-                      </span>
+                      <Badge>{colActivities.length}</Badge>
                     </div>
                   </div>
                 );

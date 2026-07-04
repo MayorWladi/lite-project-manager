@@ -4,13 +4,16 @@
 import { Activity } from "@/app/common/types";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { Button } from "@/app/common/components/Button";
+import { ChecklistProgress } from "@/app/common/components/ChecklistProgress";
+import { InfoIcon } from "@/app/common/components/Icons";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { useLanguage } from "@/app/common/context/LanguageContext";
 import { useConfirmation } from "@/app/common/context/ConfirmationContext";
 import { useCallback } from "react";
-import ActivityTaskItem from "@/app/features/activity-details/components/ActivityTaskItem";
-import ActivityHeader from "@/app/features/activity-details/components/ActivityHeader";
-import AddTaskForm from "@/app/features/activity-details/components/AddTaskForm";
+import ActivityTaskItem from "./ActivityTaskItem";
+import ActivityHeader from "./ActivityHeader";
+import AddTaskForm from "./AddTaskForm";
 
 export default function ActivityCard({ activity, sprintId, isOverlay }: { activity: Activity; sprintId: string, isOverlay?: boolean }) {
 	const {
@@ -111,7 +114,8 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 					</div>
 
 					{/* Botón Plátano para Detalles */}
-					<button
+					<Button
+						variant="custom"
 						onClick={(e) => {
 							e.stopPropagation(); // Previene que arrastres la tarjeta
 							openActivityDetails(sprintId, activity.id);
@@ -119,15 +123,12 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 						className="p-1.5 text-lg hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-all active:scale-95 shrink-0 select-none opacity-0 group-hover:opacity-100 focus:opacity-100"
 						title="Ver detalles de la actividad"
 					>
-						🍌
-					</button>
+						<InfoIcon />
+					</Button>
 				</div>
 
 				<div className="flex flex-col gap-1.5 cursor-default" onPointerDown={e => e.stopPropagation()}>
-					<div className="flex items-center justify-between mb-1 select-none">
-						<span className="text-[10px] font-bold uppercase tracking-wider text-(--color-muted)">{t("checklist")}</span>
-						<span className="text-[10px] font-mono text-(--color-muted)">{completedTasks}/{tasks.length}</span>
-					</div>
+					<ChecklistProgress completed={completedTasks} total={tasks.length} />
 
 					<div className="flex flex-col gap-1.5 group/tasklist transition-opacity duration-300">
 						{tasks.map((task) => (

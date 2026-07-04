@@ -4,11 +4,16 @@
 import React, { useState } from "react";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { useLanguage } from "@/app/common/context/LanguageContext";
-import SettingsModal from "@/app/common/components/SettingsModal";
-import InfoModal from "@/app/common/components/InfoModal";
+import SettingsModal from "./components/settings/SettingsModal";
+import InfoModal from "./components/info/InfoModal";
 import ProgressBar from "@/app/common/components/ProgressBar";
-import ProjectList from "@/app/features/sidebar/components/ProjectList";
+import ProjectList from "./components/projects/ProjectList";
 import { useConfirmation } from "@/app/common/context/ConfirmationContext";
+import { Button } from "@/app/common/components/Button";
+import { Input } from "@/app/common/components/Input";
+import { Label } from "@/app/common/components/Label";
+import { CloseIcon, MenuIcon, InfoIcon, SettingsIcon } from "@/app/common/components/Icons";
+import { useIsMobile } from "@/app/common/hooks/useIsMobile";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -25,13 +30,20 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [storageUsage, setStorageUsage] = useState(0);
   const { confirmAction } = useConfirmation();
+  const isMobile = useIsMobile();
 
   React.useEffect(() => {
     const calculateStorage = () => {
       let total = 0;
-      for (const x in localStorage) {
-        if (!localStorage.hasOwnProperty(x)) continue;
-        total += ((localStorage[x].length + x.length) * 2);
+      try {
+        if (typeof window !== "undefined") {
+          for (const x in window.localStorage) {
+            if (!window.localStorage.hasOwnProperty(x)) continue;
+            total += ((window.localStorage[x].length + x.length) * 2);
+          }
+        }
+      } catch {
+        // Ignoramos errores de cuota o localStorage deshabilitado.
       }
       setStorageUsage(Math.min((total / 5242880) * 100, 100));
     };
@@ -64,13 +76,15 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
             <h1 className="text-lg font-medium text-foreground tracking-tight truncate">
               Lite Project Manager
             </h1>
-            <button className="md:hidden p-1 -mr-2 text-(--color-muted) hover:text-foreground transition-colors" onClick={onClose}>
-              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-            {onDesktopToggle && (
-              <button className="hidden md:block p-1 -mr-2 text-(--color-muted) hover:text-foreground transition-colors" onClick={onDesktopToggle}>
-                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
-              </button>
+            {isMobile && (
+              <Button variant="icon" className="md:hidden -mr-2" onClick={onClose}>
+                <CloseIcon />
+              </Button>
+            )}
+            {onDesktopToggle && !isMobile && (
+              <Button variant="icon" className="hidden md:block -mr-2" onClick={onDesktopToggle}>
+                <MenuIcon />
+              </Button>
             )}
           </div>
 
@@ -105,15 +119,15 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
           {/* Formulario para Nuevo Proyecto */}
           <div className="p-4 border-t border-(--color-border)">
             <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-              <label className="text-[10px] font-medium text-(--color-muted) uppercase tracking-wider">
+              <Label className="text-[10px]">
                 {t("new_project")}
-              </label>
-              <input
+              </Label>
+              <Input
                 type="text"
                 placeholder={t("project_placeholder")}
                 value={newProjectName}
                 onChange={(e) => setNewProjectName(e.target.value)}
-                className="w-full px-3 py-2 bg-transparent border border-(--color-border) rounded-md text-sm outline-none transition-colors focus:border-(--color-muted) text-foreground"
+                className="w-full px-3 py-2 text-sm"
               />
             </form>
           </div>
@@ -138,28 +152,21 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
 
           {/* Botones de Footer (Info y Ajustes) */}
           <div className="p-3 border-t border-(--color-border) space-y-1">
-            <button
+            <Button
+              variant="sidebar"
               onClick={() => setIsInfoOpen(true)}
-              className="w-full text-left px-3 py-2 rounded-lg text-sm text-(--color-muted) font-medium hover:bg-black/3 dark:hover:bg-white/5 hover:text-foreground hover:translate-x-0.5 transition-all duration-200 flex items-center gap-2.5"
             >
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 16v-4" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8h.01" />
-              </svg>
+              <InfoIcon />
               <span>{t("information")}</span>
-            </button>
+            </Button>
 
-            <button
+            <Button
+              variant="sidebar"
               onClick={() => setIsSettingsOpen(true)}
-              className="w-full text-left px-3 py-2 rounded-lg text-sm text-(--color-muted) font-medium hover:bg-black/3 dark:hover:bg-white/5 hover:text-foreground hover:translate-x-0.5 transition-all duration-200 flex items-center gap-2.5"
             >
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-              </svg>
+              <SettingsIcon />
               <span>{t("settings")}</span>
-            </button>
+            </Button>
           </div>
         </div>
       </aside>

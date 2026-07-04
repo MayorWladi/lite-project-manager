@@ -2,7 +2,7 @@
 'use client'
 
 import type { Project } from "@/app/common/types"
-import ProjectItem from "@/app/features/sidebar/components/ProjectItem"
+import ProjectItem from "./ProjectItem"
 
 interface ProjectListProps {
   projects: Project[]

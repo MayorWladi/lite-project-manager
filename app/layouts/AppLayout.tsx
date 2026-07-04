@@ -6,69 +6,12 @@ import Sidebar from "@/app/features/sidebar/Sidebar";
 import { Toaster } from "sileo";
 import "sileo/styles.css";
 import { useSettings } from "@/app/common/context/SettingsContext";
-import ActivityDetailsSidebar from "@/app/features/activity-details/ActivityDetailsSidebar";
-import { useProjectsManager } from "@/app/common/context/ProjectContext";
-import { useConfirmation } from "@/app/common/context/ConfirmationContext";
-import { useLanguage } from "@/app/common/context/LanguageContext";
 import { THEMES } from "@/app/common/constants/themes";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { theme } = useSettings();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktopMenuOpen, setIsDesktopMenuOpen] = useState(true);
-  const { confirmAction } = useConfirmation();
-  const { t } = useLanguage();
-
-  // Contexto Global
-  const {
-    selectedProjectId,
-    selectedSprintId,
-    selectedActivity,
-    closeActivityDetails,
-    updateActivityDescription,
-    addTaskToActivity,
-    toggleTaskCompletion,
-    deleteTask,
-    renameTask
-  } = useProjectsManager();
-
-  // Handlers dinámicos
-  const handleUpdateDescription = (id: string, newDesc: string) => {
-    if (selectedProjectId && selectedSprintId) {
-      updateActivityDescription(selectedProjectId, selectedSprintId, id, newDesc);
-    }
-  };
-
-  const handleAddTask = (id: string, taskTitle: string) => {
-    if (selectedProjectId && selectedSprintId) {
-      addTaskToActivity(selectedProjectId, selectedSprintId, id, taskTitle);
-    }
-  };
-
-  const handleToggleTask = (id: string, taskId: string) => {
-    if (selectedProjectId && selectedSprintId) {
-      toggleTaskCompletion(selectedProjectId, selectedSprintId, id, taskId);
-    }
-  };
-
-  const handleDeleteTask = async (id: string, taskId: string) => {
-    if (selectedProjectId && selectedSprintId) {
-      const confirmed = await confirmAction({
-        title: t("delete_item"),
-        description: t("confirm_delete_task_desc"),
-        level: "normal"
-      });
-      if (confirmed) {
-        deleteTask(selectedProjectId, selectedSprintId, id, taskId);
-      }
-    }
-  };
-
-  const handleRenameTask = (id: string, taskId: string, newTitle: string) => {
-    if (selectedProjectId && selectedSprintId) {
-      renameTask(selectedProjectId, selectedSprintId, id, taskId, newTitle);
-    }
-  };
 
   return (
     <div className="flex flex-col md:flex-row h-screen w-full bg-background text-foreground overflow-hidden">
@@ -108,19 +51,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           {children}
         </div>
       </main>
-
-      {/* Panel Lateral Derecho Conectado */}
-      <ActivityDetailsSidebar
-        isOpen={selectedActivity !== null}
-        onClose={closeActivityDetails}
-        activity={selectedActivity}
-        onUpdateDescription={handleUpdateDescription}
-        // onToggleActivityStatus={handleToggleActivityStatus}
-        onAddTask={handleAddTask}
-        onToggleTask={handleToggleTask}
-        onDeleteTask={handleDeleteTask}
-        onRenameTask={handleRenameTask}
-      />
 
       {/* Tostadora */}
       <Toaster

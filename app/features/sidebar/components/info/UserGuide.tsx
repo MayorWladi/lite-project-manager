@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useLanguage } from "@/app/common/context/LanguageContext";
+import { Button } from "@/app/common/components/Button";
 import { useSettings } from "@/app/common/context/SettingsContext";
 import { THEMES } from "@/app/common/constants/themes";
 
@@ -61,17 +62,19 @@ export default function UserGuide({ onClose }: UserGuideProps) {
 
 				{/* Controles de Navegación */}
 				<div className="flex items-center justify-between mt-4">
-					<button
+					<Button
+						variant="ghost"
 						onClick={prevStep}
 						disabled={currentStep === 0}
-						className="px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-0 disabled:pointer-events-none hover:bg-black/5 dark:hover:bg-white/5 text-foreground"
+						className="px-4 py-2 disabled:opacity-0 disabled:pointer-events-none"
 					>
 						{t("tut_prev")}
-					</button>
+					</Button>
 
 					<div className="flex gap-2">
 						{tutorialSteps.map((_, idx) => (
-							<button
+							<Button
+								variant="custom"
 								key={idx}
 								onClick={() => setCurrentStep(idx)}
 								aria-label={`Go to step ${idx + 1}`}
@@ -82,12 +85,13 @@ export default function UserGuide({ onClose }: UserGuideProps) {
 						))}
 					</div>
 
-					<button
+					<Button
+						variant="primary"
 						onClick={currentStep === tutorialSteps.length - 1 ? onClose : nextStep}
-						className="px-4 py-2 rounded-lg text-sm font-medium bg-foreground text-background hover:opacity-90 transition-opacity shadow-sm"
+						className="shadow-sm"
 					>
 						{currentStep === tutorialSteps.length - 1 ? t("tut_finish") : t("tut_next")}
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>

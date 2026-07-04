@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/app/common/context/LanguageContext";
 import Modal from "@/app/common/components/Modal";
-import UserGuide from "@/app/common/components/info/UserGuide";
-import CollaboratorsList from "@/app/common/components/info/CollaboratorsList";
+import { TabButton } from "@/app/common/components/TabButton";
+import UserGuide from "./UserGuide";
+import CollaboratorsList from "./CollaboratorsList";
 
 interface InfoModalProps {
   isOpen: boolean;
@@ -61,20 +62,21 @@ export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={t("information")}>
-      {/* Pestañas */}
       <div className="flex border-b border-(--color-border) mb-6">
-        <button
+        <TabButton
+          isActive={activeTab === "guide"}
           onClick={() => handleTabChange("guide")}
-          className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 ${activeTab === "guide" ? "border-foreground text-foreground" : "border-transparent text-(--color-muted) hover:text-foreground"}`}
+          className="flex-1 pb-3"
         >
           {t("user_guide")}
-        </button>
-        <button
+        </TabButton>
+        <TabButton
+          isActive={activeTab === "collaborators"}
           onClick={() => handleTabChange("collaborators")}
-          className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 ${activeTab === "collaborators" ? "border-foreground text-foreground" : "border-transparent text-(--color-muted) hover:text-foreground"}`}
+          className="flex-1 pb-3"
         >
           {t("collaborators")}
-        </button>
+        </TabButton>
       </div>
 
       <div className="relative w-full">

@@ -3,6 +3,9 @@
 
 import { useState, memo } from "react";
 import { Task } from "@/app/common/types";
+import { Button } from "@/app/common/components/Button";
+import { Textarea } from "@/app/common/components/Textarea";
+import { CheckCircleIcon, CircleIcon, TrashIcon } from "@/app/common/components/Icons";
 
 // --- CONFIGURACIÓN PREDETERMINADA (se puede sobrescribir vía props) ---
 const DEFAULT_AUDIO_PATHS = [
@@ -64,26 +67,19 @@ const ActivityTaskItem = memo(function ActivityTaskItem({
       `}
     >
       {/* Botón de check / unchecked */}
-      <button
+      <Button
+        variant="icon"
         type="button"
         onClick={handleToggle}
-        className="mt-0.5 shrink-0 text-(--color-muted) hover:text-foreground"
+        className="mt-0.5 shrink-0 p-0"
       >
-        {task.isCompleted ? (
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-            <polyline points="22 4 12 14.01 9 11.01" />
-          </svg>
-        ) : (
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" />
-          </svg>
-        )}
-      </button>
+        {task.isCompleted ? <CheckCircleIcon /> : <CircleIcon />}
+      </Button>
 
       {/* Título de la tarea (con edición inline) */}
       {isRenaming ? (
-        <textarea
+        <Textarea
+          variant="ghost"
           value={renameValue}
           onChange={(e) => {
             setRenameValue(e.target.value);
@@ -112,7 +108,7 @@ const ActivityTaskItem = memo(function ActivityTaskItem({
           }}
           autoFocus
           rows={1}
-          className="text-xs flex-1 bg-transparent border-b border-(--color-border) outline-none resize-none overflow-hidden py-0"
+          className="text-xs flex-1 resize-none overflow-hidden py-0 border-b border-(--color-border) rounded-none focus:border-(--color-muted)"
         />
       ) : (
         <span
@@ -133,15 +129,13 @@ const ActivityTaskItem = memo(function ActivityTaskItem({
       )}
 
       {/* Botón de eliminar (visible solo al hacer hover en la tarea) */}
-      <button
+      <Button
+        variant="icon"
         onClick={onDelete}
-        className="opacity-0 group-hover/task:opacity-100 text-(--color-muted) hover:text-[#9F2F2D] transition-opacity"
+        className="opacity-0 group-hover/task:opacity-100 hover:text-red-500 p-0"
       >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M18 6 6 18" />
-          <path d="m6 6 12 12" />
-        </svg>
-      </button>
+        <TrashIcon width="12" height="12" />
+      </Button>
     </div>
   );
 });

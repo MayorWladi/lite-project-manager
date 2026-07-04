@@ -3,8 +3,8 @@
 import { Sprint, TaskStatus } from "@/app/common/types";
 import { useLanguage } from "@/app/common/context/LanguageContext";
 import { useKanbanBoard } from "@/app/features/board/hooks/useKanbanBoard";
-import KanbanBoardMobile from "@/app/features/board/components/KanbanBoardMobile";
-import KanbanBoardDesktop from "@/app/features/board/components/KanbanBoardDesktop";
+import KanbanBoardMobile from "@/app/features/board/components/kanban/KanbanBoardMobile";
+import KanbanBoardDesktop from "@/app/features/board/components/kanban/KanbanBoardDesktop";
 
 export const getColumns = (t: (k: string) => string): { id: TaskStatus; title: string }[] => [
 	{ id: "todo", title: t("col_todo") },
