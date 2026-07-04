@@ -82,13 +82,13 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 						variant="inline"
 						className="w-48"
 						tooltipPosition="bottom"
-						tooltipTitle="Progreso del Sprint"
+						tooltipTitle={t("sprint_progress")}
 						tooltipStats={
 							metrics.total !== undefined && metrics.done !== undefined ? [
-								{ label: "Completadas", value: metrics.done },
-								{ label: "Pendientes", value: metrics.total - metrics.done },
+								{ label: t("completed"), value: metrics.done },
+								{ label: t("pending"), value: metrics.total - metrics.done },
 								'divider',
-								{ label: "Total", value: `${metrics.total} actividades` },
+								{ label: t("total"), value: `${metrics.total} ${t("total_activities")}` },
 							] : []
 						}
 					/>

@@ -140,12 +140,12 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
               displayValue={`${storageUsage.toFixed(1)}%`}
               variant="stacked"
               tooltipPosition="top"
-              tooltipTitle="Almacenamiento Local"
+              tooltipTitle={t("local_storage")}
               tooltipStats={[
-                { label: "Usado", value: `${(storageUsage * 5 / 100).toFixed(2)} MB` },
-                { label: "Libre", value: `${(5 - (storageUsage * 5 / 100)).toFixed(2)} MB` },
+                { label: t("used"), value: `${(storageUsage * 5 / 100).toFixed(2)} MB` },
+                { label: t("free"), value: `${(5 - (storageUsage * 5 / 100)).toFixed(2)} MB` },
                 'divider',
-                { label: "Total Estimado", value: "5.00 MB" },
+                { label: t("estimated_total"), value: "5.00 MB" },
               ]}
             />
           </div>

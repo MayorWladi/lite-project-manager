@@ -154,7 +154,18 @@ const DICTIONARY: Translations = {
 	confirm_delete_activity_desc: { en: "Are you sure you want to delete this activity? All tasks inside it will be lost.", es: "¿Estás seguro de eliminar esta actividad? Todas sus tareas se perderán." },
 	confirm_delete_task_desc: { en: "Are you sure you want to delete this task?", es: "¿Estás seguro de eliminar esta tarea?" },
 	type_exact_name_to_confirm: { en: "Type the exact name to confirm:", es: "Escribe el nombre exacto para confirmar:" },
-	delete_action: { en: "Delete", es: "Eliminar" }
+	delete_action: { en: "Delete", es: "Eliminar" },
+
+	// Tooltips & Metrics
+	sprint_progress: { en: "Sprint Progress", es: "Progreso del Sprint" },
+	completed: { en: "Completed", es: "Completadas" },
+	pending: { en: "Pending", es: "Pendientes" },
+	total_activities: { en: "activities", es: "actividades" },
+	total: { en: "Total", es: "Total" },
+	local_storage: { en: "Local Storage", es: "Almacenamiento Local" },
+	used: { en: "Used", es: "Usado" },
+	free: { en: "Free", es: "Libre" },
+	estimated_total: { en: "Estimated Total", es: "Total Estimado" },
 };
 
 interface LanguageContextType {
