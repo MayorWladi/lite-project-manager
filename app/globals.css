@@ -231,8 +231,18 @@ body {
   background-color: var(--color-muted);
 }
 
-/* Fast Fade Transition */
+.vt-kanban {
+  view-transition-name: kanban-area;
+}
+
+/* Disable root transition */
 ::view-transition-old(root),
 ::view-transition-new(root) {
+  animation: none;
+}
+
+/* Fast Fade Transition */
+::view-transition-old(kanban-area),
+::view-transition-new(kanban-area) {
   animation-duration: 0.12s;
 }

@@ -129,7 +129,7 @@ export default function Home() {
             />
           </header>
 
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden vt-kanban">
             {activeSprint ? (
               <KanbanBoard sprint={activeSprint} />
             ) : (
