@@ -51,7 +51,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: Activity
       };
 
   const containerClassName = `w-[264px] mb-3 break-inside-avoid ${isOverlay ? "cursor-grabbing" : "cursor-grab active:cursor-grabbing"}`;
-  const cardClassName = `bg-(--color-card-bg) border rounded-xl p-4 pt-3 flex flex-col gap-3 transition-all duration-200 ease-out shadow-[0_2px_8px_rgba(0,0,0,0.02)] group relative animate-fade-in ${
+  const cardClassName = `bg-(--color-card-bg) border rounded-xl p-4 pt-3 flex flex-col gap-3 transition-all duration-200 ease-out shadow-[0_2px_8px_rgba(0,0,0,0.02)] group relative ${
     isOverlay
       ? "border-(--color-border) shadow-none"
       : isDragging

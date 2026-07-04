@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { flushSync } from "react-dom";
 import AppLayout from "@/app/layouts/AppLayout";
 import SprintSelector from "@/app/features/board/SprintSelector";
 import KanbanBoard from "@/app/features/board/KanbanBoard";
@@ -53,6 +54,20 @@ export default function Home() {
   const handleAddSprint = (name: string) => {
     if (selectedProjectId) {
       addSprint(selectedProjectId, name);
+    }
+  };
+
+  const handleSprintChange = (newId: string) => {
+    if (newId === selectedSprintId) return;
+    
+    if (typeof document !== 'undefined' && 'startViewTransition' in document) {
+      document.startViewTransition(() => {
+        flushSync(() => {
+          setSelectedSprintId(newId);
+        });
+      });
+    } else {
+      setSelectedSprintId(newId);
     }
   };
 
@@ -109,7 +124,7 @@ export default function Home() {
             <SprintSelector
               sprints={selectedProject.sprints}
               activeSprint={activeSprint}
-              onSelectSprint={setSelectedSprintId}
+              onSelectSprint={handleSprintChange}
               onAddSprint={handleAddSprint}
             />
           </header>

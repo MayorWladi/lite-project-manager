@@ -64,7 +64,7 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 
   return (
     <div
-      className={`bg-(--color-card-bg) border border-(--color-border) rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 animate-fade-in ${
+      className={`bg-(--color-card-bg) border border-(--color-border) rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 ${
         isShaking ? "animate-shake border-red-500/50" : ""
       } ${
         isAnimatingOut === "right"

@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { flushSync } from "react-dom";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { useLanguage } from "@/app/common/context/LanguageContext";
 import SettingsModal from "./components/settings/SettingsModal";
@@ -62,6 +63,20 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
     }
   };
 
+  const handleProjectChange = (id: string) => {
+    if (id === selectedProjectId) return;
+    
+    if (typeof document !== 'undefined' && 'startViewTransition' in document) {
+      document.startViewTransition(() => {
+        flushSync(() => {
+          setSelectedProjectId(id);
+        });
+      });
+    } else {
+      setSelectedProjectId(id);
+    }
+  };
+
   return (
     <>
       {isOpen && (
@@ -100,7 +115,7 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
               <ProjectList
                 projects={projects}
                 selectedProjectId={selectedProjectId}
-                onSelectProject={setSelectedProjectId}
+                onSelectProject={handleProjectChange}
                 onDeleteProject={async (id, name) => {
                   const confirmed = await confirmAction({
                     title: t("delete_item"),
