@@ -31,7 +31,7 @@ export default function AddActivityForm({ sprintId, isMobile, onClose }: AddActi
     if (!newActivityName.trim()) onClose();
   };
 
-  const formClassName = `flex gap-2 rounded-xl border border-(--color-border) bg-(--color-card-bg) ${
+  const formClassName = `inline-flex gap-2 rounded-xl border border-(--color-border) bg-(--color-card-bg) ${
     isMobile ? "p-2 shadow-xl animate-pop-count origin-bottom-right" : ""
   }`;
 
