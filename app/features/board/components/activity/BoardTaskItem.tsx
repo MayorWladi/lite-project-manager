@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
-import { memo } from "react";
+import { memo, useCallback } from "react";
+import { TASK_COMPLETE_SOUNDS, TASK_COMPLETE_VOLUMES } from "@/app/common/constants/sounds";
 import { Task } from "@/app/common/types";
 import { Button } from "@/app/common/components/Button";
 import { InlineEditableText } from "@/app/common/components/InlineEditableText";
@@ -13,16 +14,25 @@ interface ActivityTaskItemProps {
   onRename: (newTitle: string) => void;
 }
 
+const pickRandom = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
+
 const ActivityTaskItem = memo(function ActivityTaskItem({ task, onToggle, onDelete, onRename }: ActivityTaskItemProps) {
+  const handleToggle = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (!task.isCompleted) {
+      const audio = new Audio(pickRandom(TASK_COMPLETE_SOUNDS));
+      audio.volume = pickRandom(TASK_COMPLETE_VOLUMES);
+      audio.play().catch(() => { /* silenciar errores */ });
+    }
+    onToggle(e);
+  }, [task.isCompleted, onToggle]);
+
   return (
-    <div className="flex items-start gap-2 group/task transition-opacity duration-300 group-hover/tasklist:opacity-50 hover:opacity-100">
+    <div className="flex items-center gap-2 group/task transition-opacity duration-300 group-hover/tasklist:opacity-50 hover:opacity-100">
       <Button
         variant="icon"
         type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onToggle(e);
-        }}
+        onClick={handleToggle}
         className="mt-0.5 shrink-0 p-0"
       >
         {task.isCompleted ? <CheckCircleIcon /> : <CircleIcon />}
@@ -35,9 +45,8 @@ const ActivityTaskItem = memo(function ActivityTaskItem({ task, onToggle, onDele
         }}
         disabled={task.isCompleted}
         placeholder="Nueva tarea"
-        textClassName={`text-xs flex-1 min-w-0 select-none cursor-default transition-all duration-300 ease-in-out whitespace-pre-wrap ${
-          task.isCompleted ? "text-(--color-muted) line-through decoration-current decoration-1 underline-offset-2" : "text-foreground"
-        }`}
+        textClassName={`text-xs flex-1 min-w-0 select-none cursor-default transition-all duration-300 ease-in-out whitespace-pre-wrap ${task.isCompleted ? "text-(--color-muted) line-through decoration-current decoration-1 underline-offset-2" : "text-foreground"
+          }`}
         inputClassName="text-xs flex-1 border-b border-(--color-border) bg-transparent py-0 focus:border-(--color-muted) rounded-none"
         wrapperClassName="flex-1"
       />

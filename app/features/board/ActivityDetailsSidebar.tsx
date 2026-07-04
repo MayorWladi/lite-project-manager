@@ -118,7 +118,7 @@ export default function ActivityDetailsSidebar({
             <Button
               variant="icon"
               onClick={onClose}
-              className="p-1.5 border border-transparent"
+              className="p-1.5 border border-transparent hover:border-(--color-border) hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors"
             >
               <CloseIcon width="18" height="18" />
             </Button>
@@ -127,7 +127,28 @@ export default function ActivityDetailsSidebar({
           {/* Cuerpo */}
           <div className="flex-1 overflow-y-auto p-4 md:p-5 space-y-6 scrollbar-hide">
 
-            {/* SECCIÓN DE TAREAS (Usando tus componentes) */}
+            {/* Estado de la actividad */}
+            <div className="bg-background border border-(--color-border) rounded-lg divide-y divide-(--color-border) overflow-hidden">
+              <Button variant="custom" className="w-full p-3 hover:bg-black/3 dark:hover:bg-white/5 transition-colors text-left flex items-center gap-3 text-sm text-foreground">
+                <StatusIcon className="text-(--color-muted)" />
+                <span>{t("current_status")} <span className="font-semibold uppercase text-xs ml-1">{currentActivity.status}</span></span>
+              </Button>
+            </div>
+
+            {/* DESCRIPCIÓN */}
+            <div className="flex flex-col gap-1.5">
+              <Label className="text-[10px] px-1">
+                {t("description")}
+              </Label>
+              <Textarea
+                className="w-full bg-background p-3 text-sm text-foreground placeholder-(--color-muted) min-h-35 resize-none shadow-sm"
+                placeholder={t("add_note")}
+                value={currentActivity.description || ""}
+                onChange={(e) => onUpdateDescription(currentActivity.id, e.target.value)}
+              />
+            </div>
+
+            {/* SECCIÓN DE TAREAS */}
             <div className="space-y-1.5 flex flex-col">
               <ChecklistProgress completed={completedTasks} total={totalTasks} className="px-1" />
 
@@ -150,27 +171,6 @@ export default function ActivityDetailsSidebar({
                   buttonText={t("add_task")}
                 />
               </div>
-            </div>
-
-            {/* Estado de la actividad */}
-            <div className="bg-background border border-(--color-border) rounded-lg divide-y divide-(--color-border) overflow-hidden">
-              <Button variant="custom" className="w-full p-3 hover:bg-black/3 dark:hover:bg-white/5 transition-colors text-left flex items-center gap-3 text-sm text-foreground">
-                <StatusIcon className="text-(--color-muted)" />
-                <span>{t("current_status")} <span className="font-semibold uppercase text-xs ml-1">{currentActivity.status}</span></span>
-              </Button>
-            </div>
-
-            {/* DESCRIPCIÓN */}
-            <div className="flex flex-col gap-1.5">
-              <Label className="text-[10px] px-1">
-                {t("description")}
-              </Label>
-              <Textarea
-                className="w-full bg-background p-3 text-sm text-foreground placeholder-(--color-muted) min-h-35 resize-none shadow-sm"
-                placeholder={t("add_note")}
-                value={currentActivity.description || ""}
-                onChange={(e) => onUpdateDescription(currentActivity.id, e.target.value)}
-              />
             </div>
           </div>
 
