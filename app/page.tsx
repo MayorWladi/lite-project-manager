@@ -129,11 +129,11 @@ export default function Home() {
             />
           </header>
 
-          <div className="flex-1 overflow-hidden vt-kanban">
+          <div className="flex-1 overflow-hidden">
             {activeSprint ? (
               <KanbanBoard sprint={activeSprint} />
             ) : (
-              <div className="h-full border-2 border-dashed border-(--color-border) rounded-xl flex flex-col items-center justify-center gap-2">
+              <div className="h-full border-2 border-dashed border-(--color-border) rounded-xl flex flex-col items-center justify-center gap-2 vt-kanban">
                 <p className="text-(--color-muted) text-sm">{t("no_sprints_yet")}</p>
                 <p className="text-xs text-(--color-muted)/70">{t("create_sprint_msg")}</p>
               </div>
