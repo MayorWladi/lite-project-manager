@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useCallback } from "react";
+import { useMemo } from "react";
 import { Activity } from "@/app/common/types";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -9,7 +9,7 @@ import { ChecklistProgress } from "@/app/common/components/ChecklistProgress";
 import { BananaIcon } from "@/app/common/components/Icons";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { useLanguage } from "@/app/common/context/LanguageContext";
-import { useConfirmation } from "@/app/common/context/ConfirmationContext";
+import { useActivityActions } from "@/app/features/board/hooks/useActivityActions";
 import TaskItem from "./TaskItem";
 import ActivityHeader from "./ActivityHeader";
 import AddTaskForm from "./AddTaskForm";
@@ -21,19 +21,17 @@ interface ActivityCardProps {
 }
 
 export default function ActivityCard({ activity, sprintId, isOverlay }: ActivityCardProps) {
-  const {
-    selectedProjectId,
-    toggleTaskCompletion,
-    addTaskToActivity,
-    deleteTask,
-    renameActivity,
-    deleteActivity,
-    renameTask,
-    openActivityDetails,
-  } = useProjectsManager();
-
+  const { openActivityDetails } = useProjectsManager();
   const { t } = useLanguage();
-  const { confirmAction } = useConfirmation();
+
+  const {
+    handleRenameActivity,
+    handleDeleteActivity,
+    handleToggleTask,
+    handleAddTask,
+    handleDeleteTask,
+    handleRenameTask,
+  } = useActivityActions(sprintId, activity.id);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: activity.id,
@@ -51,61 +49,6 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: Activity
         transition,
         opacity: isDragging ? 0.4 : 1,
       };
-
-  const handleDeleteActivity = useCallback(async () => {
-    if (!selectedProjectId) return;
-    const confirmed = await confirmAction({
-      title: t("delete_item"),
-      description: t("confirm_delete_activity_desc"),
-      level: "normal",
-    });
-    if (confirmed) deleteActivity(selectedProjectId, sprintId, activity.id);
-  }, [selectedProjectId, sprintId, activity.id, deleteActivity, confirmAction, t]);
-
-  const handleRenameActivity = useCallback(
-    (newName: string) => {
-      if (!selectedProjectId) return;
-      renameActivity(selectedProjectId, sprintId, activity.id, newName);
-    },
-    [selectedProjectId, sprintId, activity.id, renameActivity]
-  );
-
-  const handleDeleteTask = useCallback(
-    async (taskId: string) => {
-      if (!selectedProjectId) return;
-      const confirmed = await confirmAction({
-        title: t("delete_item"),
-        description: t("confirm_delete_task_desc"),
-        level: "normal",
-      });
-      if (confirmed) deleteTask(selectedProjectId, sprintId, activity.id, taskId);
-    },
-    [selectedProjectId, sprintId, activity.id, deleteTask, confirmAction, t]
-  );
-
-  const handleAddTask = useCallback(
-    (title: string) => {
-      if (!selectedProjectId) return;
-      addTaskToActivity(selectedProjectId, sprintId, activity.id, title);
-    },
-    [selectedProjectId, sprintId, activity.id, addTaskToActivity]
-  );
-
-  const handleToggleTask = useCallback(
-    (taskId: string) => {
-      if (!selectedProjectId) return;
-      toggleTaskCompletion(selectedProjectId, sprintId, activity.id, taskId);
-    },
-    [selectedProjectId, sprintId, activity.id, toggleTaskCompletion]
-  );
-
-  const handleRenameTask = useCallback(
-    (taskId: string, newTitle: string) => {
-      if (!selectedProjectId) return;
-      renameTask(selectedProjectId, sprintId, activity.id, taskId, newTitle);
-    },
-    [selectedProjectId, sprintId, activity.id, renameTask]
-  );
 
   const containerClassName = `w-[264px] mb-3 break-inside-avoid ${isOverlay ? "cursor-grabbing" : "cursor-grab active:cursor-grabbing"}`;
   const cardClassName = `bg-(--color-card-bg) border rounded-xl p-4 pt-3 flex flex-col gap-3 transition-all duration-200 ease-out shadow-[0_2px_8px_rgba(0,0,0,0.02)] group relative animate-fade-in ${

@@ -4,10 +4,9 @@
 import { useState, useMemo, useCallback } from "react";
 import { Activity, TaskStatus } from "@/app/common/types";
 import { ChecklistProgress } from "@/app/common/components/ChecklistProgress";
-import { useProjectsManager } from "@/app/common/context/ProjectContext";
+import { useActivityActions } from "@/app/features/board/hooks/useActivityActions";
 import { useLanguage } from "@/app/common/context/LanguageContext";
 import { notifyActivityError } from "@/app/utils/helpers/notifications";
-import { useConfirmation } from "@/app/common/context/ConfirmationContext";
 import { StatusSelect } from "@/app/common/components/StatusSelect";
 import { InlineEditableText } from "@/app/common/components/InlineEditableText";
 import TaskItem from "./TaskItem";
@@ -22,17 +21,16 @@ interface MobileActivityCardProps {
 }
 
 export default function MobileActivityCard({ activity, sprintId, columns, onStatusChange }: MobileActivityCardProps) {
-  const {
-    selectedProjectId,
-    toggleTaskCompletion,
-    addTaskToActivity,
-    deleteTask,
-    renameActivity,
-    deleteActivity,
-    renameTask,
-  } = useProjectsManager();
   const { t } = useLanguage();
-  const { confirmAction } = useConfirmation();
+  
+  const {
+    handleRenameActivity,
+    handleDeleteActivity,
+    handleToggleTask,
+    handleAddTask,
+    handleDeleteTask,
+    handleRenameTask,
+  } = useActivityActions(sprintId, activity.id);
 
   const [isRenaming, setIsRenaming] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
@@ -40,31 +38,6 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
 
   const tasks = useMemo(() => activity.tasks ?? [], [activity.tasks]);
   const completedTasks = useMemo(() => tasks.filter((task) => task.isCompleted).length, [tasks]);
-
-  const handleToggle = (taskId: string) => {
-    if (!selectedProjectId) return;
-    toggleTaskCompletion(selectedProjectId, sprintId, activity.id, taskId);
-  };
-
-  const handleDelete = useCallback(
-    async (taskId: string) => {
-      if (!selectedProjectId) return;
-
-      const confirmed = await confirmAction({
-        title: t("delete_item"),
-        description: t("confirm_delete_task_desc"),
-        level: "normal",
-      });
-
-      if (confirmed) deleteTask(selectedProjectId, sprintId, activity.id, taskId);
-    },
-    [selectedProjectId, sprintId, activity.id, deleteTask, confirmAction, t]
-  );
-
-  const handleAddTask = (title: string) => {
-    if (!title.trim() || !selectedProjectId) return;
-    addTaskToActivity(selectedProjectId, sprintId, activity.id, title.trim());
-  };
 
   const handleStatusChange = (newStatusId: TaskStatus) => {
     if (newStatusId === activity.status) {
@@ -89,28 +62,6 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
     window.setTimeout(() => onStatusChange(activity.id, newStatusId), 300);
   };
 
-  const handleRenameActivity = (newName: string) => {
-    if (!selectedProjectId) return;
-    renameActivity(selectedProjectId, sprintId, activity.id, newName);
-  };
-
-  const handleRenameTask = (taskId: string, newTitle: string) => {
-    if (!selectedProjectId) return;
-    renameTask(selectedProjectId, sprintId, activity.id, taskId, newTitle);
-  };
-
-  const handleDeleteActivity = useCallback(async () => {
-    if (!selectedProjectId) return;
-
-    const confirmed = await confirmAction({
-      title: t("delete_item"),
-      description: t("confirm_delete_activity_desc"),
-      level: "normal",
-    });
-
-    if (confirmed) deleteActivity(selectedProjectId, sprintId, activity.id);
-  }, [selectedProjectId, sprintId, activity.id, deleteActivity, confirmAction, t]);
-
   return (
     <div
       className={`bg-(--color-card-bg) border border-(--color-border) rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 animate-fade-in ${
@@ -124,7 +75,7 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
       }`}
     >
       <div className="flex-1 min-w-0 flex flex-col gap-2">
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-start gap-2.5">
           <div className="flex-1 min-w-0">
             <InlineEditableText
               value={activity.name}
@@ -132,12 +83,12 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
               isEditing={isRenaming}
               onEditingChange={setIsRenaming}
               placeholder={t("rename")}
-              textClassName="font-semibold text-sm text-foreground leading-tight truncate cursor-default"
+              textClassName="font-semibold text-sm text-foreground leading-tight line-clamp-2 cursor-default"
               inputClassName="w-full p-0 text-base font-semibold"
               wrapperClassName="flex-1"
             />
             {activity.description && (
-              <p className="text-xs text-(--color-muted) mt-1 leading-relaxed">{activity.description}</p>
+              <p className="text-xs text-(--color-muted) mt-1 leading-relaxed line-clamp-2">{activity.description}</p>
             )}
           </div>
 
@@ -175,8 +126,8 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
               key={task.id}
               task={task}
               variant="mobile"
-              onToggle={() => handleToggle(task.id)}
-              onDelete={() => handleDelete(task.id)}
+              onToggle={() => handleToggleTask(task.id)}
+              onDelete={() => handleDeleteTask(task.id)}
               onRename={(newTitle: string) => handleRenameTask(task.id, newTitle)}
             />
           ))}
