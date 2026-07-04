@@ -13,7 +13,6 @@ import { Button } from "@/app/common/components/Button";
 import { Input } from "@/app/common/components/Input";
 import { Label } from "@/app/common/components/Label";
 import { CloseIcon, MenuIcon, InfoIcon, SettingsIcon } from "@/app/common/components/Icons";
-import { useIsMobile } from "@/app/common/hooks/useIsMobile";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -30,7 +29,6 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [storageUsage, setStorageUsage] = useState(0);
   const { confirmAction } = useConfirmation();
-  const isMobile = useIsMobile();
 
   React.useEffect(() => {
     const calculateStorage = () => {
@@ -48,8 +46,12 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
       setStorageUsage(Math.min((total / 5242880) * 100, 100));
     };
     calculateStorage();
-    const interval = setInterval(calculateStorage, 5000);
-    return () => clearInterval(interval);
+    window.addEventListener("storage", calculateStorage);
+    window.addEventListener("focus", calculateStorage);
+    return () => {
+      window.removeEventListener("storage", calculateStorage);
+      window.removeEventListener("focus", calculateStorage);
+    };
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -76,12 +78,10 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
             <h1 className="text-lg font-medium text-foreground tracking-tight truncate">
               Lite Project Manager
             </h1>
-            {isMobile && (
-              <Button variant="icon" className="md:hidden -mr-2" onClick={onClose}>
-                <CloseIcon />
-              </Button>
-            )}
-            {onDesktopToggle && !isMobile && (
+            <Button variant="icon" className="md:hidden -mr-2" onClick={onClose}>
+              <CloseIcon />
+            </Button>
+            {onDesktopToggle && (
               <Button variant="icon" className="hidden md:block -mr-2" onClick={onDesktopToggle}>
                 <MenuIcon />
               </Button>

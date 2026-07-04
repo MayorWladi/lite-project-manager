@@ -8,7 +8,7 @@ import { Textarea } from "@/app/common/components/Textarea";
 import { Label } from "@/app/common/components/Label";
 import { ChecklistProgress } from "@/app/common/components/ChecklistProgress";
 import { CloseIcon, StatusIcon } from "@/app/common/components/Icons";
-import BoardTaskItem from "./components/activity/BoardTaskItem";
+import TaskItem from "./components/activity/TaskItem";
 import AddTaskForm from "./components/activity/AddTaskForm";
 
 interface ActivityDetailsSidebarProps {
@@ -16,7 +16,6 @@ interface ActivityDetailsSidebarProps {
   onClose: () => void;
   activity: Activity | null;
   onUpdateDescription: (activityId: string, description: string) => void;
-  // onToggleActivityStatus: (activityId: string, currentStatus: TaskStatus) => void;
   onAddTask: (activityId: string, taskTitle: string) => void;
   onToggleTask: (activityId: string, taskId: string, isCompleted: boolean) => void;
   onDeleteTask: (activityId: string, taskId: string) => void;
@@ -28,7 +27,6 @@ export default function ActivityDetailsSidebar({
   onClose,
   activity,
   onUpdateDescription,
-  // onToggleActivityStatus,
   onAddTask,
   onToggleTask,
   onDeleteTask,
@@ -154,11 +152,12 @@ export default function ActivityDetailsSidebar({
 
               <div className="flex flex-col gap-1.5 group/tasklist transition-opacity duration-300 px-1">
                 {currentActivity.tasks && currentActivity.tasks.map((task: Task) => (
-                  <BoardTaskItem
+                  <TaskItem
                     key={task.id}
                     task={task}
-                    onToggle={(e) => { e.stopPropagation(); onToggleTask(currentActivity.id, task.id, !task.isCompleted); }}
-                    onDelete={(e) => { e.stopPropagation(); onDeleteTask(currentActivity.id, task.id); }}
+                    variant="board"
+                    onToggle={() => onToggleTask(currentActivity.id, task.id, !task.isCompleted)}
+                    onDelete={() => onDeleteTask(currentActivity.id, task.id)}
                     onRename={(newTitle) => onRenameTask(currentActivity.id, task.id, newTitle)}
                   />
                 ))}

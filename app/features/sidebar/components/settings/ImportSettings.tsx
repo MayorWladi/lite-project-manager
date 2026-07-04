@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useLanguage } from "@/app/common/context/LanguageContext";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
-import { RadioCard } from "@/app/common/components/RadioOption";
+import { RadioCard } from "@/app/common/components/SettingsUI";
 import { notify } from "@/app/utils/helpers/notifications";
 import { Project } from "@/app/common/types";
 import { Button } from "@/app/common/components/Button";

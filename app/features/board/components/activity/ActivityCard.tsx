@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useMemo, useCallback } from "react";
 import { Activity } from "@/app/common/types";
@@ -10,7 +10,7 @@ import { BananaIcon } from "@/app/common/components/Icons";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { useLanguage } from "@/app/common/context/LanguageContext";
 import { useConfirmation } from "@/app/common/context/ConfirmationContext";
-import BoardTaskItem from "./BoardTaskItem";
+import TaskItem from "./TaskItem";
 import ActivityHeader from "./ActivityHeader";
 import AddTaskForm from "./AddTaskForm";
 
@@ -52,20 +52,15 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: Activity
         opacity: isDragging ? 0.4 : 1,
       };
 
-  const confirmDelete = useCallback(
-    async (description: string, action: () => void) => {
-      if (!selectedProjectId) return;
-
-      const confirmed = await confirmAction({
-        title: t("delete_item"),
-        description,
-        level: "normal",
-      });
-
-      if (confirmed) action();
-    },
-    [selectedProjectId, confirmAction, t]
-  );
+  const handleDeleteActivity = useCallback(async () => {
+    if (!selectedProjectId) return;
+    const confirmed = await confirmAction({
+      title: t("delete_item"),
+      description: t("confirm_delete_activity_desc"),
+      level: "normal",
+    });
+    if (confirmed) deleteActivity(selectedProjectId, sprintId, activity.id);
+  }, [selectedProjectId, sprintId, activity.id, deleteActivity, confirmAction, t]);
 
   const handleRenameActivity = useCallback(
     (newName: string) => {
@@ -75,11 +70,18 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: Activity
     [selectedProjectId, sprintId, activity.id, renameActivity]
   );
 
-  const handleDeleteActivity = useCallback(async () => {
-    await confirmDelete(t("confirm_delete_activity_desc"), () => {
-      if (selectedProjectId) deleteActivity(selectedProjectId, sprintId, activity.id);
-    });
-  }, [selectedProjectId, sprintId, activity.id, deleteActivity, confirmDelete, t]);
+  const handleDeleteTask = useCallback(
+    async (taskId: string) => {
+      if (!selectedProjectId) return;
+      const confirmed = await confirmAction({
+        title: t("delete_item"),
+        description: t("confirm_delete_task_desc"),
+        level: "normal",
+      });
+      if (confirmed) deleteTask(selectedProjectId, sprintId, activity.id, taskId);
+    },
+    [selectedProjectId, sprintId, activity.id, deleteTask, confirmAction, t]
+  );
 
   const handleAddTask = useCallback(
     (title: string) => {
@@ -95,15 +97,6 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: Activity
       toggleTaskCompletion(selectedProjectId, sprintId, activity.id, taskId);
     },
     [selectedProjectId, sprintId, activity.id, toggleTaskCompletion]
-  );
-
-  const handleDeleteTask = useCallback(
-    async (taskId: string) => {
-      await confirmDelete(t("confirm_delete_task_desc"), () => {
-        if (selectedProjectId) deleteTask(selectedProjectId, sprintId, activity.id, taskId);
-      });
-    },
-    [selectedProjectId, sprintId, activity.id, deleteTask, confirmDelete, t]
   );
 
   const handleRenameTask = useCallback(
@@ -160,17 +153,12 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: Activity
 
           <div className="flex flex-col gap-1.5 group/tasklist transition-opacity duration-300">
             {tasks.map((task) => (
-              <BoardTaskItem
+              <TaskItem
                 key={task.id}
                 task={task}
-                onToggle={(e) => {
-                  e.stopPropagation();
-                  handleToggleTask(task.id);
-                }}
-                onDelete={(e) => {
-                  e.stopPropagation();
-                  handleDeleteTask(task.id);
-                }}
+                variant="board"
+                onToggle={() => handleToggleTask(task.id)}
+                onDelete={() => handleDeleteTask(task.id)}
                 onRename={(newTitle) => handleRenameTask(task.id, newTitle)}
               />
             ))}

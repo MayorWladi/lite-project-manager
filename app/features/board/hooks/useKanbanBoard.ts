@@ -10,6 +10,12 @@ export function useKanbanBoard(sprint: Sprint, t: (k: string) => string) {
   const { selectedProjectId, updateSprintActivities } = useProjectsManager();
   const COLUMNS = getColumns(t);
 
+  const isBlockedStatus = (status: string): boolean =>
+    status === 'review' || status === 'done';
+
+  const isActivityBlocked = (activity: Activity): boolean =>
+    activity.tasks?.some(task => !task.isCompleted) ?? false;
+
   const [activeActivity, setActiveActivity] = useState<Activity | null>(null);
   const [localActivities, setLocalActivities] = useState<Activity[]>(sprint.activities || []);
 
@@ -46,13 +52,8 @@ export function useKanbanBoard(sprint: Sprint, t: (k: string) => string) {
 
     if (!targetStatus) return activities;
 
-    if (targetStatus === 'review' || targetStatus === 'done') {
-      if (activeItem.tasks && activeItem.tasks.length > 0) {
-        const hasUncompleted = activeItem.tasks.some(t => !t.isCompleted);
-        if (hasUncompleted) {
-          return activities;
-        }
-      }
+    if (isBlockedStatus(targetStatus as string) && isActivityBlocked(activeItem)) {
+      return activities;
     }
 
     const columnsData: Record<string, Activity[]> = {};
@@ -147,8 +148,8 @@ export function useKanbanBoard(sprint: Sprint, t: (k: string) => string) {
     const overItem = localActivities.find(a => a.id === overId);
     const targetStatus = isOverColumn ? overId : overItem?.status;
 
-    if (activeItem && targetStatus && (targetStatus === 'review' || targetStatus === 'done') && activeItem.status !== targetStatus) {
-      if (activeItem.tasks && activeItem.tasks.some(t => !t.isCompleted)) {
+    if (activeItem && targetStatus && isBlockedStatus(targetStatus) && activeItem.status !== targetStatus) {
+      if (isActivityBlocked(activeItem)) {
         notifyActivityError(t);
         setLocalActivities(sprint.activities || []);
         return;
@@ -167,14 +168,9 @@ export function useKanbanBoard(sprint: Sprint, t: (k: string) => string) {
     const activity = localActivities.find(a => a.id === activityId);
     if (!activity) return;
 
-    if (newStatus === 'review' || newStatus === 'done') {
-      if (activity.tasks && activity.tasks.length > 0) {
-        const hasUncompleted = activity.tasks.some(t => !t.isCompleted);
-        if (hasUncompleted) {
-          notifyActivityError(t);
-          return;
-        }
-      }
+    if (isBlockedStatus(newStatus) && isActivityBlocked(activity)) {
+      notifyActivityError(t);
+      return;
     }
 
     const updated = localActivities.map(a =>

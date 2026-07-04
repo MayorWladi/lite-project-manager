@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { safeGetItem, safeSetItem } from "@/app/utils/storage/core";
 import { Sprint, TaskStatus, Activity } from "@/app/common/types";
 import { useLanguage } from "@/app/common/context/LanguageContext";
@@ -37,16 +37,24 @@ export default function KanbanBoardDesktop({
   const [mounted, setMounted] = useState(false);
   const [columnGrids, setColumnGrids] = useState<Record<string, number>>({});
 
+  const activitiesByStatus = useMemo(
+    () => columns.reduce<Record<string, Activity[]>>((acc, col) => {
+      acc[col.id] = localActivities.filter((a) => a.status === col.id);
+      return acc;
+    }, {}),
+    [localActivities, columns]
+  );
+
   useEffect(() => {
     const saved = safeGetItem('kanbanColumnGrids');
     if (saved) {
       try {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setColumnGrids(JSON.parse(saved));
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (e) {}
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (e) { }
     }
-     
+
     setMounted(true);
   }, []);
 
@@ -57,17 +65,17 @@ export default function KanbanBoardDesktop({
       setColumnGrids(prev => {
         let changed = false;
         const next = { ...prev };
-        
+
         columns.forEach(col => {
           const count = localActivities.filter(a => a.status === col.id).length;
           const current = next[col.id] || 1;
-          
+
           if (count < 3 && current !== 1) {
             next[col.id] = 1;
             changed = true;
           }
         });
-        
+
         if (changed) {
           safeSetItem('kanbanColumnGrids', JSON.stringify(next));
           return next;
@@ -117,17 +125,17 @@ export default function KanbanBoardDesktop({
             {/* Headers */}
             <div className="flex gap-4 mb-4 sticky top-0 bg-background z-10 py-2 border-b border-(--color-border)">
               {columns.map((col) => {
-                const colActivities = localActivities.filter(a => a.status === col.id);
+                const colActivities = activitiesByStatus[col.id] ?? [];
                 const gridMode = columnGrids[col.id] || 1;
 
-                const widthClass = gridMode === 1 ? "w-[288px]" : "w-[568px]"; 
+                const widthClass = gridMode === 1 ? "w-[288px]" : "w-[568px]";
 
                 return (
                   <div key={col.id} className={`${widthClass} shrink-0 px-2 flex justify-between items-end pb-1 transition-all duration-300`}>
                     <h3 className="font-bold text-(--color-muted) text-sm uppercase tracking-widest">{col.title}</h3>
                     <div className="flex items-center gap-2">
                       {colActivities.length >= 3 && (
-                        <Button 
+                        <Button
                           variant="icon"
                           onClick={() => toggleGridMode(col.id, colActivities.length)}
                           title={gridMode === 1 ? t("grid_2x2") : t("grid_list")}
@@ -147,8 +155,8 @@ export default function KanbanBoardDesktop({
             {/* Columns */}
             <div className="flex gap-4 flex-1 min-h-0">
               {columns.map((col) => {
-                const activities = localActivities.filter((a) => a.status === col.id);
-                
+                const activities = activitiesByStatus[col.id] ?? [];
+
                 const gridMode = columnGrids[col.id] || 1;
 
                 return <KanbanCell key={col.id} sprintId={sprint.id} statusId={col.id} activities={activities} gridMode={gridMode} />;

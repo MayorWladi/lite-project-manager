@@ -1,4 +1,4 @@
-﻿// /app/components/MobileActivityCard.tsx
+// /app/components/MobileActivityCard.tsx
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
@@ -10,7 +10,7 @@ import { notifyActivityError } from "@/app/utils/helpers/notifications";
 import { useConfirmation } from "@/app/common/context/ConfirmationContext";
 import { StatusSelect } from "@/app/common/components/StatusSelect";
 import { InlineEditableText } from "@/app/common/components/InlineEditableText";
-import { MobileTaskItem } from "./MobileTaskItem";
+import TaskItem from "./TaskItem";
 import AddTaskForm from "./AddTaskForm";
 import DropdownMenu from "@/app/common/components/DropdownMenu";
 
@@ -171,9 +171,10 @@ export default function MobileActivityCard({ activity, sprintId, columns, onStat
         <div className="flex flex-col gap-1.5">
           <ChecklistProgress completed={completedTasks} total={tasks.length} />
           {tasks.map((task) => (
-            <MobileTaskItem
+            <TaskItem
               key={task.id}
               task={task}
+              variant="mobile"
               onToggle={() => handleToggle(task.id)}
               onDelete={() => handleDelete(task.id)}
               onRename={(newTitle: string) => handleRenameTask(task.id, newTitle)}

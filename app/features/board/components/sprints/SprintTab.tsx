@@ -4,6 +4,7 @@
 import { useState, useCallback } from "react";
 import { Sprint } from "@/app/common/types";
 import { useDoubleTapById } from "@/app/common/hooks/useDoubleTap";
+import { useLanguage } from "@/app/common/context/LanguageContext";
 import DropdownMenu from "@/app/common/components/DropdownMenu";
 import { Button } from "@/app/common/components/Button";
 import { Input } from "@/app/common/components/Input";
@@ -14,10 +15,10 @@ interface SprintTabProps {
   onSelect: () => void;
   onRename: (id: string, newName: string) => void;
   onDelete: (id: string) => void;
-  t: (key: string) => string;
 }
 
-export default function SprintTab({ sprint, isActive, onSelect, onRename, onDelete, t }: SprintTabProps) {
+export default function SprintTab({ sprint, isActive, onSelect, onRename, onDelete }: SprintTabProps) {
+  const { t } = useLanguage();
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState(sprint.name);
 

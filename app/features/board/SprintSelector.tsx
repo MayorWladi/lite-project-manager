@@ -65,7 +65,6 @@ export default function SprintSelector({ sprints, activeSprint, onSelectSprint, 
 						onSelect={() => onSelectSprint(sprint.id)}
 						onRename={handleRenameSprint}
 						onDelete={handleDeleteSprint}
-						t={t}
 					/>
 				))}
 
