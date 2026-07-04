@@ -36,8 +36,6 @@ interface ProjectContextType {
   renameTask: (projectId: string, sprintId: string, activityId: string, taskId: string, newTitle: string) => void;
   toggleTaskCompletion: (projectId: string, sprintId: string, activityId: string, taskId: string) => void;
   deleteTask: (projectId: string, sprintId: string, activityId: string, taskId: string) => void;
-  useSprintMetrics: (sprint: Sprint | null | undefined) => { total: number; done: number; percentage: number };
-  getActivityMetrics: (activity: Activity) => { total: number; done: number };
   importData: (data: Project[], mode: 'merge' | 'overwrite') => void;
 }
 
@@ -264,7 +262,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   const contextValue = useMemo(() => ({
     projects, selectedProjectId, setSelectedProjectId,
     selectedSprintId, selectedActivityId, selectedActivity, openActivityDetails, closeActivityDetails, updateActivityDescription, updateActivityStatus,
-    addProject, renameProject, deleteProject, addSprint, renameSprint, deleteSprint, addActivity, renameActivity, deleteActivity, updateSprintActivities, addTaskToActivity, renameTask, toggleTaskCompletion, deleteTask, useSprintMetrics, getActivityMetrics, importData,
+    addProject, renameProject, deleteProject, addSprint, renameSprint, deleteSprint, addActivity, renameActivity, deleteActivity, updateSprintActivities, addTaskToActivity, renameTask, toggleTaskCompletion, deleteTask, importData,
   }), 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   [
