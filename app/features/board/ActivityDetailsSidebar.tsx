@@ -103,12 +103,6 @@ export default function ActivityDetailsSidebar({
           {/* Encabezado */}
           <div className="h-16 flex justify-between items-center px-5 border-b border-(--color-border) shrink-0">
             <div className="flex items-center gap-3 truncate mr-2">
-              {/* <input
-                type="checkbox"
-                checked={isActivityDone}
-                onChange={() => onToggleActivityStatus(activity.id, activity.status)}
-                className="w-4 h-4 rounded-full border-(--color-border) accent-foreground cursor-pointer"
-              /> */}
               <h3 className={`font-medium truncate tracking-tight ${isActivityDone ? 'text-(--color-muted) line-through' : 'text-foreground'}`}>
                 {currentActivity.name}
               </h3>
