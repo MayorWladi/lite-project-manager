@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useState, ReactNode, useMemo, useCallback } from "react";
 import { THEMES, ThemeType } from "@/app/common/constants/themes";
+import { safeGetItem, safeSetItem } from "@/app/utils/storage/core";
 
 export type FontType = "quicksand" | "comfortaa" | "dm-sans" | "mono";
 
@@ -20,8 +21,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 	const [mounted, setMounted] = useState(false);
 
 	useEffect(() => {
-		const savedTheme = localStorage.getItem("kanban-theme") as ThemeType | null;
-		const savedFont = localStorage.getItem("kanban-font") as FontType | null;
+		const savedTheme = safeGetItem("kanban-theme") as ThemeType | null;
+		const savedFont = safeGetItem("kanban-font") as FontType | null;
 
 		if (savedTheme) {
 			// eslint-disable-next-line react-hooks/set-state-in-effect
@@ -56,16 +57,27 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 			root.classList.add("dark");
 		}
 		
-		localStorage.setItem("kanban-theme", theme);
+		safeSetItem("kanban-theme", theme);
 	}, [theme, mounted]);
 
 	useEffect(() => {
 		if (!mounted) return;
-		localStorage.setItem("kanban-font", font);
+		safeSetItem("kanban-font", font);
 	}, [font, mounted]);
 
-	const setTheme = (newTheme: ThemeType) => setThemeState(newTheme);
-	const setFont = (newFont: FontType) => setFontState(newFont);
+	const setTheme = useCallback((newTheme: ThemeType) => {
+		setThemeState(newTheme);
+		safeSetItem("kanban-theme", newTheme);
+	}, []);
+
+	const setFont = useCallback((newFont: FontType) => {
+		setFontState(newFont);
+		safeSetItem("kanban-font", newFont);
+	}, []);
+
+	const contextValue = useMemo(() => ({
+		theme, setTheme, font, setFont
+	}), [theme, font, setTheme, setFont]);
 
 	// Prevenimos renderizado del children hasta que se monte para evitar desajuste de hidratación (flickering de fuentes y colores)
 	if (!mounted) {
@@ -73,7 +85,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 	}
 
 	return (
-		<SettingsContext.Provider value={{ theme, setTheme, font, setFont }}>
+		<SettingsContext.Provider value={contextValue}>
 			<div className={`font-${font}`}>
 				{children}
 			</div>

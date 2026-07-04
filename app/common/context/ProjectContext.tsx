@@ -4,6 +4,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from "react";
 import { Project, Sprint, TaskStatus, Activity } from "@/app/common/types";
 import { useLanguage } from "./LanguageContext";
+import { safeGetItem, safeSetItem, safeRemoveItem } from "@/app/utils/storage/core";
 import { notifyTaskAdded, notifyTaskCompleted, notifyTaskDeleted } from "@/app/utils/helpers/notifications";
 
 interface ProjectContextType {
@@ -84,8 +85,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const savedProjects = localStorage.getItem("kanban-projects");
-    const savedSelectedId = localStorage.getItem("kanban-selected-id");
+    const savedProjects = safeGetItem("kanban-projects");
+    const savedSelectedId = safeGetItem("kanban-selected-id");
     if (savedProjects) {
       try {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -116,13 +117,13 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (isHydrated) localStorage.setItem("kanban-projects", JSON.stringify(projects));
+    if (isHydrated) safeSetItem("kanban-projects", JSON.stringify(projects));
   }, [projects, isHydrated]);
 
   useEffect(() => {
     if (isHydrated) {
-      if (selectedProjectId) localStorage.setItem("kanban-selected-id", selectedProjectId);
-      else localStorage.removeItem("kanban-selected-id");
+      if (selectedProjectId) safeSetItem("kanban-selected-id", selectedProjectId);
+      else safeRemoveItem("kanban-selected-id");
     }
   }, [selectedProjectId, isHydrated]);
 
@@ -260,16 +261,20 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const contextValue = useMemo(() => ({
+    projects, selectedProjectId, setSelectedProjectId,
+    selectedSprintId, selectedActivityId, selectedActivity, openActivityDetails, closeActivityDetails, updateActivityDescription, updateActivityStatus,
+    addProject, renameProject, deleteProject, addSprint, renameSprint, deleteSprint, addActivity, renameActivity, deleteActivity, updateSprintActivities, addTaskToActivity, renameTask, toggleTaskCompletion, deleteTask, useSprintMetrics, getActivityMetrics, importData,
+  }), 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [
+    projects, selectedProjectId, selectedSprintId, selectedActivityId, selectedActivity,
+  ]);
+
   if (!isHydrated) return null;
 
   return (
-    <ProjectContext.Provider
-      value={{
-        projects, selectedProjectId, setSelectedProjectId,
-        selectedSprintId, selectedActivityId, selectedActivity, openActivityDetails, closeActivityDetails, updateActivityDescription, updateActivityStatus,
-        addProject, renameProject, deleteProject, addSprint, renameSprint, deleteSprint, addActivity, renameActivity, deleteActivity, updateSprintActivities, addTaskToActivity, renameTask, toggleTaskCompletion, deleteTask, useSprintMetrics, getActivityMetrics, importData,
-      }}
-    >
+    <ProjectContext.Provider value={contextValue}>
       {children}
     </ProjectContext.Provider>
   );
