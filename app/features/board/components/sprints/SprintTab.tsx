@@ -1,7 +1,7 @@
 // /app/components/SprintTab.tsx
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Sprint } from "@/app/common/types";
 import { useDoubleTapById } from "@/app/common/hooks/useDoubleTap";
 import { useLanguage } from "@/app/common/context/LanguageContext";
@@ -21,6 +21,17 @@ export default function SprintTab({ sprint, isActive, onSelect, onRename, onDele
   const { t } = useLanguage();
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState(sprint.name);
+  const [mountedActive, setMountedActive] = useState(false);
+
+
+  useEffect(() => {
+    if (isActive) {
+      const timer = setTimeout(() => setMountedActive(true), 10);
+      return () => clearTimeout(timer);
+    } else {
+      setMountedActive(false);
+    }
+  }, [isActive]);
 
   const handleDoubleTap = useDoubleTapById(useCallback(() => {
     setIsRenaming(true);
@@ -70,7 +81,7 @@ export default function SprintTab({ sprint, isActive, onSelect, onRename, onDele
 
   return (
     <div
-      className={`shrink-0 flex items-center rounded-md border text-xs md:text-sm font-medium transition-all duration-300 ease-in-out whitespace-nowrap ${isActive
+      className={`shrink-0 flex items-center rounded-md border text-xs md:text-sm font-medium transition-all duration-300 ease-in-out whitespace-nowrap ${mountedActive
         ? "bg-foreground text-background border-foreground shadow-sm"
         : "bg-background text-(--color-muted) border-(--color-border) hover:bg-black/5 dark:hover:bg-white/10 hover:text-foreground hover:border-(--color-muted)"
         }`}
@@ -90,10 +101,9 @@ export default function SprintTab({ sprint, isActive, onSelect, onRename, onDele
         {sprint.name}
       </Button>
 
-      <div 
-        className={`flex items-center overflow-hidden transition-all duration-300 ease-in-out ${
-          isActive ? 'w-6 opacity-100 pr-1.5' : 'w-0 opacity-0 pr-0'
-        }`}
+      <div
+        className={`flex items-center overflow-hidden transition-all duration-300 ease-in-out ${mountedActive ? 'w-6 opacity-100 pr-1.5' : 'w-0 opacity-0 pr-0'
+          }`}
       >
         <DropdownMenu
           items={menuItems}
