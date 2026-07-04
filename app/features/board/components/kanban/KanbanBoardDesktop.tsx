@@ -112,7 +112,7 @@ export default function KanbanBoardDesktop({
             <Button
               variant="custom"
               onClick={() => setIsAdding(true)}
-              className="px-4 py-2.5 rounded-lg border border-(--color-border) text-(--color-muted) hover:text-foreground hover:border-(--color-muted) bg-background hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-sm font-medium flex items-center gap-2 shadow-sm"
+              className="w-[180px] justify-center px-4 py-2.5 rounded-lg border border-(--color-border) text-(--color-muted) hover:text-foreground hover:border-(--color-muted) bg-background hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-sm font-medium flex items-center gap-2 shadow-sm"
             >
               <PlusIcon width="16" height="16" />
               {t("add_activity")}

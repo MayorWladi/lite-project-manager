@@ -35,7 +35,7 @@ export default function AddActivityForm({ sprintId, isMobile, onClose }: AddActi
     isMobile ? "p-2 shadow-xl rounded-xl animate-pop-count origin-bottom-right" : ""
   }`;
 
-  const inputClassName = `px-3 text-sm ${isMobile ? "py-2 w-48" : "py-2.5 w-[280px] shadow-sm"}`;
+  const inputClassName = `px-3 text-sm ${isMobile ? "py-2 w-48" : "py-2.5 w-[180px] shadow-sm"}`;
 
   return (
     <form onSubmit={handleAddActivity} className={formClassName}>
