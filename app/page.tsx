@@ -2,20 +2,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import dynamic from "next/dynamic";
 import AppLayout from "@/app/layouts/AppLayout";
 import SprintSelector from "@/app/features/board/SprintSelector";
-
-const KanbanBoard = dynamic(() => import("@/app/features/board/KanbanBoard"), {
-  ssr: false,
-  loading: () => (
-    <div className="h-full w-full flex items-center justify-center p-4">
-      <div className="w-full h-full border-2 border-dashed border-(--color-border) bg-black/2 dark:bg-white/2 rounded-xl flex items-center justify-center animate-pulse">
-        <p className="text-(--color-muted) font-medium tracking-tight">Cargando tablero...</p>
-      </div>
-    </div>
-  )
-});
+import KanbanBoard from "@/app/features/board/KanbanBoard";
 import ActivityDetailsSidebar from "@/app/features/board/ActivityDetailsSidebar";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { useLanguage } from "@/app/common/context/LanguageContext";
@@ -38,19 +27,26 @@ export default function Home() {
   const { t } = useLanguage();
   const { confirmAction } = useConfirmation();
   const [selectedSprintId, setSelectedSprintId] = useState<string | null>(null);
+  const [prevProjectId, setPrevProjectId] = useState<string | null>(selectedProjectId);
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
 
-  // Auto-seleccionar el primer sprint al cambiar de proyecto o al crear uno nuevo
+  // Auto-seleccionar sincrónicamente el primer sprint al cambiar de proyecto
+  if (selectedProjectId !== prevProjectId) {
+    setPrevProjectId(selectedProjectId);
+    if (selectedProject && selectedProject.sprints.length > 0) {
+      setSelectedSprintId(selectedProject.sprints[0].id);
+    } else {
+      setSelectedSprintId(null);
+    }
+  }
+
+  // Also handle cases where the selected sprint is deleted
   useEffect(() => {
     if (selectedProject && selectedProject.sprints.length > 0) {
-      if (!selectedSprintId || !selectedProject.sprints.some(s => s.id === selectedSprintId)) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (selectedSprintId && !selectedProject.sprints.some(s => s.id === selectedSprintId)) {
         setSelectedSprintId(selectedProject.sprints[0].id);
       }
-    } else {
-       
-      setSelectedSprintId(null);
     }
   }, [selectedProject, selectedSprintId]);
 
@@ -120,7 +116,7 @@ export default function Home() {
 
           <div className="flex-1 overflow-hidden">
             {activeSprint ? (
-              <KanbanBoard key={activeSprint.id} sprint={activeSprint} />
+              <KanbanBoard sprint={activeSprint} />
             ) : (
               <div className="h-full border-2 border-dashed border-(--color-border) rounded-xl flex flex-col items-center justify-center gap-2">
                 <p className="text-(--color-muted) text-sm">{t("no_sprints_yet")}</p>

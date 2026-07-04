@@ -18,14 +18,21 @@ export function useKanbanBoard(sprint: Sprint, t: (k: string) => string) {
 
   const [activeActivity, setActiveActivity] = useState<Activity | null>(null);
   const [localActivities, setLocalActivities] = useState<Activity[]>(sprint.activities || []);
+  const [prevSprintId, setPrevSprintId] = useState(sprint.id);
+
+  if (sprint.id !== prevSprintId) {
+    setPrevSprintId(sprint.id);
+    setLocalActivities(sprint.activities || []);
+  }
 
   // Mobile: active column tab
   const [mobileActiveColumn, setMobileActiveColumn] = useState<TaskStatus>("todo");
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLocalActivities(sprint.activities || []);
-  }, [sprint.activities]);
+    if (sprint.id === prevSprintId) {
+      setLocalActivities(sprint.activities || []);
+    }
+  }, [sprint.activities, sprint.id, prevSprintId]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
