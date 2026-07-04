@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Modal from "@/app/common/components/Modal";
 import { useLanguage } from "@/app/common/context/LanguageContext";
+import { Button } from "@/app/common/components/Button";
+import { Label } from "@/app/common/components/Label";
 
 interface ConfirmModalProps {
 	isOpen: boolean;
@@ -44,9 +46,9 @@ export default function ConfirmModal({
 
 				{level === "high" && confirmWord && (
 					<div className="pt-2 animate-in fade-in slide-in-from-top-2 duration-200">
-						<label className="block text-xs font-bold text-(--color-muted) uppercase tracking-wider mb-2">
-							{t("type_exact_name_to_confirm")} <span className="text-foreground ml-1 font-extrabold">{confirmWord}</span>
-						</label>
+						<Label className="mb-2">
+							{t("type")} &quot;{confirmWord}&quot; {t("to_confirm")}
+						</Label>
 						<input
 							type="text"
 							value={inputText}
@@ -57,24 +59,22 @@ export default function ConfirmModal({
 					</div>
 				)}
 
-				<div className="flex gap-3 pt-4 border-t border-(--color-border)">
-					<button
+				<div className="flex gap-3 pt-6 border-t border-(--color-border)">
+					<Button
+						variant="ghost"
 						onClick={onClose}
-						className="flex-1 py-2.5 px-4 rounded-xl border border-(--color-border) text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+						className="flex-1"
 					>
 						{t("cancel")}
-					</button>
-					<button
+					</Button>
+					<Button
+						variant={level === "high" ? "danger" : "primary"}
 						onClick={onConfirm}
 						disabled={isConfirmDisabled}
-						className={`flex-1 py-2.5 px-4 rounded-xl text-sm font-medium transition-all ${
-							isConfirmDisabled
-								? "bg-red-600/30 text-white/50 cursor-not-allowed"
-								: "bg-red-600 text-white shadow-md hover:bg-red-700"
-						}`}
+						className="flex-1"
 					>
-						{t("delete_action")}
-					</button>
+						{t("confirm")}
+					</Button>
 				</div>
 			</div>
 		</Modal>

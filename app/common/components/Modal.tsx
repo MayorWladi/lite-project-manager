@@ -79,7 +79,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
 	const modalClass = isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-8 scale-95";
 
 	return (
-		<div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6">
+		<div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
 			{/* Backdrop */}
 			<div
 				className={`absolute inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm transition-opacity duration-200 ease-out ${backdropClass}`}

@@ -3,6 +3,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { MoreVerticalIcon } from "@/app/common/components/Icons";
+import { MenuItemButton } from "@/app/common/components/MenuItemButton";
 
 interface MenuItem {
   label: string;
@@ -14,12 +16,14 @@ interface DropdownMenuProps {
   items: MenuItem[];
   triggerClassName?: string;
   menuClassName?: string;
+  ariaLabel?: string;
 }
 
 export default function DropdownMenu({
   items,
   triggerClassName = "",
-  menuClassName = "bg-(--color-card-bg) border border-(--color-border) rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-1 min-w-[120px] animate-fade-in"
+  menuClassName = "bg-(--color-card-bg) border border-(--color-border) rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-1 min-w-[120px] animate-fade-in",
+  ariaLabel = "Opciones"
 }: DropdownMenuProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0 });
@@ -49,24 +53,23 @@ export default function DropdownMenu({
     <div className="relative shrink-0 flex items-center" ref={triggerRef}>
       <button
         type="button"
+        aria-label={ariaLabel}
+        aria-haspopup="menu"
+        aria-expanded={showMenu}
         onClick={(e) => {
           e.stopPropagation();
           setShowMenu(!showMenu);
         }}
         className={`p-0.5 rounded text-current hover:opacity-100 transition-opacity ${triggerClassName}`}
       >
-        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
-          <circle cx="12" cy="5" r="2" />
-          <circle cx="12" cy="12" r="2" />
-          <circle cx="12" cy="19" r="2" />
-        </svg>
+        <MoreVerticalIcon />
       </button>
 
       {showMenu &&
         createPortal(
           <>
             <div
-              className="fixed inset-0 z-99 cursor-default"
+              className="fixed inset-0 z-40 cursor-default"
               onClick={(e) => {
                 e.stopPropagation();
                 setShowMenu(false);
@@ -74,26 +77,22 @@ export default function DropdownMenu({
             />
             <div
               ref={menuRef}
-              className={`fixed z-100 ${menuClassName}`}
+              className={`fixed z-50 ${menuClassName}`}
               style={{ top: position.top, left: position.left }}
               onClick={(e) => e.stopPropagation()}
             >
               {items.map((item, idx) => (
-                <button
+                <MenuItemButton
                   key={idx}
-                  type="button"
+                  isDanger={item.isDanger}
                   onClick={(e) => {
                     e.stopPropagation();
                     setShowMenu(false);
                     item.onClick();
                   }}
-                  className={`w-full text-left px-3 py-1.5 text-xs font-medium transition-colors ${item.isDanger
-                    ? "text-red-500 hover:bg-red-500/10"
-                    : "text-foreground hover:bg-black/5 dark:hover:bg-white/5"
-                    }`}
                 >
                   {item.label}
-                </button>
+                </MenuItemButton>
               ))}
             </div>
           </>,
