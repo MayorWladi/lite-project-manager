@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Input } from "@/app/common/components/Input";
+import { useEffect, useRef, useState } from "react";
+import { Textarea } from "@/app/common/components/Textarea";
 import { useDoubleTap } from "@/app/common/hooks/useDoubleTap";
 
 interface InlineEditableTextProps {
@@ -33,12 +33,19 @@ export function InlineEditableText({
 }: InlineEditableTextProps) {
   const [internalEditing, setInternalEditing] = useState(false);
   const [draft, setDraft] = useState(value);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const isEditing = controlledEditing ?? internalEditing;
 
   useEffect(() => {
     setDraft(value);
   }, [value]);
+
+  // Auto-resize: ajusta la altura al contenido mientras se escribe
+  const autoResize = (el: HTMLTextAreaElement) => {
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  };
 
   const setEditing = (next: boolean) => {
     if (disabled) return;
@@ -78,14 +85,20 @@ export function InlineEditableText({
         }}
         className={wrapperClassName}
       >
-        <Input
+        <Textarea
+          ref={textareaRef}
           autoFocus
-          type="text"
+          variant="ghost"
           value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          rows={1}
+          onChange={(e) => {
+            setDraft(e.target.value);
+            autoResize(e.target);
+          }}
+          onFocus={(e) => autoResize(e.target)}
           onBlur={handleSubmit}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               handleSubmit();
             }
@@ -95,8 +108,7 @@ export function InlineEditableText({
             }
           }}
           placeholder={placeholder}
-          variant="ghost"
-          className={inputClassName}
+          className={`resize-none overflow-hidden ${inputClassName}`}
         />
       </form>
     );
@@ -109,7 +121,7 @@ export function InlineEditableText({
         setEditing(true);
       }}
       onTouchEnd={handleTouchEnd}
-      className={`${textClassName} ${className}`}
+      className={`wrap-break-word ${textClassName} ${className}`}
     >
       {value || placeholder}
     </span>
