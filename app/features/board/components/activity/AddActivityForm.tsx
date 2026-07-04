@@ -31,11 +31,11 @@ export default function AddActivityForm({ sprintId, isMobile, onClose }: AddActi
     if (!newActivityName.trim()) onClose();
   };
 
-  const formClassName = `inline-flex gap-2 rounded-xl border border-(--color-border) bg-(--color-card-bg) ${
-    isMobile ? "p-2 shadow-xl animate-pop-count origin-bottom-right" : ""
+  const formClassName = `inline-flex gap-2 rounded-lg border border-(--color-border) bg-(--color-card-bg) ${
+    isMobile ? "p-2 shadow-xl rounded-xl animate-pop-count origin-bottom-right" : ""
   }`;
 
-  const inputClassName = `px-3 py-2 text-sm ${isMobile ? "w-48" : "w-[280px] shadow-sm"}`;
+  const inputClassName = `px-3 text-sm ${isMobile ? "py-2 w-48" : "py-2.5 w-[280px] shadow-sm"}`;
 
   return (
     <form onSubmit={handleAddActivity} className={formClassName}>
