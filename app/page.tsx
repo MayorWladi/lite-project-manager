@@ -117,7 +117,7 @@ export default function Home() {
     <AppLayout>
       {selectedProjectId && selectedProject ? (
         <div className="h-full w-full flex flex-row overflow-hidden relative">
-          <div className="flex-1 flex flex-col p-4 md:p-8 animate-scroll-entry overflow-hidden">
+          <div className="flex-1 flex flex-col p-4 md:p-8 overflow-hidden">
             <header className="flex flex-col gap-4 shrink-0">
             <h1 className="text-2xl md:text-4xl font-semibold tracking-tight text-foreground">
               {selectedProject.name}
