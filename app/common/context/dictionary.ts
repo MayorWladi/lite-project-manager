@@ -1,0 +1,161 @@
+export interface Translations {
+	[key: string]: {
+		en: string;
+		es: string;
+	};
+}
+
+export const DICTIONARY: Translations = {
+	projects: { en: "Projects", es: "Proyectos" },
+	no_projects: { en: "No projects yet.", es: "No hay proyectos aún." },
+	new_project: { en: "New Project", es: "Nuevo Proyecto" },
+	project_placeholder: { en: "Ex: Web Redesign...", es: "Ej: Rediseño Web..." },
+	settings: { en: "Settings", es: "Ajustes" },
+
+	select_project_msg: { en: "Select or create a project from the sidebar", es: "Selecciona o crea un proyecto de la barra lateral" },
+	no_sprints_yet: { en: "This project has no sprints yet.", es: "Este proyecto aún no tiene sprints." },
+	create_sprint_msg: { en: "Use the button above to create a new one.", es: "Utiliza el botón de arriba para crear uno nuevo." },
+	new_sprint: { en: "New Sprint", es: "Nuevo Sprint" },
+	sprint_placeholder: { en: "Sprint name...", es: "Nombre del sprint..." },
+
+	add_activity: { en: "Add Activity", es: "Añadir Actividad" },
+	new_activity_placeholder: { en: "New activity name...", es: "Nombre de la nueva actividad..." },
+	no_activities_here: { en: "No activities here", es: "Sin actividades aquí" },
+	add: { en: "Add", es: "Añadir" },
+
+	checklist: { en: "Checklist", es: "Checklist" },
+	add_task: { en: "Add task", es: "Añadir tarea" },
+	new_task_placeholder: { en: "New task...", es: "Nueva tarea..." },
+
+	drop_here: { en: "Drop here", es: "Suelta aquí" },
+	add_activity_here: { en: "+ Add activity", es: "+ Añadir actividad" },
+
+	appearance: { en: "Appearance", es: "Apariencia" },
+	theme: { en: "Theme", es: "Tema" },
+	light: { en: "Light", es: "Claro" },
+	dark: { en: "Dark", es: "Oscuro" },
+	font: { en: "Font", es: "Tipografía" },
+	language: { en: "Language", es: "Idioma" },
+	english: { en: "English", es: "Inglés" },
+	spanish: { en: "Spanish", es: "Español" },
+
+	information: { en: "Information", es: "Información" },
+	user_guide: { en: "User Guide", es: "Guía de Uso" },
+	collaborators: { en: "Collaborators", es: "Colaboradores" },
+	guide_desc: { en: "Learn how to use Lite Project Manager efficiently.", es: "Aprende a usar Lite Project Manager de forma eficiente." },
+	credits_desc: { en: "The people who made this possible.", es: "Las personas que hicieron esto posible." },
+
+	danger_zone: { en: "Danger Zone", es: "Zona de Peligro" },
+	delete_all_data: { en: "Delete All Data", es: "Borrar Todos los Datos" },
+	delete_warning: { en: "This will permanently delete all your projects, sprints, and tasks.", es: "Esto eliminará permanentemente todos tus proyectos, sprints y tareas." },
+	
+	error_title: { en: "Oops! Something went wrong", es: "¡Ups! Algo salió mal" },
+	error_desc: { en: "An unexpected error occurred while rendering the application. Don't worry, your data is safe locally.", es: "Ha ocurrido un error inesperado al renderizar la aplicación. No te preocupes, tus datos están a salvo localmente." },
+	retry: { en: "Retry", es: "Reintentar" },
+	reload_page: { en: "Reload page", es: "Recargar página" },
+
+	not_found_desc: { en: "We couldn't find the page you're looking for. The URL might be incorrect or the project may no longer exist.", es: "No pudimos encontrar la página que estás buscando. Es posible que la URL sea incorrecta o el proyecto ya no exista." },
+	back_to_board: { en: "Back to Main Board", es: "Volver al Tablero Principal" },
+
+	col_todo: { en: "To Do", es: "Por Hacer" },
+	col_working: { en: "In Progress", es: "En Progreso" },
+	col_review: { en: "Review", es: "Revisión" },
+	col_dropped: { en: "Dropped", es: "Descartado" },
+	col_done: { en: "Done", es: "Terminado" },
+
+	done: { en: "Done", es: "Listo" },
+
+	rename: { en: "Rename", es: "Renombrar" },
+	delete_item: { en: "Delete", es: "Eliminar" },
+	cancel: { en: "Cancel", es: "Cancelar" },
+	save: { en: "Save", es: "Guardar" },
+	rename_placeholder: { en: "New name...", es: "Nuevo nombre..." },
+
+	// Missing Translations
+	description: { en: "Description", es: "Descripción" },
+	add_note: { en: "Add note...", es: "Agregar nota..." },
+	new_project_placeholder: { en: "New project", es: "Nuevo proyecto" },
+	delete_project_title: { en: 'Delete "{{name}}"?', es: '¿Eliminar "{{name}}"?'},
+	grid_2x2: { en: "Switch to 2x2 grid", es: "Cambiar a grid 2x2" },
+	grid_list: { en: "Switch to list view", es: "Cambiar a lista" },
+	current_status: { en: "Current status:", es: "Estado actual:" },
+	created_on: { en: "Created on", es: "Creada el" },
+	info_create: { en: "Create projects and sprints from the sidebar.", es: "Crea proyectos y sprints desde la barra lateral." },
+	info_drag: { en: "Add activities and drag them between columns.", es: "Añade actividades y arrástralas entre columnas." },
+	info_tasks: { en: "Click on an activity to add tasks (checklist).", es: "Haz clic en una actividad para añadir tareas (checklist)." },
+	info_rules: { en: "You cannot move an activity to 'Review' or 'Done' if it has incomplete tasks.", es: "No puedes mover una actividad a 'Revisión' o 'Terminado' si tiene tareas sin completar." },
+	type_name: { en: "Type the name...", es: "Escribe el nombre..." },
+	create: { en: "Create", es: "Crear" },
+
+	// Tutorial Translations
+	tut_step1_title: { en: "1. Create Projects", es: "1. Crea Proyectos" },
+	tut_step1_desc: { en: "Start by creating a project and adding sprints from the left sidebar.", es: "Comienza creando un proyecto y añadiendo sprints desde la barra lateral." },
+	tut_step2_title: { en: "2. The Kanban Board", es: "2. El Tablero Kanban" },
+	tut_step2_desc: { en: "Visualize your workflow. Add activities to the columns.", es: "Visualiza tu flujo de trabajo. Añade actividades a las columnas." },
+	tut_step3_title: { en: "3. Drag and Drop", es: "3. Arrastrar y Soltar" },
+	tut_step3_desc: { en: "Move activities easily between statuses as your work progresses.", es: "Mueve actividades fácilmente entre estados conforme avanzas." },
+	tut_step4_title: { en: "4. Checklists & Details", es: "4. Checklists y Detalles" },
+	tut_step4_desc: { en: "Click on any activity to open its side panel and break it down into tasks.", es: "Haz clic en cualquier actividad para abrir su panel y desglosarla en tareas." },
+	tut_next: { en: "Next", es: "Siguiente" },
+	tut_prev: { en: "Back", es: "Atrás" },
+	tut_finish: { en: "Got it!", es: "¡Entendido!" },
+
+	// Onboarding Template
+	tpl_sprint_name: { en: "Sprint 1", es: "Sprint 1" },
+	tpl_activity_name: { en: "Welcome! Start Here 🚀", es: "¡Bienvenido! Empieza Aquí 🚀" },
+	tpl_activity_desc: { en: "Welcome to Lite Project Manager! Complete these tasks to learn how everything works.", es: "¡Bienvenido a Lite Project Manager! Completa estas tareas para aprender cómo funciona todo." },
+	tpl_task1: { en: "Drag this card to the 'In Progress' column", es: "Arrastra esta tarjeta a la columna 'En Progreso'" },
+	tpl_task2: { en: "Click on this card to view details", es: "Haz clic en esta tarjeta para ver los detalles" },
+	tpl_task3: { en: "Check off these tasks", es: "Marca estas tareas como completadas" },
+	tpl_task4: { en: "Delete this card when you're done", es: "Elimina esta tarjeta cuando termines" },
+
+	// Data Management Translations
+	data_management: { en: "Data Management", es: "Gestión de Datos" },
+	export_backup: { en: "Export Backup", es: "Exportar Respaldo" },
+	export_desc: { en: "Download all your projects and tasks as a JSON file.", es: "Descarga todos tus proyectos y tareas como un archivo JSON." },
+	import_backup: { en: "Import Backup", es: "Importar Respaldo" },
+	import_desc: { en: "Restore your projects from a JSON file.", es: "Restaura tus proyectos desde un archivo JSON." },
+	import_mode: { en: "Import Mode", es: "Modo de Importación" },
+	mode_merge: { en: "Merge (Safest)", es: "Sumar (Más seguro)" },
+	mode_merge_desc: { en: "Adds imported projects without deleting current ones.", es: "Añade los proyectos importados sin borrar los actuales." },
+	mode_overwrite: { en: "Overwrite (Destructive)", es: "Sobreescribir (Destructivo)" },
+	mode_overwrite_desc: { en: "Deletes all current data and replaces it with the backup.", es: "Borra todos los datos actuales y los reemplaza con el respaldo." },
+	type_to_confirm: { en: "Type CONFIRM to proceed", es: "Escribe CONFIRMAR para continuar" },
+	confirm_word: { en: "CONFIRM", es: "CONFIRMAR" },
+	import_action: { en: "Import Data", es: "Importar Datos" },
+	notif_import_success: { en: "Import Successful", es: "Importación Exitosa" },
+	notif_import_success_desc: { en: "Your projects have been restored.", es: "Tus proyectos han sido restaurados." },
+	notif_import_error: { en: "Import Failed", es: "Error al importar" },
+	notif_import_error_desc: { en: "The file format is invalid.", es: "El formato del archivo no es válido." },
+
+	// Notifications
+	notif_task_added: { en: "Task Added", es: "Tarea añadida" },
+	notif_task_added_desc: { en: "The task was added:", es: "Se ha añadido la tarea:" },
+	notif_task_done: { en: "Task Completed", es: "Tarea completada" },
+	notif_task_done_desc: { en: "has been marked as done", es: "ha sido marcada como completada" },
+	notif_task_undone: { en: "Task Unmarked", es: "Tarea desmarcada" },
+	notif_task_undone_desc: { en: "is now pending", es: "ahora está pendiente" },
+	notif_task_deleted: { en: "Task Deleted", es: "Tarea eliminada" },
+	notif_task_deleted_desc: { en: "The task was removed from the list", es: "La tarea ha sido eliminada de la lista" },
+	notif_error_title: { en: "Action Not Allowed", es: "Acción no permitida" },
+	notif_error_desc: { en: "You cannot review or finish an activity with incomplete tasks", es: "No puedes pasar a revisión o finalizar una actividad con tareas sin completar" },
+
+	// Confirmations
+	confirm_delete_project_desc: { en: "Are you sure you want to delete this project? All sprints and tasks will be lost. This action cannot be undone.", es: "¿Estás seguro de eliminar este proyecto? Todos los sprints y tareas se perderán. Esta acción no se puede deshacer." },
+	confirm_delete_sprint_desc: { en: "Are you sure you want to delete this sprint? All activities and tasks will be lost. This action cannot be undone.", es: "¿Estás seguro de eliminar este sprint? Todas las actividades y tareas se perderán. Esta acción no se puede deshacer." },
+	confirm_delete_activity_desc: { en: "Are you sure you want to delete this activity? All tasks inside it will be lost.", es: "¿Estás seguro de eliminar esta actividad? Todas sus tareas se perderán." },
+	confirm_delete_task_desc: { en: "Are you sure you want to delete this task?", es: "¿Estás seguro de eliminar esta tarea?" },
+	type_exact_name_to_confirm: { en: "Type the exact name to confirm:", es: "Escribe el nombre exacto para confirmar:" },
+	delete_action: { en: "Delete", es: "Eliminar" },
+
+	// Tooltips & Metrics
+	sprint_progress: { en: "Sprint Progress", es: "Progreso del Sprint" },
+	completed: { en: "Completed", es: "Completadas" },
+	pending: { en: "Pending", es: "Pendientes" },
+	total_activities: { en: "activities", es: "actividades" },
+	total: { en: "Total", es: "Total" },
+	local_storage: { en: "Local Storage", es: "Almacenamiento Local" },
+	used: { en: "Used", es: "Usado" },
+	free: { en: "Free", es: "Libre" },
+	estimated_total: { en: "Estimated Total", es: "Total Estimado" },
+};
