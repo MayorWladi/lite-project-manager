@@ -1,13 +1,8 @@
-export interface SocialLink {
-  url: string;
-  // We can infer the type (linkedin, instagram, github) from the URL later in the UI
-}
-
 export interface Collaborator {
   id: string;
   name: string;
   role: { en: string; es: string };
-  socials?: SocialLink[];
+  socials?: string[];
 }
 
 export const collaborators: Collaborator[] = [
@@ -16,9 +11,8 @@ export const collaborators: Collaborator[] = [
     name: "Wladimir Sanvicente",
     role: { en: "Lead Developer", es: "Desarrollador Principal" },
     socials: [
-      // Example data - User can replace with real links
-      { url: "https://www.linkedin.com/in/wladimir-sanvicente/" },
-      { url: "https://github.com/MayorWladi/" },
+      "https://www.linkedin.com/in/wladimir-sanvicente/",
+      "https://github.com/MayorWladi/",
     ]
   },
   {
@@ -26,8 +20,7 @@ export const collaborators: Collaborator[] = [
     name: "Rafael Trejo",
     role: { en: "Sound Designer", es: "Diseñador de Sonido" },
     socials: [
-      // Example data
-      { url: "https://instagram.com/el.ragus" }
+      "https://instagram.com/el.ragus"
     ]
   }
 ];

@@ -34,15 +34,15 @@ export default function CollaboratorsList() {
             </div>
             {collaborator.socials && collaborator.socials.length > 0 && (
               <div className="flex gap-2 text-(--color-muted) shrink-0">
-                {collaborator.socials.map((social, index) => (
+                {collaborator.socials.map((url, index) => (
                   <a
                     key={index}
-                    href={social.url}
+                    href={url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="p-1 hover:text-foreground transition-colors"
                   >
-                    <SocialIcon url={social.url} />
+                    <SocialIcon url={url} />
                   </a>
                 ))}
               </div>
