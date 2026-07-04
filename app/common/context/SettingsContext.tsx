@@ -56,14 +56,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 		if (themeConfig?.isDark) {
 			root.classList.add("dark");
 		}
-		
-		safeSetItem("kanban-theme", theme);
 	}, [theme, mounted]);
 
-	useEffect(() => {
-		if (!mounted) return;
-		safeSetItem("kanban-font", font);
-	}, [font, mounted]);
+
 
 	const setTheme = useCallback((newTheme: ThemeType) => {
 		setThemeState(newTheme);
