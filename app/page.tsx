@@ -32,7 +32,7 @@ export default function Home() {
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
 
-  // Auto-seleccionar sincrónicamente el primer sprint al cambiar de proyecto
+  // Auto-seleccionar sincrónicamente el primer sprint al cambiar de proyecto o en carga inicial
   if (selectedProjectId !== prevProjectId) {
     setPrevProjectId(selectedProjectId);
     if (selectedProject && selectedProject.sprints.length > 0) {
@@ -40,6 +40,8 @@ export default function Home() {
     } else {
       setSelectedSprintId(null);
     }
+  } else if (selectedSprintId === null && selectedProject && selectedProject.sprints.length > 0) {
+    setSelectedSprintId(selectedProject.sprints[0].id);
   }
 
   // Also handle cases where the selected sprint is deleted
