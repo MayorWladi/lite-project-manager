@@ -120,7 +120,7 @@ export default function KanbanBoardDesktop({
                 const colActivities = localActivities.filter(a => a.status === col.id);
                 const gridMode = columnGrids[col.id] || 1;
 
-                const widthClass = gridMode === 1 ? "w-[280px]" : "w-[560px]"; 
+                const widthClass = gridMode === 1 ? "w-[288px]" : "w-[568px]"; 
 
                 return (
                   <div key={col.id} className={`${widthClass} shrink-0 px-2 flex justify-between items-end pb-1 transition-all duration-300`}>

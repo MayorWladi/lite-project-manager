@@ -18,13 +18,13 @@ export default function KanbanCell({ sprintId, statusId, activities, gridMode = 
 		id: statusId,
 	});
 
-	const widthClass = gridMode === 1 ? "w-[280px]" : "w-[560px]";
+	const widthClass = gridMode === 1 ? "w-[288px]" : "w-[568px]";
 	const layoutClass = gridMode === 1 ? "flex flex-col" : "columns-2 gap-4 block";
 
 	return (
 		<div
 			ref={setNodeRef}
-			className={`${widthClass} shrink-0 h-full min-h-0 rounded-xl border p-2 transition-all duration-300 overflow-y-auto
+			className={`${widthClass} shrink-0 h-full min-h-0 rounded-xl border pl-2 py-2 pr-4 transition-all duration-300 overflow-y-auto
         ${isOver ? 'border-solid border-(--color-muted) bg-black/4 dark:bg-white/5 shadow-inner' : 'border-dashed border-(--color-border) bg-black/2 dark:bg-white/2'}
       `}
 		>
