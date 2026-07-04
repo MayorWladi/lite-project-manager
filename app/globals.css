@@ -230,3 +230,9 @@ body {
 *:hover::-webkit-scrollbar-thumb:hover {
   background-color: var(--color-muted);
 }
+
+/* Fast Fade Transition */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.12s;
+}
