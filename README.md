@@ -12,7 +12,7 @@ This project goes against the grain:
 
 ## ✨ Aesthetic & UI Design (Lo-Fi)
 The visual identity of this manager is heavily inspired by **Lo-Fi** aesthetics—creating a relaxed, warm, and comfortable environment for focused work:
-- **Warm Color Palette:** Avoids harsh pure whites and pitch blacks. Light mode uses a creamy paper texture (`#F4F0EB`), while dark mode leans into a cozy dark coffee hue (`#1C1A19`) to reduce eye strain.
+- **Curated Theme Palette:** Beyond standard Light and Dark modes, choose from beautifully crafted palettes like `Matcha`, `Honey`, `Espresso`, and `Midnight` to reduce eye strain and match your vibe.
 - **Micro-Interactions:** Subtle hover shifts, gentle shadows that simulate physical cardboard cards, and smooth scroll entry animations.
 - **Safe Centered Layout:** Designed with a "Safe Center" approach for ultra-wide screens, where your Kanban columns naturally center themselves, keeping a symmetric and balanced workspace without cutting off content on smaller screens.
 - **Customizable Typography:** Choose from 4 curated Lo-Fi fonts (DM Sans, Quicksand, Comfortaa, JetBrains Mono) dynamically in the settings to match your vibe.
@@ -23,7 +23,7 @@ The visual identity of this manager is heavily inspired by **Lo-Fi** aesthetics�
 - **Smart Progress Bar:** A sleek progress bar that tracks the percentage of activities successfully moved to the `Done` column.
 - **Checklists:** Break down activities into micro-tasks directly inside the cards.
 - **Bilingual Support:** Full interface translation available in English and Spanish.
-- **Persistent Settings:** Real-time Dark/Light mode toggling and font adjustments that save directly to your local preferences.
+- **Persistent Settings:** Real-time theme toggling and font adjustments that save directly to your local preferences.
 
 ## 🏗️ Architecture & Core Engines
 Under the hood, Lite Project Manager is powered by robust architectural decisions designed to keep the codebase clean, performant, and highly scalable:

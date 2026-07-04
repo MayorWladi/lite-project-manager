@@ -79,3 +79,18 @@ If you start another Next.js project in the future, end up with spaghetti code, 
 > 7. Be careful not to break Next.js routing (the main page.tsx and layout.tsx files should stay where they are and only update their imports).
 > 
 > Present to me first the exact folder tree of how the code will look. Once I approve it, please create the terminal scripts, Node scripts, or necessary replacements to move the physical files and recursively update all 'import' paths that break in the process."
+
+---
+
+## 5. Next.js Anti-FOUC Strategy
+
+To provide a seamless experience with multiple themes (dark, light, matcha, etc.), this architecture implements a strict **Anti-FOUC (Flash of Unstyled Content)** strategy. 
+
+In Next.js App Router, injecting theme classes dynamically on the client often causes a **Hydration Mismatch**, where the server renders one HTML layout (e.g., Light) and the client immediately switches it (e.g., Dark), causing React to throw errors or the screen to flash white.
+
+**The Solution Implemented:**
+- We extract the theme evaluation logic into an isolated component: `app/common/components/ThemeScript.tsx`.
+- This component returns a raw HTML `<script>` tag using `dangerouslySetInnerHTML`.
+- It is imported and placed directly inside the `<head>` of the root `layout.tsx`.
+- Because this script executes **synchronously** before the browser renders the `<body>`, it applies the correct CSS variables *before* React even wakes up.
+- To satisfy Next.js's strict Turbopack parser, the script tag is explicitly closed (`<script></script>`), preventing `Unterminated regexp literal` AST parsing errors.
