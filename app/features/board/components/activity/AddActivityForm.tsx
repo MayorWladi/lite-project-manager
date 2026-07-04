@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { useLanguage } from "@/app/common/context/LanguageContext";
@@ -15,46 +17,43 @@ export default function AddActivityForm({ sprintId, isMobile, onClose }: AddActi
   const { t } = useLanguage();
   const [newActivityName, setNewActivityName] = useState("");
 
-  const handleAddActivity = (e: React.FormEvent) => {
+  const handleAddActivity = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (newActivityName.trim() && selectedProjectId) {
-      addActivity(selectedProjectId, sprintId, newActivityName.trim());
-      setNewActivityName("");
-      onClose();
-    }
+
+    if (!newActivityName.trim() || !selectedProjectId) return;
+
+    addActivity(selectedProjectId, sprintId, newActivityName.trim());
+    setNewActivityName("");
+    onClose();
   };
 
-  if (isMobile) {
-    return (
-      <form onSubmit={handleAddActivity} className="flex gap-2 bg-(--color-card-bg) p-2 rounded-xl shadow-xl border border-(--color-border) animate-pop-count origin-bottom-right">
-        <Input
-          type="text"
-          autoFocus
-          placeholder={t("new_activity_placeholder")}
-          value={newActivityName}
-          onChange={(e) => setNewActivityName(e.target.value)}
-          className="w-48 px-3 py-2 text-sm"
-          variant="ghost"
-          onBlur={() => { if (!newActivityName.trim()) onClose(); }}
-        />
-        <Button variant="primary" type="submit" className="shrink-0">
-          {t("add")}
-        </Button>
-      </form>
-    );
-  }
+  const handleBlur = () => {
+    if (!newActivityName.trim()) onClose();
+  };
+
+  const formClassName = `flex gap-2 rounded-xl border border-(--color-border) bg-(--color-card-bg) ${
+    isMobile ? "p-2 shadow-xl animate-pop-count origin-bottom-right" : ""
+  }`;
+
+  const inputClassName = `px-3 py-2 text-sm ${isMobile ? "w-48" : "w-[280px] shadow-sm"}`;
 
   return (
-    <form onSubmit={handleAddActivity} className="flex items-center gap-2">
+    <form onSubmit={handleAddActivity} className={formClassName}>
       <Input
         type="text"
         autoFocus
         placeholder={t("new_activity_placeholder")}
         value={newActivityName}
         onChange={(e) => setNewActivityName(e.target.value)}
-        className="w-[280px] px-3 py-2 text-sm shadow-sm"
-        onBlur={() => { if (!newActivityName.trim()) onClose(); }}
+        onBlur={handleBlur}
+        variant="ghost"
+        className={inputClassName}
       />
+      {isMobile && (
+        <Button variant="primary" type="submit" className="shrink-0">
+          {t("add")}
+        </Button>
+      )}
     </form>
   );
 }

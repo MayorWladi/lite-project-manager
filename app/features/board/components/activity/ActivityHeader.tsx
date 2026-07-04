@@ -1,9 +1,9 @@
-// /app/components/ActivityHeader.tsx
-"use client";
+﻿"use client";
 
 import { useState } from "react";
+import { useLanguage } from "@/app/common/context/LanguageContext";
 import DropdownMenu from "@/app/common/components/DropdownMenu";
-import { Input } from "@/app/common/components/Input";
+import { InlineEditableText } from "@/app/common/components/InlineEditableText";
 
 interface ActivityHeaderProps {
   name: string;
@@ -11,29 +11,16 @@ interface ActivityHeaderProps {
   isOverlay?: boolean;
   onRenameSubmit: (newName: string) => void;
   onDeleteActivity: () => void;
-  t: (key: string) => string;
 }
 
-export default function ActivityHeader({ name, description, isOverlay, onRenameSubmit, onDeleteActivity, t }: ActivityHeaderProps) {
+export default function ActivityHeader({ name, description, isOverlay, onRenameSubmit, onDeleteActivity }: ActivityHeaderProps) {
+  const { t } = useLanguage();
   const [isRenaming, setIsRenaming] = useState(false);
-  const [renameValue, setRenameValue] = useState(name);
-
-  const handleRenameSubmit = () => {
-    if (renameValue.trim() && renameValue.trim() !== name) {
-      onRenameSubmit(renameValue.trim());
-    } else {
-      setRenameValue(name);
-    }
-    setIsRenaming(false);
-  };
 
   const menuItems = [
     {
       label: t("rename"),
-      onClick: () => {
-        setIsRenaming(true);
-        setRenameValue(name);
-      },
+      onClick: () => setIsRenaming(true),
     },
     {
       label: t("delete_item"),
@@ -43,40 +30,23 @@ export default function ActivityHeader({ name, description, isOverlay, onRenameS
   ];
 
   return (
-    <div className="flex items-start justify-between gap-1" onPointerDown={e => e.stopPropagation()}>
+    <div className="flex items-start justify-between gap-1" onPointerDown={(e) => e.stopPropagation()}>
       <div className="flex-1 min-w-0">
-        {isRenaming ? (
-          <form onSubmit={(e) => { e.preventDefault(); handleRenameSubmit(); }}>
-            <Input
-              autoFocus
-              type="text"
-              value={renameValue}
-              onChange={(e) => setRenameValue(e.target.value)}
-              onBlur={handleRenameSubmit}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  setIsRenaming(false);
-                  setRenameValue(name);
-                }
-              }}
-              variant="ghost"
-              className="w-full p-0 text-sm"
-            />
-          </form>
-        ) : (
-          <>
-            <h4
-              onDoubleClick={(e) => { e.stopPropagation(); setIsRenaming(true); setRenameValue(name); }}
-              className="font-semibold text-foreground text-sm leading-tight tracking-tight mt-0.5 wrap-break-word break-all group-hover:text-foreground transition-colors"
-            >
-              {name}
-            </h4>
-            {description && !isRenaming && (
-              <p className="text-xs text-(--color-muted) line-clamp-2 leading-relaxed mt-1 hidden md:block group-hover:text-foreground/80 transition-colors">
-                {description}
-              </p>
-            )}
-          </>
+        <InlineEditableText
+          value={name}
+          onSubmit={onRenameSubmit}
+          isEditing={isRenaming}
+          onEditingChange={setIsRenaming}
+          disabled={isOverlay}
+          placeholder={t("rename")}
+          textClassName="font-semibold text-foreground text-sm leading-tight tracking-tight mt-0.5 break-all group-hover:text-foreground transition-colors"
+          inputClassName="w-full p-0 text-sm"
+          wrapperClassName="w-full"
+        />
+        {description && (
+          <p className="text-xs text-(--color-muted) line-clamp-2 leading-relaxed mt-1 hidden md:block group-hover:text-foreground/80 transition-colors">
+            {description}
+          </p>
         )}
       </div>
 

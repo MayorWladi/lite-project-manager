@@ -1,18 +1,18 @@
-// /app/components/MobileActivityCard.tsx
+﻿// /app/components/MobileActivityCard.tsx
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Activity, TaskStatus } from "@/app/common/types";
-import { Input } from "@/app/common/components/Input";
-import { Button } from "@/app/common/components/Button";
 import { ChecklistProgress } from "@/app/common/components/ChecklistProgress";
-import { PlusIcon, TrashIcon, CheckIcon } from "@/app/common/components/Icons";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { useLanguage } from "@/app/common/context/LanguageContext";
 import { notifyActivityError } from "@/app/utils/helpers/notifications";
-import { useDoubleTap, useDoubleTapById } from "@/app/common/hooks/useDoubleTap";
-import DropdownMenu from "@/app/common/components/DropdownMenu";
 import { useConfirmation } from "@/app/common/context/ConfirmationContext";
+import { StatusSelect } from "@/app/common/components/StatusSelect";
+import { InlineEditableText } from "@/app/common/components/InlineEditableText";
+import { TaskItem } from "@/app/common/components/TaskItem";
+import AddTaskForm from "./AddTaskForm";
+import DropdownMenu from "@/app/common/components/DropdownMenu";
 
 interface MobileActivityCardProps {
   activity: Activity;
@@ -22,296 +22,169 @@ interface MobileActivityCardProps {
 }
 
 export default function MobileActivityCard({ activity, sprintId, columns, onStatusChange }: MobileActivityCardProps) {
-  const { selectedProjectId, toggleTaskCompletion, addTaskToActivity, deleteTask, renameActivity, deleteActivity, renameTask } = useProjectsManager();
+  const {
+    selectedProjectId,
+    toggleTaskCompletion,
+    addTaskToActivity,
+    deleteTask,
+    renameActivity,
+    deleteActivity,
+    renameTask,
+  } = useProjectsManager();
   const { t } = useLanguage();
   const { confirmAction } = useConfirmation();
-  const [newTaskTitle, setNewTaskTitle] = useState("");
-  const [isAddingTask, setIsAddingTask] = useState(false);
-  const [showStatusPicker, setShowStatusPicker] = useState(false);
-  const [isAnimatingOut, setIsAnimatingOut] = useState<"left" | "right" | null>(null);
+
   const [isRenaming, setIsRenaming] = useState(false);
-  const [renameValue, setRenameValue] = useState("");
   const [isShaking, setIsShaking] = useState(false);
-  const [renamingTaskId, setRenamingTaskId] = useState<string | null>(null);
-  const [renameTaskValue, setRenameTaskValue] = useState("");
+  const [isAnimatingOut, setIsAnimatingOut] = useState<"left" | "right" | null>(null);
 
-  const tasks = activity.tasks || [];
-  const completedTasks = tasks.filter(t => t.isCompleted).length;
-
-  const currentCol = columns.find(c => c.id === activity.status);
-
-  // Double-tap handlers for mobile
-  const handleActivityTitleDoubleTap = useDoubleTap(useCallback((e) => {
-    e.stopPropagation();
-    setIsRenaming(true);
-    setRenameValue(activity.name);
-  }, [activity.name]));
-
-  const handleTaskDoubleTap = useDoubleTapById(useCallback((taskId) => {
-    const task = (activity.tasks || []).find(t => t.id === taskId);
-    if (task) {
-      setRenamingTaskId(taskId);
-      setRenameTaskValue(task.title);
-    }
-  }, [activity.tasks]));
+  const tasks = useMemo(() => activity.tasks ?? [], [activity.tasks]);
+  const completedTasks = useMemo(() => tasks.filter((task) => task.isCompleted).length, [tasks]);
 
   const handleToggle = (taskId: string) => {
-    if (selectedProjectId) {
-      toggleTaskCompletion(selectedProjectId, sprintId, activity.id, taskId);
-    }
+    if (!selectedProjectId) return;
+    toggleTaskCompletion(selectedProjectId, sprintId, activity.id, taskId);
   };
 
-  const handleDelete = useCallback(async (taskId: string) => {
-    if (selectedProjectId) {
+  const handleDelete = useCallback(
+    async (taskId: string) => {
+      if (!selectedProjectId) return;
+
       const confirmed = await confirmAction({
         title: t("delete_item"),
         description: t("confirm_delete_task_desc"),
-        level: "normal"
+        level: "normal",
       });
-      if (confirmed) deleteTask(selectedProjectId, sprintId, activity.id, taskId);
-    }
-  }, [selectedProjectId, sprintId, activity.id, deleteTask, confirmAction, t]);
 
-  const handleAddTask = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newTaskTitle.trim() && selectedProjectId) {
-      addTaskToActivity(selectedProjectId, sprintId, activity.id, newTaskTitle.trim());
-      setNewTaskTitle("");
-      setIsAddingTask(false);
-    }
+      if (confirmed) deleteTask(selectedProjectId, sprintId, activity.id, taskId);
+    },
+    [selectedProjectId, sprintId, activity.id, deleteTask, confirmAction, t]
+  );
+
+  const handleAddTask = (title: string) => {
+    if (!title.trim() || !selectedProjectId) return;
+    addTaskToActivity(selectedProjectId, sprintId, activity.id, title.trim());
   };
 
   const handleStatusChange = (newStatusId: TaskStatus) => {
     if (newStatusId === activity.status) {
-      setShowStatusPicker(false);
       return;
     }
 
-    // Verify first
-    if (newStatusId === 'review' || newStatusId === 'done') {
-      if (activity.tasks && activity.tasks.length > 0) {
-        const hasUncompleted = activity.tasks.some(t => !t.isCompleted);
-        if (hasUncompleted) {
-          setIsShaking(true);
-          setTimeout(() => setIsShaking(false), 400);
-          setShowStatusPicker(false);
-          notifyActivityError(t);
-          return;
-        }
+    if (newStatusId === "review" || newStatusId === "done") {
+      const hasUncompleted = tasks.some((task) => !task.isCompleted);
+      if (hasUncompleted) {
+        setIsShaking(true);
+        window.setTimeout(() => setIsShaking(false), 400);
+        notifyActivityError(t);
+        return;
       }
     }
 
-    const currentIndex = columns.findIndex(c => c.id === activity.status);
-    const targetIndex = columns.findIndex(c => c.id === newStatusId);
-
+    const currentIndex = columns.findIndex((col) => col.id === activity.status);
+    const targetIndex = columns.findIndex((col) => col.id === newStatusId);
     const direction = targetIndex > currentIndex ? "right" : "left";
+
     setIsAnimatingOut(direction);
-    setShowStatusPicker(false);
-
-    setTimeout(() => {
-      onStatusChange(activity.id, newStatusId);
-    }, 300);
+    window.setTimeout(() => onStatusChange(activity.id, newStatusId), 300);
   };
 
-  const handleRenameSubmit = () => {
-    if (renameValue.trim() && selectedProjectId) {
-      renameActivity(selectedProjectId, sprintId, activity.id, renameValue.trim());
-    }
-    setIsRenaming(false);
+  const handleRenameActivity = (newName: string) => {
+    if (!selectedProjectId) return;
+    renameActivity(selectedProjectId, sprintId, activity.id, newName);
   };
 
-  const handleRenameTaskSubmit = (taskId: string) => {
-    if (renameTaskValue.trim() && selectedProjectId) {
-      renameTask(selectedProjectId, sprintId, activity.id, taskId, renameTaskValue.trim());
-    }
-    setRenamingTaskId(null);
+  const handleRenameTask = (taskId: string, newTitle: string) => {
+    if (!selectedProjectId) return;
+    renameTask(selectedProjectId, sprintId, activity.id, taskId, newTitle);
   };
 
   const handleDeleteActivity = useCallback(async () => {
-    if (selectedProjectId) {
-      const confirmed = await confirmAction({
-        title: t("delete_item"),
-        description: t("confirm_delete_activity_desc"),
-        level: "normal"
-      });
-      if (confirmed) deleteActivity(selectedProjectId, sprintId, activity.id);
-    }
+    if (!selectedProjectId) return;
+
+    const confirmed = await confirmAction({
+      title: t("delete_item"),
+      description: t("confirm_delete_activity_desc"),
+      level: "normal",
+    });
+
+    if (confirmed) deleteActivity(selectedProjectId, sprintId, activity.id);
   }, [selectedProjectId, sprintId, activity.id, deleteActivity, confirmAction, t]);
 
   return (
-    <div className={`bg-(--color-card-bg) border border-(--color-border) rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 animate-fade-in ${isShaking ? 'animate-shake border-red-500/50' : ''} ${isAnimatingOut === "right" ? "translate-x-[120%] opacity-0" : isAnimatingOut === "left" ? "translate-x-[-120%] opacity-0" : "translate-x-0 opacity-100"
-      }`}>
-      {/* Header: Title + Menu + Status Chip */}
-      <div className="flex-1 min-w-0 flex items-center gap-1.5">
-        {isRenaming ? (
-          <form onSubmit={(e) => { e.preventDefault(); handleRenameSubmit(); }} className="flex-1">
-            <Input
-              autoFocus
-              type="text"
-              value={renameValue}
-              onChange={(e) => setRenameValue(e.target.value)}
-              onBlur={handleRenameSubmit}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  setIsRenaming(false);
-                  setRenameValue(activity.name);
-                }
-              }}
-              variant="ghost"
-              className="w-full text-base font-semibold p-0"
-            />
-          </form>
-        ) : (
+    <div
+      className={`bg-(--color-card-bg) border border-(--color-border) rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 animate-fade-in ${
+        isShaking ? "animate-shake border-red-500/50" : ""
+      } ${
+        isAnimatingOut === "right"
+          ? "translate-x-[120%] opacity-0"
+          : isAnimatingOut === "left"
+          ? "translate-x-[-120%] opacity-0"
+          : "translate-x-0 opacity-100"
+      }`}
+    >
+      <div className="flex-1 min-w-0 flex flex-col gap-2">
+        <div className="flex items-center gap-2.5">
           <div className="flex-1 min-w-0">
-            <h4
-              onDoubleClick={(e) => { e.stopPropagation(); setIsRenaming(true); setRenameValue(activity.name); }}
-              onTouchEnd={handleActivityTitleDoubleTap}
-              className="font-semibold text-sm text-foreground leading-tight truncate cursor-default"
-            >
-              {activity.name}
-            </h4>
+            <InlineEditableText
+              value={activity.name}
+              onSubmit={handleRenameActivity}
+              isEditing={isRenaming}
+              onEditingChange={setIsRenaming}
+              placeholder={t("rename")}
+              textClassName="font-semibold text-sm text-foreground leading-tight truncate cursor-default"
+              inputClassName="w-full p-0 text-base font-semibold"
+              wrapperClassName="flex-1"
+            />
             {activity.description && (
-              <p className="text-xs text-(--color-muted) mt-1 leading-relaxed">
-                {activity.description}
-              </p>
+              <p className="text-xs text-(--color-muted) mt-1 leading-relaxed">{activity.description}</p>
             )}
           </div>
-        )}
-        {/* Status Chip / Picker */}
-        <div className="relative shrink-0">
-          <button
-            onClick={() => setShowStatusPicker(!showStatusPicker)}
-            aria-haspopup="listbox"
-            aria-expanded={showStatusPicker}
-            aria-label={`${t("options")} - ${t("status")}`}
-            className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border border-(--color-border) bg-black/3 dark:bg-white/5 text-(--color-muted) active:scale-95 transition-transform flex items-center gap-1"
-          >
-            {currentCol?.title || activity.status}
-            <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
 
-          {showStatusPicker && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => setShowStatusPicker(false)} />
-              <div className="absolute right-0 top-full mt-1 z-50 bg-(--color-card-bg) border border-(--color-border) rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-1 min-w-[130px]">
-                {columns.map(col => (
-                  <button
-                    key={col.id}
-                    onClick={() => handleStatusChange(col.id)}
-                    className={`w-full text-left px-3 py-2 text-xs font-medium transition-colors ${activity.status === col.id
-                      ? "text-foreground bg-black/5 dark:bg-white/10"
-                      : "text-(--color-muted) active:bg-black/5 dark:active:bg-white/5"
-                      }`}
-                  >
-                    {col.title}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
+          <StatusSelect
+            options={columns.map((col) => ({ id: col.id, label: col.title }))}
+            selectedId={activity.status}
+            onChange={handleStatusChange}
+            buttonLabel={t("status")}
+          />
+
+          <DropdownMenu
+            triggerClassName="p-1 rounded text-(--color-muted) active:text-foreground"
+            menuClassName="left-0 top-full mt-0.5 z-50 bg-(--color-card-bg) border border-(--color-border) rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-1 min-w-[120px] max-w-[calc(100vw-50%)]"
+            ariaLabel={`${t("options")} - ${activity.name}`}
+            items={[
+              {
+                label: t("rename"),
+                onClick: () => setIsRenaming(true),
+              },
+              {
+                label: t("delete_item"),
+                onClick: handleDeleteActivity,
+                isDanger: true,
+              },
+            ]}
+          />
         </div>
-
-        {/* ⋯ Menu */}
-        <DropdownMenu
-          triggerClassName="p-1 rounded text-(--color-muted) active:text-foreground"
-          menuClassName="left-0 top-full mt-0.5 z-50 bg-(--color-card-bg) border border-(--color-border) rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-1 min-w-[120px] max-w-[calc(100vw-50%)]"
-          ariaLabel={`${t("options")} - ${activity.name}`}
-          items={[
-            {
-              label: t("rename"),
-              onClick: () => setIsRenaming(true),
-            },
-            {
-              label: t("delete_item"),
-              onClick: handleDeleteActivity,
-              isDanger: true,
-            },
-          ]}
-        />
       </div>
 
-      {/* Checklist */}
       {tasks.length > 0 && (
         <div className="flex flex-col gap-1.5">
           <ChecklistProgress completed={completedTasks} total={tasks.length} />
-
-          {tasks.map(task => (
-            <div key={task.id} className={`flex items-start gap-2.5 transition-opacity duration-300 ${task.isCompleted ? 'opacity-60' : 'opacity-100'}`}>
-              <Button
-                variant="icon"
-                onClick={() => handleToggle(task.id)}
-                className="shrink-0 p-1"
-              >
-                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${task.isCompleted ? 'bg-foreground border-foreground text-background' : 'border-(--color-muted)'}`}>
-                  {task.isCompleted && <CheckIcon />}
-                </div>
-              </Button>
-              {renamingTaskId === task.id ? (
-                <form onSubmit={(e) => { e.preventDefault(); handleRenameTaskSubmit(task.id); }} className="flex-1">
-                  <Input
-                    autoFocus
-                    type="text"
-                    value={renameTaskValue}
-                    onChange={(e) => setRenameTaskValue(e.target.value)}
-                    onBlur={() => handleRenameTaskSubmit(task.id)}
-                    onKeyDown={(e) => { if (e.key === 'Escape') setRenamingTaskId(null); }}
-                    className="w-full text-sm px-1.5 py-0.5"
-                  />
-                </form>
-              ) : (
-                <span
-                  onDoubleClick={(e) => { e.stopPropagation(); setRenamingTaskId(task.id); setRenameTaskValue(task.title); }}
-                  onTouchEnd={(e) => handleTaskDoubleTap(e, task.id)}
-                  className={`text-sm flex-1 select-none cursor-default ${task.isCompleted ? 'text-(--color-muted) line-through' : 'text-foreground'}`}
-                >
-                  {task.title}
-                </span>
-              )}
-              <Button
-                variant="icon"
-                onClick={() => handleDelete(task.id)}
-                aria-label={t("delete_item")}
-                className="hover:text-red-500"
-              >
-                <TrashIcon />
-              </Button>
-            </div>
+          {tasks.map((task) => (
+            <TaskItem
+              key={task.id}
+              task={task}
+              onToggle={() => handleToggle(task.id)}
+              onDelete={() => handleDelete(task.id)}
+              onRename={(newTitle) => handleRenameTask(task.id, newTitle)}
+            />
           ))}
         </div>
       )}
 
-      {/* Add Task */}
-      {isAddingTask ? (
-        <form onSubmit={handleAddTask} className="mt-1 w-full">
-          <Input
-            autoFocus
-            type="text"
-            value={newTaskTitle}
-            onChange={e => setNewTaskTitle(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleAddTask(e as unknown as React.FormEvent);
-              }
-              if (e.key === 'Escape') setIsAddingTask(false);
-            }}
-            onBlur={() => setIsAddingTask(false)}
-            placeholder={t("new_task_placeholder")}
-            className="w-full text-sm px-2 py-1.5"
-          />
-        </form>
-      ) : (
-        <Button
-          variant="icon"
-          onClick={() => setIsAddingTask(true)}
-          className="w-full text-left py-1 text-(--color-muted) hover:text-foreground text-sm font-medium flex items-center gap-1.5"
-        >
-          <PlusIcon width="10" height="10" strokeWidth="2.5" />
-          {t("add_task")}
-        </Button>
-      )}
+      <div className="mt-1 w-full">
+        <AddTaskForm onAdd={handleAddTask} placeholderText={t("new_task_placeholder")} buttonText={t("add_task")} />
+      </div>
     </div>
   );
 }
