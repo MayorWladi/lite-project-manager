@@ -67,7 +67,7 @@ export default function ActivityHeader({ name, description, isOverlay, onRenameS
           <>
             <h4
               onDoubleClick={(e) => { e.stopPropagation(); setIsRenaming(true); setRenameValue(name); }}
-              className="font-semibold text-foreground text-sm leading-tight tracking-tight mt-0.5 wrap-break-word group-hover:text-foreground transition-colors"
+              className="font-semibold text-foreground text-sm leading-tight tracking-tight mt-0.5 wrap-break-word break-all group-hover:text-foreground transition-colors"
             >
               {name}
             </h4>
@@ -83,7 +83,7 @@ export default function ActivityHeader({ name, description, isOverlay, onRenameS
       {!isOverlay && (
         <DropdownMenu
           items={menuItems}
-          triggerClassName="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+          triggerClassName="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all hover:bg-black/5 dark:hover:bg-white/5 rounded-md"
           ariaLabel={`${t("options")} - ${name}`}
         />
       )}

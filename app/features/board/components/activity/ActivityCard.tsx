@@ -6,7 +6,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/app/common/components/Button";
 import { ChecklistProgress } from "@/app/common/components/ChecklistProgress";
-import { InfoIcon } from "@/app/common/components/Icons";
+import { InfoIcon, BananaIcon } from "@/app/common/components/Icons";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { useLanguage } from "@/app/common/context/LanguageContext";
 import { useConfirmation } from "@/app/common/context/ConfirmationContext";
@@ -123,7 +123,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: { activi
 						className="p-1.5 text-lg hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-all active:scale-95 shrink-0 select-none opacity-0 group-hover:opacity-100 focus:opacity-100"
 						title="Ver detalles de la actividad"
 					>
-						<InfoIcon />
+						<BananaIcon />
 					</Button>
 				</div>
 
