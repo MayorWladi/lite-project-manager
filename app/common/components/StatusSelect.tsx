@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { useLanguage } from "@/app/common/context/LanguageContext";
 
 interface StatusOption<T> {
@@ -33,7 +33,7 @@ export function StatusSelect<T extends string>({
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!showMenu || !triggerRef.current || !menuRef.current) return;
 
     const rect = triggerRef.current.getBoundingClientRect();
@@ -44,8 +44,8 @@ export function StatusSelect<T extends string>({
     if (left + menuWidth > window.innerWidth) left = window.innerWidth - menuWidth;
 
     setPosition({
-      top: rect.bottom + window.scrollY + 4,
-      left: left + window.scrollX,
+      top: 0,
+      left,
     });
   }, [showMenu]);
 
