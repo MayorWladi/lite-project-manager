@@ -10,7 +10,7 @@ import { BananaIcon } from "@/app/common/components/Icons";
 import { useProjectsManager } from "@/app/common/context/ProjectContext";
 import { useLanguage } from "@/app/common/context/LanguageContext";
 import { useConfirmation } from "@/app/common/context/ConfirmationContext";
-import ActivityTaskItem from "./ActivityTaskItem";
+import BoardTaskItem from "./BoardTaskItem";
 import ActivityHeader from "./ActivityHeader";
 import AddTaskForm from "./AddTaskForm";
 
@@ -160,7 +160,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: Activity
 
           <div className="flex flex-col gap-1.5 group/tasklist transition-opacity duration-300">
             {tasks.map((task) => (
-              <ActivityTaskItem
+              <BoardTaskItem
                 key={task.id}
                 task={task}
                 onToggle={(e) => {

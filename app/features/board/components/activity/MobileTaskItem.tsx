@@ -6,7 +6,7 @@ import { Button } from "@/app/common/components/Button";
 import { Input } from "@/app/common/components/Input";
 import { CheckIcon, TrashIcon } from "@/app/common/components/Icons";
 
-interface TaskItemProps {
+interface MobileTaskItemProps {
   task: Task;
   onToggle: () => void;
   onDelete: () => void;
@@ -15,7 +15,7 @@ interface TaskItemProps {
   onEditingChange?: (isEditing: boolean) => void;
 }
 
-export function TaskItem({ task, onToggle, onDelete, onRename, isEditing: controlledEditing, onEditingChange }: TaskItemProps) {
+export function MobileTaskItem({ task, onToggle, onDelete, onRename, isEditing: controlledEditing, onEditingChange }: MobileTaskItemProps) {
   const [isRenaming, setIsRenaming] = useState(false);
   const [draft, setDraft] = useState(task.title);
   const isEditing = controlledEditing ?? isRenaming;

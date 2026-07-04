@@ -8,7 +8,7 @@ import { Textarea } from "@/app/common/components/Textarea";
 import { Label } from "@/app/common/components/Label";
 import { ChecklistProgress } from "@/app/common/components/ChecklistProgress";
 import { CloseIcon, StatusIcon } from "@/app/common/components/Icons";
-import ActivityTaskItem from "./components/activity/ActivityTaskItem";
+import BoardTaskItem from "./components/activity/BoardTaskItem";
 import AddTaskForm from "./components/activity/AddTaskForm";
 
 interface ActivityDetailsSidebarProps {
@@ -94,13 +94,13 @@ export default function ActivityDetailsSidebar({
 
       {/* CONTENEDOR ANIMADO PRO: Transición de ancho y transformación */}
       <aside
-        className={`fixed inset-y-0 right-0 z-50 bg-(--color-card-bg) flex flex-col transition-all duration-300 ease-in-out xl:static overflow-hidden shrink-0 shadow-[-20px_0_40px_rgba(0,0,0,0.05)] w-[85%] md:w-[340px] ${isVisible
+        className={`fixed inset-y-0 right-0 z-50 bg-(--color-card-bg) flex flex-col transition-all duration-300 ease-in-out xl:static overflow-hidden shrink-0 shadow-[-20px_0_40px_rgba(0,0,0,0.05)] w-[85%] md:w-85Visible
           ? "translate-x-0 border-l border-(--color-border) xl:mr-0"
           : "translate-x-full border-none xl:mr-[-340px]"
           }`}
       >
         {/* Contenedor interno de ancho fijo para evitar que el contenido se aplaste durante la animación */}
-        <div className="w-[85vw] md:w-[340px] min-w-[85vw] md:min-w-[340px] h-full flex flex-col">
+        <div className="w-[85vw] md:w-85 min-w-[85vw] md:min-w-85 h-full flex flex-col">
 
           {/* Encabezado */}
           <div className="h-16 flex justify-between items-center px-5 border-b border-(--color-border) shrink-0">
@@ -133,7 +133,7 @@ export default function ActivityDetailsSidebar({
 
               <div className="flex flex-col gap-1.5 group/tasklist transition-opacity duration-300 px-1">
                 {currentActivity.tasks && currentActivity.tasks.map((task: Task) => (
-                  <ActivityTaskItem
+                  <BoardTaskItem
                     key={task.id}
                     task={task}
                     onToggle={(e) => { e.stopPropagation(); onToggleTask(currentActivity.id, task.id, !task.isCompleted); }}
@@ -166,7 +166,7 @@ export default function ActivityDetailsSidebar({
                 {t("description")}
               </Label>
               <Textarea
-                className="w-full bg-background p-3 text-sm text-foreground placeholder-(--color-muted) min-h-[140px] resize-none shadow-sm"
+                className="w-full bg-background p-3 text-sm text-foreground placeholder-(--color-muted) min-h-35 resize-none shadow-sm"
                 placeholder={t("add_note")}
                 value={currentActivity.description || ""}
                 onChange={(e) => onUpdateDescription(currentActivity.id, e.target.value)}
