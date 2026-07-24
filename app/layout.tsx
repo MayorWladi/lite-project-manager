@@ -3,8 +3,24 @@ import type { Metadata, Viewport } from 'next'
 import { ProjectProvider } from "@/app/common/context/ProjectContext";
 
 export const metadata: Metadata = {
-  title: 'Lite Project Manager',
-  description: 'Fast, lightweight, and local-first project manager',
+  title: "Lite Project Manager",
+  description: "Gestor de proyectos minimalista, rápido y local",
+  applicationName: "Lite Project Manager",
+  icons: {
+    icon: "/app-icon.png",
+  },
+  openGraph: {
+    title: "Lite Project Manager",
+    description: "Gestor de proyectos minimalista, rápido y local",
+    images: [
+      {
+        url: "/projects/lite-project-manager/app-preview.gif",
+        width: 1200,
+        height: 630,
+        alt: "Lite Project Manager",
+      },
+    ],
+  },
 }
 
 export const viewport: Viewport = {
