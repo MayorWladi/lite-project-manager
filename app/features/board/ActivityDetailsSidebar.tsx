@@ -92,13 +92,13 @@ export default function ActivityDetailsSidebar({
 
       {/* CONTENEDOR ANIMADO PRO: Transición de ancho y transformación */}
       <aside
-        className={`fixed inset-y-0 right-0 z-50 bg-(--color-card-bg) flex flex-col transition-all duration-300 ease-in-out xl:static overflow-hidden shrink-0 shadow-[-20px_0_40px_rgba(0,0,0,0.05)] w-[85%] md:w-[340px] ${isVisible
+        className={`fixed inset-y-0 right-0 z-50 bg-(--color-card-bg) flex flex-col transition-all duration-300 ease-in-out xl:static overflow-hidden shrink-0 shadow-[-20px_0_40px_rgba(0,0,0,0.05)] w-[85%] md:w-85 ${isVisible
           ? "translate-x-0 border-l border-(--color-border) xl:mr-0"
-          : "translate-x-full border-none xl:mr-[-340px]"
+          : "translate-x-full border-none xl:-mr-85"
           }`}
       >
         {/* Contenedor interno de ancho fijo para evitar que el contenido se aplaste durante la animación */}
-        <div className="w-[85vw] md:w-[340px] min-w-[85vw] md:min-w-[340px] h-full flex flex-col">
+        <div className="w-[85vw] md:w-85 min-w-[85vw] md:min-w-85 h-full flex flex-col">
 
           {/* Encabezado */}
           <div className="h-16 flex justify-between items-center px-5 border-b border-(--color-border) shrink-0">

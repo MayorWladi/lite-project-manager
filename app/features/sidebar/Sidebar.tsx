@@ -65,7 +65,7 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
 
   const handleProjectChange = (id: string) => {
     if (id === selectedProjectId) return;
-    
+
     if (typeof document !== 'undefined' && 'startViewTransition' in document) {
       document.startViewTransition(() => {
         flushSync(() => {
@@ -86,8 +86,8 @@ export default function Sidebar({ isOpen, onClose, isDesktopOpen = true, onDeskt
         />
       )}
 
-      <aside className={`fixed inset-y-0 left-0 z-50 bg-(--color-card-bg) border-r border-(--color-border) flex flex-col transition-all duration-300 ease-in-out md:static ${isOpen ? 'translate-x-0 shadow-[20px_0_40px_rgba(0,0,0,0.05)] w-[260px]' : '-translate-x-full md:translate-x-0'} ${isDesktopOpen ? 'md:w-[260px]' : 'md:w-0 md:border-r-0 overflow-hidden w-[260px]'}`}>
-        <div className="w-[260px] min-w-[260px] h-full flex flex-col">
+      <aside className={`fixed inset-y-0 left-0 z-50 bg-(--color-card-bg) border-r border-(--color-border) flex flex-col transition-all duration-300 ease-in-out md:static ${isOpen ? 'translate-x-0 shadow-[20px_0_40px_rgba(0,0,0,0.05)] w-65' : '-translate-x-full md:translate-x-0'} ${isDesktopOpen ? 'md:w-65' : 'md:w-0 md:border-r-0 overflow-hidden w-65'}`}>
+        <div className="w-65 min-w-65 h-full flex flex-col">
           {/* Encabezado */}
           <div className="h-16 flex justify-between items-center px-6 border-b border-(--color-border) shrink-0">
             <h1 className="text-lg font-medium text-foreground tracking-tight truncate">

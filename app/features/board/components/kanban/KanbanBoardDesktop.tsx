@@ -112,7 +112,7 @@ export default function KanbanBoardDesktop({
             <Button
               variant="custom"
               onClick={() => setIsAdding(true)}
-              className="w-[180px] justify-center px-4 py-2.5 rounded-lg border border-(--color-border) text-(--color-muted) hover:text-foreground hover:border-(--color-muted) bg-background hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-sm font-medium flex items-center gap-2 shadow-sm"
+              className="w-45 justify-center px-4 py-2.5 rounded-lg border border-(--color-border) text-(--color-muted) hover:text-foreground hover:border-(--color-muted) bg-background hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-sm font-medium flex items-center gap-2 shadow-sm"
             >
               <PlusIcon width="16" height="16" />
               {t("add_activity")}
@@ -169,7 +169,7 @@ export default function KanbanBoardDesktop({
       {mounted && createPortal(
         <DragOverlay>
           {activeActivity ? (
-            <div className="rotate-3 scale-105 shadow-[0_12px_40px_rgba(58,54,50,0.15)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.4)] cursor-grabbing w-[264px]">
+            <div className="rotate-3 scale-105 shadow-[0_12px_40px_rgba(58,54,50,0.15)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.4)] cursor-grabbing w-66">
               <ActivityCard activity={activeActivity} sprintId={sprint.id} isOverlay />
             </div>
           ) : null}

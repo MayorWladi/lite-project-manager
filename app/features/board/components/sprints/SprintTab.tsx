@@ -96,7 +96,7 @@ export default function SprintTab({ sprint, isActive, onSelect, onRename, onDele
           setRenameValue(sprint.name);
         }}
         onTouchEnd={(e) => handleDoubleTap(e, sprint.id)}
-        className="pl-3 pr-2 py-1.5 text-left outline-none rounded-l-md cursor-pointer select-none truncate max-w-[120px] md:max-w-[200px]"
+        className="pl-3 pr-2 py-1.5 text-left outline-none rounded-l-md cursor-pointer select-none truncate max-w-30 md:max-w-50"
       >
         {sprint.name}
       </Button>
