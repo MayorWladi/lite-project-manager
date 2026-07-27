@@ -39,7 +39,7 @@ export default function ActivityHeader({ name, description, isOverlay, onRenameS
           onEditingChange={setIsRenaming}
           disabled={isOverlay}
           placeholder={t("rename")}
-          textClassName="font-semibold text-foreground text-sm leading-tight tracking-tight mt-0.5 break-all group-hover:text-foreground transition-colors"
+          textClassName="font-semibold text-foreground text-sm leading-tight tracking-tight mt-0.5 break-all group-hover:text-foreground transition-colors cursor-default"
           inputClassName="w-full p-0 text-sm"
           wrapperClassName="w-full"
         />
