@@ -13,6 +13,7 @@ import { useActivityActions } from "@/app/features/board/hooks/useActivityAction
 import TaskItem from "./TaskItem";
 import ActivityHeader from "./ActivityHeader";
 import AddTaskForm from "./AddTaskForm";
+import { Tooltip } from "@/app/common/components/Tooltip";
 
 interface ActivityCardProps {
   activity: Activity;
@@ -81,21 +82,19 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: Activity
             />
           </div>
 
-          <Button
-            variant="custom"
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              openActivityDetails(sprintId, activity.id);
-            }}
-            className="p-1.5 text-lg hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-all active:scale-95 shrink-0 select-none opacity-0 group-hover:opacity-100 focus:opacity-100 relative group/btn"
-          >
-            <BananaIcon />
-            <div className="absolute right-0 bottom-full mb-2 z-50 bg-(--color-card-bg) border border-(--color-border) rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] px-2.5 py-1.5 min-w-max pointer-events-none opacity-0 invisible group-hover/btn:opacity-100 group-hover/btn:visible transition-all duration-200">
-              <span className="text-xs font-medium text-foreground whitespace-nowrap font-sans">{t("view_details")}</span>
-              <div className="absolute w-2 h-2 bg-(--color-card-bg) border-r border-b border-(--color-border) rotate-45 right-2.5 -bottom-1" />
-            </div>
-          </Button>
+          <Tooltip content={t("view_details")}>
+            <Button
+              variant="custom"
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                openActivityDetails(sprintId, activity.id);
+              }}
+              className="p-1.5 text-lg hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-all active:scale-95 shrink-0 select-none opacity-0 group-hover:opacity-100 focus:opacity-100"
+            >
+              <BananaIcon />
+            </Button>
+          </Tooltip>
         </div>
 
         <div className="flex flex-col gap-1.5 cursor-default" onPointerDown={(e) => e.stopPropagation()}>
