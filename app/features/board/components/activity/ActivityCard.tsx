@@ -33,7 +33,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: Activity
     handleRenameTask,
   } = useActivityActions(sprintId, activity.id);
 
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({
     id: activity.id,
     data: { activity, sprintId },
     disabled: isOverlay,
@@ -50,8 +50,8 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: Activity
         opacity: isDragging ? 0.4 : 1,
       };
 
-  const containerClassName = `w-[264px] mb-3 break-inside-avoid ${isOverlay ? "cursor-grabbing" : "cursor-grab active:cursor-grabbing"}`;
-  const cardClassName = `bg-(--color-card-bg) border rounded-xl p-4 pt-3 flex flex-col gap-3 transition-all duration-200 ease-out shadow-[0_2px_8px_rgba(0,0,0,0.02)] group relative ${
+  const containerClassName = `w-[264px] mb-3 break-inside-avoid`;
+  const cardClassName = `bg-(--color-card-bg) border rounded-xl p-4 pt-1 flex flex-col gap-3 transition-all duration-200 ease-out shadow-[0_2px_8px_rgba(0,0,0,0.02)] group relative ${
     isOverlay
       ? "border-(--color-border) shadow-none"
       : isDragging
@@ -60,10 +60,14 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: Activity
   }`;
 
   return (
-    <div ref={isOverlay ? undefined : setNodeRef} style={style} className={containerClassName} {...(isOverlay ? {} : { ...listeners, ...attributes })}>
+    <div ref={isOverlay ? undefined : setNodeRef} style={style} className={containerClassName}>
       <div className={cardClassName}>
-        <div className="w-full flex justify-center pb-1">
-          <div className="w-8 h-1 rounded-full bg-(--color-border) group-hover:bg-(--color-muted) transition-colors" />
+        <div 
+          ref={setActivatorNodeRef} 
+          className={`w-full flex justify-center pt-2 pb-2 ${isOverlay ? "cursor-grabbing" : "cursor-grab active:cursor-grabbing"} group/handle`}
+          {...(isOverlay ? {} : { ...listeners, ...attributes })}
+        >
+          <div className="w-8 h-1.5 rounded-full bg-(--color-border) group-hover/handle:bg-(--color-muted) transition-colors" />
         </div>
 
         <div className="flex items-start justify-between gap-2 w-full">
