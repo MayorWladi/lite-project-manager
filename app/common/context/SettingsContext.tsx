@@ -58,6 +58,14 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 		}
 	}, [theme, mounted]);
 
+	useEffect(() => {
+		if (!mounted) return;
+
+		const body = document.body;
+		const currentFontClasses = Array.from(body.classList).filter(cls => cls.startsWith('font-'));
+		body.classList.remove(...currentFontClasses);
+		body.classList.add(`font-${font}`);
+	}, [font, mounted]);
 
 
 	const setTheme = useCallback((newTheme: ThemeType) => {
