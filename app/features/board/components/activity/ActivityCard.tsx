@@ -89,7 +89,7 @@ export default function ActivityCard({ activity, sprintId, isOverlay }: Activity
               openActivityDetails(sprintId, activity.id);
             }}
             className="p-1.5 text-lg hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-all active:scale-95 shrink-0 select-none opacity-0 group-hover:opacity-100 focus:opacity-100"
-            title="Ver detalles de la actividad"
+            title={t("view_details")}
           >
             <BananaIcon />
           </Button>

@@ -72,6 +72,7 @@ export const DICTIONARY: Translations = {
 	rename_placeholder: { en: "New name...", es: "Nuevo nombre..." },
 
 	// Missing Translations
+	view_details: { en: "View activity details", es: "Ver detalles de la actividad" },
 	description: { en: "Description", es: "Descripción" },
 	add_note: { en: "Add note...", es: "Agregar nota..." },
 	new_project_placeholder: { en: "New project", es: "Nuevo proyecto" },
